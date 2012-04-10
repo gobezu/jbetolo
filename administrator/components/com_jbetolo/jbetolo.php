@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $task = JRequest::getCmd('task');
 
-require_once dirname(__FILE__).'/helper.php';
+require_once dirname(__FILE__).'/helpers/helper.php';
 
 $lang = JFactory::getLanguage();
 $lang->load('plg_system_jbetolo');

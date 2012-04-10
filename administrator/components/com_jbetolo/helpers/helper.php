@@ -25,11 +25,11 @@ class jbetoloComponentHelper {
         }
 
         private static function doSendFile($type, $cache_file, $is_gz, $age) {
-                $m_time = jbetoloComponentHelper::gmdateStr(filemtime($cache_file));
+                $m_time = self::gmdateStr(filemtime($cache_file));
                 
                 $document = JFactory::getDocument();
                 
-                header("Content-type: ".jbetoloComponentHelper::$contentTypes[$type]."; charset: " . $document->getCharset());
+                header("Content-type: ".self::$contentTypes[$type]."; charset: " . $document->getCharset());
 
                 if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $m_time) {
                         header('Content-Length: 0');
@@ -40,13 +40,13 @@ class jbetoloComponentHelper {
                 jimport('joomla.plugin.plugin');
                 JPluginHelper::importPlugin('system', 'jbetolo');
                 
-                $t_age = jbetoloComponentHelper::gmdateStr(time() + $age);
+                $t_age = self::gmdateStr(time() + $age);
 
                 if ($is_gz) {
                         header("Content-Encoding: gzip");
                 }
 
-                header('Last-Modified: ' . jbetoloComponentHelper::gmdateStr(filemtime($cache_file)));
+                header('Last-Modified: ' . self::gmdateStr(filemtime($cache_file)));
                 header('Content-Length: ' . filesize($cache_file));
                 header('Cache-Control: must-revalidate, max-age=' . $age);
                 header('Cache-Control: Public');
@@ -54,7 +54,7 @@ class jbetoloComponentHelper {
                 header('Expires: ' . $t_age);
 
                 if (!$is_gz && JBETOLO_IS_GZ) {
-                        $content = jbetoloComponentHelper::gzdecode($cache_file);
+                        $content = self::gzdecode($cache_file);
                 } else {
                         jimport('joomla.filesystem.file');
                         $content = JFile::read($cache_file);
@@ -81,7 +81,7 @@ class jbetoloComponentHelper {
                 }
 
                 if (file_exists($to_file)) {
-                        jbetoloComponentHelper::doSendFile($type, $to_file, $is_gz, $age);
+                        self::doSendFile($type, $to_file, $is_gz, $age);
                 } else {
                         die('Restricted access');
                 }
@@ -92,7 +92,7 @@ class jbetoloComponentHelper {
         }
 
         public static function pluginLocation() {
-                return JPATH_PLUGINS.'/system/'.(jbetoloComponentHelper::isJ16()?'jbetolo/':'').'jbetolo.php';
+                return JPATH_PLUGINS.'/system/'.(self::isJ16()?'jbetolo/':'').'jbetolo.php';
         }
 
         private static function settingAllowed() {
@@ -110,45 +110,45 @@ class jbetoloComponentHelper {
                         JError::raiseError(403, JText::_("ALERTNOTAUTH"));
                 }                
                 
-                require_once jbetoloComponentHelper::pluginLocation();
+                require_once self::pluginLocation();
                 return jbetoloHelper::pingUrls();
         }
 
         public static function resetCache() {
-                jbetoloComponentHelper::settingAllowed();
+                self::settingAllowed();
 
-                require_once jbetoloComponentHelper::pluginLocation();
+                require_once self::pluginLocation();
                 return jbetoloHelper::resetCache(JRequest::getCmd('app', 'all'));
         }
 
         public static function resetSetting() {
-                jbetoloComponentHelper::settingAllowed();
+                self::settingAllowed();
                 
-                require_once jbetoloComponentHelper::pluginLocation();
+                require_once self::pluginLocation();
                 
                 return jbetoloHelper::resetSetting(JRequest::getCmd('setting', ''));
         }
 
         public static function saveSetting() {
-                jbetoloComponentHelper::settingAllowed();
+                self::settingAllowed();
                 
                 $name = JRequest::getString('name');
                 $setting = JRequest::getString('settings');
                 
-                require_once jbetoloComponentHelper::pluginLocation();
+                require_once self::pluginLocation();
                 
                 return jbetoloHelper::saveSetting($name, $setting);
         }
 
         public static function smushIt() {
-                jbetoloComponentHelper::settingAllowed();
+                self::settingAllowed();
 
                 $dir = JRequest::getString('dir');
                 $replace = JRequest::getString('replace');
                 $recursive = JRequest::getString('recursive');
                 $fix = JRequest::getString('fix', '_smushed');
 
-                require_once jbetoloComponentHelper::pluginLocation();
+                require_once self::pluginLocation();
 
                 return jbetoloHelper::smushItDirectory($dir, $recursive == 'recursive', $replace == 'replace', $fix);
         }
