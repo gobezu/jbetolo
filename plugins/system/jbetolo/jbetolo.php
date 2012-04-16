@@ -121,7 +121,7 @@ class plgSystemJBetolo extends JPlugin {
                 $donts = plgSystemJBetolo::$donts[$type];
                 
                 if ($type == 'jbetolo') {
-			$excludeComponents = plgSystemJBetolo::param('js_exclude_components');
+			$excludeComponents = plgSystemJBetolo::param('exclude_components');
                 } else {
 			$excludeComponents = plgSystemJBetolo::param($type . '_exclude_components');
                 }

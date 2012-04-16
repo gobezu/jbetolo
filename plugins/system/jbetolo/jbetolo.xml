@@ -97,7 +97,6 @@
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
                                 <field name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></field>
-                                <field name="js_exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></field>
                                 <field name="spacer_js" type="spacer" default="" label="PLG_JBETOLO_JQUERY" />
                                 <field name="js_jquery_no_conflict" type="radio" default="1" label="PLG_JBETOLO_JQUERY_NO_CONFLICT_LBL" description="PLG_JBETOLO_JQUERY_NO_CONFLICT_DESC">
                                     <option value="1">PLG_JBETOLO_YES</option>
@@ -125,6 +124,7 @@
                                 <field name="gzip_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_GZIP_LBL" description="PLG_JBETOLO_EXCL_GZIP_DESC"></field>
                                 <field name="minify_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_MINIFY_LBL" description="PLG_JBETOLO_EXCL_MINIFY_DESC"></field>
                                 <field name="delete" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_DELETE_LBL" description="PLG_JBETOLO_DELETE_DESC"></field>
+                                <field name="exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CDN">
                                 <field name="cdn_enabled" type="radio" default="0" label="PLG_JBETOLO_CDN_ENABLED_LBL" description="PLG_JBETOLO_CDN_ENABLED_DESC">
