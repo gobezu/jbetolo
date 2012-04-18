@@ -42,6 +42,10 @@ class plgSystemJBetolo extends JPlugin {
             'js' => "/<script[^>]*?src=(?:[\"\'])([^\"\']*?)[\"\'][^>]*?(?:\/>|>.*?<\/script>)/ims",
             'css' => "/<link[^>]*?href=(?:[\"\'])([^\"\']*?)[\"\'][^>]*?(?:\/>|>.*?<\/link>)/ims"
         );
+        private static $commentedTagScript = array(
+            'js' => "/<\!--.*?-->/ims",
+            'css' => "/<\!--.*?-->/ims"
+        );
         
         function plgSystemJBetolo(& $subject, $config) {                
                 parent::__construct($subject, $config);
@@ -68,15 +72,15 @@ class plgSystemJBetolo extends JPlugin {
                 
                 jbetoloHelper::handleChanges();
 
-                $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
+                $_comments = $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
 
-                list($_srcs['css'], $_esrcs['css'], $_tags['css'], $_conds['css'], $_indexes['css']) =
+                list($_srcs['css'], $_esrcs['css'], $_tags['css'], $_conds['css'], $_comments['css'], $_indexes['css']) =
                         $this->parseBody($body, 'css');
 
-                list($_srcs['js'], $_esrcs['js'], $_tags['js'], $_conds['js'], $_indexes['js']) =
+                list($_srcs['js'], $_esrcs['js'], $_tags['js'], $_conds['js'], $_comments['js'], $_indexes['js']) =
                         $this->parseBody($body, 'js');
 
-                jbetoloFileHelper::createFile($body, $_srcs, $_esrcs, $_tags, $_conds, $_indexes);
+                jbetoloFileHelper::createFile($body, $_srcs, $_esrcs, $_tags, $_conds, $_comments, $_indexes);
 
                 jbetoloJS::moveInlineScripts($body);
                 
@@ -201,17 +205,35 @@ class plgSystemJBetolo extends JPlugin {
                         $body = str_ireplace('</title>', '</title>' . $includedStr, $body);
                 }
 
-                $excluded = $conds = $excludedSrcs = array();
+                $excluded = $comments = $conds = $excludedSrcs = array();
 
                 // find and consider IE conditionals as excluded from merging
-                preg_match_all(plgSystemJBetolo::$conditionalTagScript[$type], $body, $matches);
-                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], implode('', $matches[0]), $matches);
-
+                preg_match_all(plgSystemJBetolo::$conditionalTagScript[$type], $body, $condTags);
+                $condTags = $condTags[0];
+                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], implode('', $condTags), $matches);
+                
                 foreach ($matches[0] as $c => $conditional) {
                         $conds[] = jbetoloFileHelper::normalizeCall($matches[1][$c]);
                         $excludedSrcs[] = $conds[$c];
                 }
-
+                
+                // find and exclude commented resources from merging
+                preg_match_all(plgSystemJBetolo::$commentedTagScript[$type], $body, $matches);
+                
+                if (!empty($matches[0]) && !empty($condTags)) {
+                        foreach ($matches[0] as $m => $match) {
+                                if (in_array($match, $condTags)) unset($matches[0][$m]);
+                        }
+                }
+                
+                $matches = implode('', $matches[0]);
+                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], $matches, $matches);
+                
+                foreach ($matches[0] as $c => $conditional) {
+                        $comments[] = jbetoloFileHelper::normalizeCall($matches[1][$c]);
+                        $excludedSrcs[] = $comments[$c];
+                }
+                
                 // collect resources to be excluded from merging
                 if ($merge) {
                         $excluded = plgSystemJBetolo::param($type . '_merge_exclude');
@@ -240,6 +262,25 @@ class plgSystemJBetolo extends JPlugin {
                 preg_match_all(plgSystemJBetolo::$tagRegex[$type], $body, $matches);
                 $tags = $matches[0];
                 preg_match_all(plgSystemJBetolo::$srcRegex[$type], implode('', $tags), $matches);
+                
+                if (count($matches[0]) != count($tags)) {
+                        // Due to incorrect syntax some tags has not found corresponding source entry and will be discarded
+                        $n = count($matches[1]);
+                        $d = 0;
+                        foreach ($tags as $s => $src) {
+                                $si = $s - $d;
+                                if ($si < $n) {
+                                        if (strpos($tags[$s], $matches[1][$si]) === false) {
+                                                unset($tags[$s]);
+                                                $d++;
+                                        }
+                                } else {
+                                        unset($tags[$s]);
+                                }
+                        }
+                        $tags = array_filter($tags);
+                        $tags = array_values($tags);
+                }
 
                 $excludedSrcs = $_excludedSrcs = $srcs = $indexes = array();
                 
@@ -247,6 +288,12 @@ class plgSystemJBetolo extends JPlugin {
                 // 1. separate the excluded ones by considering the choosen merging method
                 // 2. if css identify and assign correct media type
                 // 3. if resource is not locally available no further processing
+                $deleteSrcs = plgSystemJBetolo::param('delete');
+                
+                if ($deleteSrcs) {
+                        $deleteSrcs = explode(',', $deleteSrcs);
+                }
+                
                 foreach ($matches[1] as $s => $src) {
                         $indexes[] = array('src' => $src, 'tag' => $tags[$s], 'srci' => '', 'media' => 'screen');
 
@@ -270,23 +317,45 @@ class plgSystemJBetolo extends JPlugin {
                                         $srcs[] = $src;
                                         $indexes[$s]['srci'] = count($srcs) - 1;
                                 } else {
-                                        $excludedSrcs[$src] = array('src' => $src, 'tag' => $tags[$s], 'dynamic' => $asDynamic);
-                                        $_excludedSrcs[] = $src;
-                                        $tags[$s] = JBETOLO_EMPTYTAG;
+                                        $isDeleted = false;
+
+                                        // is deleted
+                                        if ($deleteSrcs) {
+                                                foreach ($deleteSrcs as $d) {
+                                                        if ($d == $matches[1][$s]) {
+                                                                $isDeleted = true;
+                                                                break;
+                                                        }
+                                                }
+                                        }
+                                        
+                                        if (!$isDeleted) {
+                                                $excludedSrcs[$src] = array('src' => $src, 'tag' => $tags[$s], 'dynamic' => $asDynamic);
+                                                $_excludedSrcs[] = $src;
+                                                $tags[$s] = JBETOLO_EMPTYTAG;
+                                        }
                                 }
                         } else {
-                                // external url's or resources not found physically on the server
-                                // are left untouched
-                                $tags[$s] = JBETOLO_EMPTYTAG;
+                                // external url or resource not found physically on the server
+                                $isDeleted = false;
+                                
+                                // is deleted
+                                if ($deleteSrcs) {
+                                        foreach ($deleteSrcs as $d) {
+                                                if ($d == $matches[1][$s]) {
+                                                        $isDeleted = true;
+                                                        break;
+                                                }
+                                        }
+                                }                                        
+
+                                // is left untouched
+                                if (!$isDeleted) $tags[$s] = JBETOLO_EMPTYTAG;
                         }
                 }
 
                 // resources to be deleted are removed from found ones
-                $deleteSrcs = plgSystemJBetolo::param('delete');
-
                 if ($deleteSrcs) {
-                        $deleteSrcs = explode(',', $deleteSrcs);
-
                         foreach ($deleteSrcs as $d) {
                                 $_d = jbetoloFileHelper::normalizeCall($d);
 
@@ -305,12 +374,12 @@ class plgSystemJBetolo extends JPlugin {
                 if ($type == 'js') {
                         jbetoloJS::setJqueryFile($srcs, $_excludedSrcs);
                 }
-
+                
                 // apply merging ordering 
                 $orderedSrcs = jbetoloFileHelper::customOrder($srcs, $type);
                 $orderedExcludedSrcs = jbetoloFileHelper::customOrder($excludedSrcs, $type, $_excludedSrcs);
 
-                return array($orderedSrcs, $orderedExcludedSrcs, $tags, $conds, $indexes);
+                return array($orderedSrcs, $orderedExcludedSrcs, $tags, $conds, $comments, $indexes);
         }
 
         /**

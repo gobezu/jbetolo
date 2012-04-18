@@ -654,8 +654,7 @@ class jbetoloHelper {
 
         public static function replaceTags(&$subject, $tags, $replaceWith = "\n") {
                 foreach ($tags as $tag) {
-                        if ($tag == JBETOLO_EMPTYTAG)
-                                continue;
+                        if ($tag == JBETOLO_EMPTYTAG) continue;
                         $subject = str_ireplace($tag, $replaceWith, $subject);
                 }
         }
@@ -977,7 +976,9 @@ class jbetoloFileHelper {
                 if ($type == 'js') {
                         $customOrder = explode(',', $customOrder);
                         $moos = array();
-                        foreach ($files as $file) {
+                        $_files = !empty($index) ? $index : $files;
+                        
+                        foreach ($_files as $file) {
                                 if (preg_match('#mootools-(core|more){1}(\-[\d\.]+){0,1}\.js$#i', $file)) {
                                         $b = basename($file);
                                         $f = jbetoloFileHelper::fileInArray($b, $customOrder);
@@ -987,29 +988,9 @@ class jbetoloFileHelper {
                                         $moos[] = $file;
                                 }
                         }
+                        
                         $customOrder = implode(',', $customOrder);
                         $customOrder = implode(',', $moos) . ($customOrder ? ','  . $customOrder : '');
-                        
-//                        $moo = '';
-//                        
-//                        $moos = array(
-//                                'mootools.js',
-//                                'mootools-core.js',
-//                                'mootools-more.js'
-//                        );
-//                        
-//                        $customOrder = explode(',', $customOrder);
-//
-//                        foreach ($moos as $moo) {
-//                                $f = jbetoloFileHelper::fileInArray($moo, $customOrder);
-//                                
-//                                if ($f) {
-//                                        unset($customOrder[$f[0]]);
-//                                }
-//                        }
-//                        
-//                        $customOrder = implode(',', $customOrder);
-//                        $customOrder = implode(',', $moos) . ($customOrder ? ','  . $customOrder : '');
                 }
                 
                 if (!empty($customOrder)) {
@@ -1561,7 +1542,7 @@ class jbetoloFileHelper {
                 fclose($socket);
         }
 
-        public static function createFile(&$body, $src_files, $excluded_files, $replace_tags, $conds, $indexes) {
+        public static function createFile(&$body, $src_files, $excluded_files, $replace_tags, $conds, $comments, $indexes) {
                 $arr = plgSystemJBetolo::param('files');
                 $abs_excl_minify = plgSystemJBetolo::param('minify_exclude');
 
@@ -1587,6 +1568,8 @@ class jbetoloFileHelper {
                 foreach ($src_files as $type => $_src_files) {
                         if (empty($_src_files))
                                 continue;
+                        
+                        $skipFiles = array_merge($conds[$type], $comments[$type]);
 
                         $merge = plgSystemJBetolo::param($type . '_merge');
                         $is_gz = JBETOLO_IS_GZ && plgSystemJBetolo::param($type . '_gzip') && jbetoloHelper::clientEncoding();
@@ -1697,7 +1680,7 @@ class jbetoloFileHelper {
 
                                 foreach ($excl_files as $excl_file) {
                                         $src = $excl_file['src'];
-                                        if (jbetoloFileHelper::fileInArray($src, $conds[$type]))
+                                        if (jbetoloFileHelper::fileInArray($src, $skipFiles))
                                                 continue;
 
                                         $_minify = $is_minify && !jbetoloFileHelper::isFileExcluded($src, $abs_excl_minify);
@@ -1780,7 +1763,7 @@ class jbetoloFileHelper {
         public static function minify($type, $cont) {
                 static $id = 0;
                 
-                $path = dirname(__FILE__) . '/mrclay-minify-6969982/min/lib/';
+                $path = dirname(__FILE__) . '/minify-2.1.5/min/lib/';
                 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
                 
                 require_once dirname(__FILE__) . '/jbetolo.php';
