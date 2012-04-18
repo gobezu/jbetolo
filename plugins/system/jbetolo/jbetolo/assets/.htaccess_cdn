@@ -1,0 +1,24 @@
+# @version		2.0.0.b10-99 - 2012 March 09 16:03:58 +0300
+# @package		jbetolo
+# @copyright		Copyright © 2010 - All rights reserved.
+# @license		GNU/GPL
+# @author		Gobezu Sewu
+# @author mail		info@jproven.com
+# @website		http://jproven.com
+
+<Files "jbetolo.cdn.conf">
+Order allow,deny
+Deny from all
+</Files>
+
+<FilesMatch "\.(.*)$">
+        FileETag None
+        <IfModule mod_headers.c>
+                Header set X-Powered-By "jbetolo/2.0"
+        </IfModule>
+</FilesMatch>
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule (.*$) HTTP_HOST_REPLACEpuller.php?cfile=$1 [R=301|L]
+
