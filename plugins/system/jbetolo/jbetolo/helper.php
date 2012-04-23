@@ -772,18 +772,20 @@ class jbetoloJS {
 }
 
 class jbetoloCSS {
-        private static $contents, $files, $root, $cdn_merged;
+        private static $contents, $files, $root, $cdn_merged, $deleteSrcs;
 
         public static function build($files, $attrs, $is_generate_file = true) {
                 if (is_string($files)) $files = array($files);
 
                 $categorized = array();
-                jbetoloCSS::$cdn_merged = JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged');
+                self::$cdn_merged = JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged');
+                $deleteSrcs = plgSystemJBetolo::param('delete');
+                self::$deleteSrcs = $deleteSrcs ? explode(',', $deleteSrcs) : array();
 
                 foreach ($files as $f => $file) {
-                        jbetoloCSS::$root = null;
-                        jbetoloCSS::$contents = jbetoloCSS::$files = array();
-                        jbetoloCSS::load($file);
+                        self::$root = null;
+                        self::$contents = self::$files = array();
+                        self::load($file);
 
                         $attr = $attrs[$f];
 
@@ -794,12 +796,12 @@ class jbetoloCSS {
                                 $categorized[$attr] = array('files' => array(), 'contents' => array(), 'srcs' => array());
                         }
 
-                        if (is_array(jbetoloCSS::$files)) {
-                                $categorized[$attr]['files'] = array_merge($categorized[$attr]['files'], jbetoloCSS::$files);
-                                $categorized[$attr]['contents'] = array_merge($categorized[$attr]['contents'], jbetoloCSS::$contents);
+                        if (is_array(self::$files)) {
+                                $categorized[$attr]['files'] = array_merge($categorized[$attr]['files'], self::$files);
+                                $categorized[$attr]['contents'] = array_merge($categorized[$attr]['contents'], self::$contents);
                         } else {
-                                $categorized[$attr]['files'][] = jbetoloCSS::$files;
-                                $categorized[$attr]['contents'][] = jbetoloCSS::$contents;
+                                $categorized[$attr]['files'][] = self::$files;
+                                $categorized[$attr]['contents'][] = self::$contents;
                         }
 
                         $categorized[$attr]['srcs'] = array_merge($categorized[$attr]['srcs'], array($file));
@@ -818,7 +820,7 @@ class jbetoloCSS {
                         $res = implode(chr(13), $res);
                 }
 
-                jbetoloCSS::$contents = jbetoloCSS::$files = null;
+                self::$contents = self::$files = null;
 
                 return $res;
         }
@@ -826,19 +828,19 @@ class jbetoloCSS {
         private static function load($file, $is_recursive_call = false) {
                 $content = jbetoloFileHelper::getContent($file, 'css');
                 $base = jbetoloFileHelper::getDirectoryName($file);
-                if (empty(jbetoloCSS::$root)) jbetoloCSS::$root = $base;
-                $content = jbetoloCSS::buildPath($content, $base);
+                if (empty(self::$root)) self::$root = $base;
+                $content = self::buildPath($content, $base);
 
                 $content = preg_replace_callback(
                                 '#^[\s]*?\@import\s*?(?:url\()?[\'\"]?([^\'\"\()]+)[\'\"]?\)?;#im',
-                                'jbetoloCSS::_load',
+                                'self::_load',
                                 $content
                 );
 
                 $content = (JBETOLO_DEBUG ? "/** $file **/\n" : '') . $content;
 
-                jbetoloCSS::$contents[] = array('file' => $file, 'content' => $content);
-                jbetoloCSS::$files[] = $file;
+                self::$contents[] = array('file' => $file, 'content' => $content);
+                self::$files[] = $file;
 
                 if ($is_recursive_call) {
                         return '';
@@ -846,7 +848,20 @@ class jbetoloCSS {
         }
 
         private static function _load($matches) {
-                return jbetoloCSS::load($matches[1], true);
+                $file = jbetoloFileHelper::normalizeCall($matches[1]);
+                $file = (array) $file;
+                foreach (self::$deleteSrcs as $d) {
+                        $_d = jbetoloFileHelper::normalizeCall($d);
+
+                        if ($_d !== false) {
+                                $d = $_d;
+                        }
+
+                        $f = jbetoloFileHelper::fileInArray($d, $file);
+
+                        if ($f) return '';
+                }                
+                return self::load($matches[1], true);
         }
 
         private static function buildPath($content, $base) {
@@ -862,21 +877,21 @@ class jbetoloCSS {
                  */
                 if (preg_match_all('/url\([\'"]?(?![a-z]+:|\/+)([^\'"\?\#)]+)([^\'")]+)?[\'"]?\)/i', $content, $matches)) {
                         foreach ($matches[1] as $m => $match) {
-                                if (jbetoloCSS::$cdn_merged) {
+                                if (self::$cdn_merged) {
                                         $path = jbetoloFileHelper::normalizeTOCDN($base . '/' . $match);
 
                                         if (!$path) {
-                                                $path = jbetoloFileHelper::normalizeTOCDN(jbetoloCSS::$root . '/' . $match);
+                                                $path = jbetoloFileHelper::normalizeTOCDN(self::$root . '/' . $match);
                                         }
                                 } else {
                                         $path = jbetoloFileHelper::normalizeCall($base . '/' . $match, true, false);
 
                                         if (!$path) {
-                                                $path = jbetoloFileHelper::normalizeCall(jbetoloCSS::$root . '/' . $match, true, false);
+                                                $path = jbetoloFileHelper::normalizeCall(self::$root . '/' . $match, true, false);
                                         }
                                 }
                                 
-                                $path = jbetoloCSS::processResources($path);
+                                $path = self::processResources($path);
                                 
                                 if ($path) {
                                         $path .= $matches[2][$m];
