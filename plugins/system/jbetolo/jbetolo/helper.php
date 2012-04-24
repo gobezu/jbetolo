@@ -833,7 +833,7 @@ class jbetoloCSS {
 
                 $content = preg_replace_callback(
                                 '#^[\s]*?\@import\s*?(?:url\()?[\'\"]?([^\'\"\()]+)[\'\"]?\)?;#im',
-                                'self::_load',
+                                'jbetoloCSS::_load',
                                 $content
                 );
 
