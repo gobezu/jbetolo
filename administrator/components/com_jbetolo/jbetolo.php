@@ -11,6 +11,8 @@ require_once dirname(__FILE__).'/helpers/helper.php';
 $lang = JFactory::getLanguage();
 $lang->load('plg_system_jbetolo');
 
+$app = JFactory::getApplication();
+
 switch ($task) {
         case 'serve':
                 $file = JRequest::getString('file', false);
@@ -28,19 +30,24 @@ switch ($task) {
 
                 break;
         case 'clearcache':
-                die(jbetoloComponentHelper::resetCache());
+                echo jbetoloComponentHelper::resetCache();
+                $app->close();
                 break;
         case 'resetsetting':
-                die(jbetoloComponentHelper::resetSetting());
+                echo jbetoloComponentHelper::resetSetting();
+                $app->close();
                 break;
         case 'savesetting':
-                die(jbetoloComponentHelper::saveSetting());
+                echo jbetoloComponentHelper::saveSetting();
+                $app->close();
                 break;
         case 'smushit':
-                die(jbetoloComponentHelper::smushIt());
+                echo jbetoloComponentHelper::smushIt();
+                $app->close();
                 break;
         case 'ping':
-                die(jbetoloComponentHelper::ping());
+                echo jbetoloComponentHelper::ping();
+                $app->close();
                 break;
         default:
                 jbetoloComponentHelper::redirectToPlg('jbetolo', 'system');
