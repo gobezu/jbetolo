@@ -32,11 +32,12 @@ class jbetoloComponentHelper {
                 header("Content-type: ".self::$contentTypes[$type]."; charset: " . $document->getCharset());
 
                 if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $m_time) {
+                        header('Last-Modified: ' . $m_time);
                         header('Content-Length: 0');
                         header("HTTP/1.0 304 Not Modified");
                         return;
                 }
-
+                
                 jimport('joomla.plugin.plugin');
                 JPluginHelper::importPlugin('system', 'jbetolo');
                 
@@ -111,6 +112,7 @@ class jbetoloComponentHelper {
                 }                
                 
                 require_once self::pluginLocation();
+                
                 return jbetoloHelper::pingUrls();
         }
 
@@ -118,6 +120,7 @@ class jbetoloComponentHelper {
                 self::settingAllowed();
 
                 require_once self::pluginLocation();
+                
                 return jbetoloHelper::resetCache(JRequest::getCmd('app', 'all'));
         }
 
