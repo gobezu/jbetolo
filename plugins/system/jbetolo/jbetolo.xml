@@ -250,7 +250,6 @@
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
                 <param name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></param>
-                <param name="jbetolo_exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></param>
                 <param name="spacer_js" type="spacer" default="" label="PLG_JBETOLO_JQUERY" />
                 <param name="js_jquery_no_conflict" type="radio" default="1" label="PLG_JBETOLO_JQUERY_NO_CONFLICT_LBL" description="PLG_JBETOLO_JQUERY_NO_CONFLICT_DESC">
                         <option value="1">PLG_JBETOLO_YES</option>
@@ -279,7 +278,8 @@
                 <param name="gzip_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_GZIP_LBL" description="PLG_JBETOLO_EXCL_GZIP_DESC"></param>
                 <param name="minify_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_MINIFY_LBL" description="PLG_JBETOLO_EXCL_MINIFY_DESC"></param>
                 <param name="delete" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_DELETE_LBL" description="PLG_JBETOLO_DELETE_DESC"></param>
-
+                <param name="exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></param>
+                
                 <param name="spacer_cdn" type="spacer" default="PLG_JBETOLO_CDN_SPACER" />
                 <param name="cdn_enabled" type="radio" default="0" label="PLG_JBETOLO_CDN_ENABLED_LBL" description="PLG_JBETOLO_CDN_ENABLED_DESC">
                         <option value="0">PLG_JBETOLO_NO</option>
