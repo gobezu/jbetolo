@@ -136,6 +136,10 @@
                                         <option value="pullown">PLG_JBETOLO_CDN_TYPE_PULL_OWN</option>
                                 </field>
                                 <field name="cdn_domain" type="text" default="cdn.domain.com" label="PLG_JBETOLO_CDN_DOMAIN_LBL" description="PLG_JBETOLO_CDN_DOMAIN_DESC" />
+                                <field name="cdn_compress" type="radio" default="0" label="PLG_JBETOLO_CDN_COMPRESS_LBL" description="PLG_JBETOLO_CDN_COMPRESS_DESC">
+                                        <option value="1">JYes</option>
+                                        <option value="0">JNo</option>
+                                </field>
                                 <field name="cdn_own_folder" type="text" default="cdn" label="PLG_JBETOLO_CDN_OWN_FOLDER_LBL" description="PLG_JBETOLO_CDN_OWN_FOLDER_DESC" />
                                 <field name="cdn_domain_images" type="text" default="" label="PLG_JBETOLO_CDN_DOMAIN_IMAGES_LBL" description="PLG_JBETOLO_CDN_DOMAIN_IMAGES_DESC" />
                                 <field name="cdn_types_images" type="text" default="png,jpg,gif" label="PLG_JBETOLO_CDN_TYPES_IMAGES_LBL" description="PLG_JBETOLO_CDN_TYPES_IMAGES_DESC" />
@@ -166,6 +170,12 @@
                                 <field name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="1">PLG_JBETOLO_YES</option>
+                                </field>
+                                <field name="profile" type="list" default="none" label="PLG_JBETOLO_PROFILE_LBL" description="PLG_JBETOLO_PROFILE_DESC">
+                                        <option value="none">PLG_JBETOLO_ALLOW_IN_NONE</option>
+                                        <option value="site">PLG_JBETOLO_ALLOW_IN_SITE</option>
+                                        <option value="administrator">PLG_JBETOLO_ALLOW_IN_ADMIN</option>
+                                        <option value="all">PLG_JBETOLO_ALLOW_IN_ALL</option>
                                 </field>
                         </fieldset>
                 </fields>
@@ -290,6 +300,11 @@
                         <option value="pullown">PLG_JBETOLO_CDN_TYPE_PULL_OWN</option>
                 </param>
                 <param name="cdn_domain" type="text" default="" label="PLG_JBETOLO_CDN_DOMAIN_LBL" description="PLG_JBETOLO_CDN_DOMAIN_DESC" />
+                <param name="cdn_compress" type="radio" default="0" label="PLG_JBETOLO_CDN_COMPRESS_LBL" description="PLG_JBETOLO_CDN_COMPRESS_DESC">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                </param>
+                
                 <param name="cdn_own_folder" type="text" default="cdn" label="PLG_JBETOLO_CDN_OWN_FOLDER_LBL" description="PLG_JBETOLO_CDN_OWN_FOLDER_DESC" />
                 <param name="cdn_domain_images" type="text" default="" label="PLG_JBETOLO_CDN_DOMAIN_IMAGES_LBL" description="PLG_JBETOLO_CDN_DOMAIN_IMAGES_DESC" />
                 <param name="cdn_types_images" type="text" default="png,jpg,gif" label="PLG_JBETOLO_CDN_TYPES_IMAGES_LBL" description="PLG_JBETOLO_CDN_TYPES_IMAGES_DESC" />
@@ -322,5 +337,6 @@
                         <option value="0">PLG_JBETOLO_NO</option>
                         <option value="1">PLG_JBETOLO_YES</option>
                 </param>
+                
         </params>
 </install>

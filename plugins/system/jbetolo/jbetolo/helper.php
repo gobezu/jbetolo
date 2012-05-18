@@ -226,11 +226,36 @@ class jbetoloHelper {
 
                 define("JBETOLO_EMPTYTAG", "_JBETOLO_");
                 define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
-                define('JBETOLO_IS_GZ', !JBETOLO_CDN_MAP && (extension_loaded('zlib') || ini_get('zlib.output_compression')));
+                
+                $gz = extension_loaded('zlib') || ini_get('zlib.output_compression');
+                
+                if ($gz && JBETOLO_CDN_MAP) {
+                        $gz = !(bool) plgSystemJBetolo::param('cdn_compress', 0);
+                }
+                
+                define('JBETOLO_IS_GZ', $gz);
+                
                 define('JBETOLO_IS_MINIFY', 1);
                 define('JBETOLO_DEBUG', (bool) plgSystemJBetolo::param('debug_mode'));
-        }
+                
+                $user = JFactory::getUser();
+                require_once JPATH_ADMINISTRATOR.'/components/com_jbetolo/helpers/helper.php';
+                
+                if ($app->getName() == 'administrator' && !$user->guest && $gz) {
+                        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
 
+                        // if files compressed and CDN can't compress provide info
+                        if (jbetoloHelper::beginWith($server, 'nginx')) {
+                                if (JRequest::getString('JBETOLO_NGINX_NOTICE', '', 'cookie') == '' && jbetoloComponentHelper::inPlg()) {
+                                        JFactory::getLanguage()->load('plg_system_jbetolo');
+                                        $msg = JText::sprintf(PLG_JBETOLO_CDN_COMPRESS_NGINX, JBETOLO_URI_BASE.'/plugins/system/jbetolo/jbetolo/assets/nginx.conf.txt');
+                                        JFactory::getApplication()->enqueueMessage($msg, 'warning');
+                                        setcookie('JBETOLO_NGINX_NOTICE', 'YES');
+                                }                                                                
+                        }
+                }                
+        }
+        
         public static function setupOwnCDN() {
                 if (jbetoloHelper::defineOwnCDNFolder()) {
                         jbetoloFileHelper::allowRewrite('cdn', JBETOLO_CDN_OWN_FOLDER);
@@ -884,10 +909,10 @@ class jbetoloCSS {
                                                 $path = jbetoloFileHelper::normalizeTOCDN(self::$root . '/' . $match);
                                         }
                                 } else {
-                                        $path = jbetoloFileHelper::normalizeCall($base . '/' . $match, true, false);
+                                        $path = jbetoloFileHelper::normalizeCall($base . '/' . $match, false, false);
 
                                         if (!$path) {
-                                                $path = jbetoloFileHelper::normalizeCall(self::$root . '/' . $match, true, false);
+                                                $path = jbetoloFileHelper::normalizeCall(self::$root . '/' . $match, false, false);
                                         }
                                 }
                                 
@@ -1111,6 +1136,33 @@ class jbetoloFileHelper {
 
                         if (!JBETOLO_CDN_MAP) {
                                 jbetoloFileHelper::allowRewrite('create', JBETOLO_CACHE_DIR);
+                        } else {
+                                $gz = JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0);
+                                
+                                if ($gz) {
+                                        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+                                        
+                                        // if files compressed and CDN can't compress, provide correct header
+                                        if ($server == 'apache') {
+                                                JFile::copy(
+                                                        __DIR__.'/assets/htaccess_cdn_content_encoding.txt', 
+                                                        JBETOLO_CACHE_DIR.'/.htaccess'
+                                                );
+                                        }
+                                }
+                        }
+                } else {
+                        $remove = !JBETOLO_CDN_MAP || !(JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0));
+                        
+                        if ($remove) {
+                                $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+                                $file = '';        
+                                
+                                if ($server == 'apache') {
+                                        $file = JBETOLO_CACHE_DIR.'/.htaccess';
+                                }
+                                
+                                if ($file && JFile::exists($file)) JFile::delete($file);
                         }
                 }
         }
@@ -1178,9 +1230,10 @@ class jbetoloFileHelper {
 
                 foreach ($src_files as $s => $src_file) {
                         list($src_file, ) = explode('?', $src_file);
-                        $src_files[$s] = $src_file;
                         $f = jbetoloFileHelper::normalizeCall($src_file, true);
-                        $res[] = array('file' => $src_file, 'time' => filemtime($f));
+                        $t = filemtime($f);
+                        $res[] = array('file' => $src_file, 'time' => $t);
+                        $src_files[$s] = $src_file.$t;
                 }
 
                 array_multisort($src_files, SORT_ASC, SORT_STRING);
@@ -1358,12 +1411,12 @@ class jbetoloFileHelper {
                                 unset($path[$i]);
                                 $path = array_values($path);
                                 $i--;
-                        } elseif ($path[$i] == '..' AND ($i > 1 OR ($i == 1 AND $path[0] != ''))) {
+                        } elseif ($path[$i] == '..' && ($i > 1 OR ($i == 1 && $path[0] != ''))) {
                                 unset($path[$i]);
                                 unset($path[$i - 1]);
                                 $path = array_values($path);
                                 $i -= 2;
-                        } elseif ($path[$i] == '..' AND $i == 1 AND $path[0] == '') {
+                        } elseif ($path[$i] == '..' && $i == 1 && $path[0] == '') {
                                 unset($path[$i]);
                                 $path = array_values($path);
                                 $i--;

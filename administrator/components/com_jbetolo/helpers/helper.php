@@ -161,6 +161,37 @@ class jbetoloComponentHelper {
                 
                 if (!$app->isAdmin()) return;
                 
+                $plgId = self::getPlg($plgName, $folder);
+                
+                if (self::isJ16()) {
+                        $url = "index.php?option=com_plugins&task=plugin.edit&extension_id=".$plgId;
+                } else {
+                        $url = "index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]=".$plgId;
+                }
+                
+                $app->redirect($url, !empty($msg) ? $msg : JText::_('No component setting, redirected to corresponding plugin setting page'), 'info');
+        }  
+        
+        public static function inPlg() {
+                $option = JRequest::getCmd('option');
+                $j16 = self::isJ16();
+                
+                $edit = $option == 'com_plugins';
+                
+                if ($option != 'com_plugins') return false;
+                
+                $task = JRequest::getCmd('task', JRequest::getCmd('layout', ''));
+                
+                if (!in_array($task, array('plugin.edit', 'edit'))) return false;
+                
+                $plgId = self::getPlg();
+                
+                $ext = JRequest::getInt($j16 ? 'extension_id' : 'cid[]');
+                
+                return $plgId == $ext;
+        }
+        
+        protected static function getPlg($plgName = 'jbetolo', $folder = 'system') {
                 $j16 = self::isJ16();
 
                 if ($j16) {
@@ -173,13 +204,7 @@ class jbetoloComponentHelper {
                 $db->setQuery($query);
                 $plgId = $db->loadResult();
                 
-                if ($j16) {
-                        $url = "index.php?option=com_plugins&task=plugin.edit&extension_id=".$plgId;
-                } else {
-                        $url = "index.php?option=com_plugins&view=plugin&client=site&task=edit&cid[]=".$plgId;
-                }
-                
-                $app->redirect($url, !empty($msg) ? $msg : JText::_('No component setting, redirected to corresponding plugin setting page'), 'info');
-        }        
+                return $plgId;
+        }
 }
 ?>

@@ -1,0 +1,4 @@
+# assumes headers-more module http://wiki.nginx.org/HttpHeadersMoreModule
+location ~ /cache/jbetolo/.*\.(css|js)$ {
+        more_set_headers "Content-Encoding: gzip";
+}
