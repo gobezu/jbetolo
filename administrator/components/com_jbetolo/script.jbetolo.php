@@ -12,6 +12,8 @@ class Com_JbetoloInstallerScript {
         public function update($adapter) { $this->install($adapter, true); }
 
 	public function install($adapter, $isUpdate = false) {
+                $installer  = $adapter->getParent();
+                
                 if (!$isUpdate) {
                         // Create stored procedures if any available
                         jimport('joomla.filesystem.file');
@@ -33,7 +35,7 @@ class Com_JbetoloInstallerScript {
                         }
                 }
 
-                $extensions = $this->getExtensions($adapter);
+                $extensions = $this->getExtensions($installer);
                 $aerror = array();
                 $error = false;
                 $db = JFactory::getDbo();
@@ -60,7 +62,7 @@ class Com_JbetoloInstallerScript {
 
                 // rollback on installation errors
                 if ($error) {
-                        $adapter->parent->abort(JText::_('Component').' '.JText::_('Install').': '.JText::_('Error'), 'component');
+                        $installer->abort(JText::_('Component').' '.JText::_('Install').': '.JText::_('Error'), 'component');
 
                         for ($i = 0; $i < count($extensions); $i++) {
                                 if ($extensions[$i]['status']) {
@@ -121,7 +123,8 @@ class Com_JbetoloInstallerScript {
         
         function uninstall($adapter) {
                 $extensions = array();
-                $exts = $this->getExtensions($adapter);
+                $installer = $adapter->getParent();
+                $exts = $this->getExtensions($installer);
                 
                 foreach ($exts as $ext) 
                         $extensions[] = $this->uninstallExt($ext);
@@ -154,8 +157,7 @@ class Com_JbetoloInstallerScript {
 <?php
         }
         
-        function getExtensions($adapter) {
-                $installer  = $adapter->getParent();
+        function getExtensions($installer) {
                 $add = $installer->manifest->xpath('additional');
                 
                 if ($add) $add = $add[0];
