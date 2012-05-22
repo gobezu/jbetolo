@@ -156,6 +156,33 @@ class jbetoloComponentHelper {
                 return jbetoloHelper::smushItDirectory($dir, $recursive == 'recursive', $replace == 'replace', $fix);
         }
         
+        public static function htaccess() {
+                require_once self::pluginLocation();
+                
+                if (jbetoloHelper::isNginx()) return JText::_('PLG_SYSTEM_JBETOLO_CACHE_STATIC_NGINX');
+                
+                $htaccessFile = JPATH_SITE.'/.htaccess';
+                
+                if (!JFile::exists($htaccessFile)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_FILE_NOT_EXIST');
+                
+                $htaccess = JFile::read($htaccessFile);
+                
+                $patch = JPATH_SITE.'/plugins/system/jbetolo/jbetolo/assets/htaccess_cache_static.txt';
+                
+                if (!JFile::exists($htaccessFile)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_MISSING');
+                
+                $patch = JFile::read($patch);
+                
+                if (strpos($htaccess, $patch) !== false) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_ALREADY_PATCHED');
+                
+                $time = JHtml::_('date', 'now', 'DATE_FORMAT_LC2');
+                $htaccess = '# Patched on: '.$time."\n".$patch."\n".$htaccess;
+                
+                if (JFile::write($htaccessFile, $htaccess)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_SUCCESS');
+                
+                return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_FAILED');
+        }
+        
         public static function redirectToPlg($plgName, $folder, $msg = '') {
                 $app = JFactory::getApplication();
                 

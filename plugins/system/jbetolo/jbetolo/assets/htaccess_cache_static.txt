@@ -1,0 +1,21 @@
+# Auto-patched by jbetolo
+<FilesMatch "\.(gif|jpg|jpeg|png|swf|pdf|css|js|html|ico?|xml|txt)$">
+	FileETag none
+</FilesMatch>
+<IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresDefault A600
+        ExpiresByType image/x-icon A5184000
+        ExpiresByType application/x-javascript A5184000
+        ExpiresByType application/javascript A5184000
+        ExpiresByType text/css A5184000
+        ExpiresByType text/javascript A5184000
+        ExpiresByType image/gif A5184000
+        ExpiresByType image/png A5184000
+        ExpiresByType image/jpeg A5184000
+        ExpiresByType text/plain A86400
+        ExpiresByType application/x-shockwave-flash A5184000
+        ExpiresByType video/x-flv A5184000
+        ExpiresByType application/pdf A5184000
+        ExpiresByType text/html A600
+</IfModule>

@@ -49,6 +49,10 @@ switch ($task) {
                 echo jbetoloComponentHelper::ping();
                 $app->close();
                 break;
+        case 'htaccess':
+                echo jbetoloComponentHelper::htaccess();
+                $app->close();
+                break;
         default:
                 jbetoloComponentHelper::redirectToPlg('jbetolo', 'system');
                 break;

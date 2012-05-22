@@ -13,6 +13,8 @@
 		<filename>index.html</filename>
 		<filename>jbetolo.php</filename>
 	</files>
+        <install><sql><file driver="mysqli" charset="utf8">setup/install.mysqli.sql</file></sql></install>
+        <uninstall><sql><file driver="mysqli" charset="utf8">setup/uninstall.mysqli.sql</file></sql></uninstall>         
 	<administration>
                 <menu>jbetolo</menu>                
                 <files folder="administrator/components/com_jbetolo">

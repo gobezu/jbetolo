@@ -38,6 +38,7 @@
                                 <field type="clearcache" name="clear_cache" label="PLG_JBETOLO_CLEAR_CACHE_LBL" description="PLG_JBETOLO_CLEAR_CACHE_DESC" />
                                 <field type="jbetolosettings" name="predefined_settings" default="1.6:molajo" hide_default="true" directory="/plugins/system/jbetolo/jbetolo/settings" stripext="true" exclude="^index\.htm" label="PLG_JBETOLO_PREDEFINED_LBL" description="PLG_JBETOLO_PREDEFINED_DESC" />
                                 <field type="smushit" name="smushit" default="" label="PLG_JBETOLO_SMUSHIT_LBL" description="PLG_JBETOLO_SMUSHIT_DESC" />
+                                <field type="htaccess" name="htaccess" default="" label="PLG_JBETOLO_HTACCESS_LBL" description="PLG_JBETOLO_HTACCESS_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CSS">
                                 <field name="css_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
