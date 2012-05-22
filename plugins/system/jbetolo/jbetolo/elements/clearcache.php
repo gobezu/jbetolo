@@ -1,16 +1,10 @@
 <?php
-/**
-* @version:	2.0.0.b10-99 - 2012 March 09 16:03:58 +0300
-* @package:	jbetolo
-* @subpackage:	jbetolo
-* @copyright:	Copyright (C) 2010 - 2011 jproven.com. All rights reserved. 
-* @license:	GNU General Public License Version 2, or later http://www.gnu.org/licenses/gpl.html
-*/
+//$Copyright$
 
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
-require_once dirname(__FILE__) . '/../../jbetolo.php';
+require_once __DIR__ . '/../../jbetolo.php';
 
 class JbetoloClearcacheElement {
         public static function ui($name) {
