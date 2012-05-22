@@ -29,7 +29,7 @@ class JbetoloSmushitElement {
                         });
                 ");
 
-                $ui = '<div style="border:2px solid #F06F47; padding:3px;clear:both;">
+                $ui = '<div class="fieldContainer">
                         <div style="clear:both;">
                         <img id="smushitprogress" src="'.$loc.'progress.gif" style="visibility:hidden;" /><input type="text" name="'.$name.'" id="'.$name.'" value="" size="50" />
                         <button type="button" id="smushItBtn">'.JText::_('PLG_JBETOLO_SMUSHIT_BTN').'</button>

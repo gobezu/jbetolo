@@ -1,0 +1,10 @@
+/*$Copyright*/
+
+.fieldContainer {
+        border:2px solid #F06F47; 
+        padding:3px;
+        clear:both;
+}
+
+.fieldContainer * { float:none; }
+.fieldContainer button { font-size:large; }

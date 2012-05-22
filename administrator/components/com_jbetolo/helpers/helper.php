@@ -92,8 +92,10 @@ class jbetoloComponentHelper {
                 return version_compare(JVERSION, '1.6.0', 'ge');
         }
 
-        public static function pluginLocation() {
-                return JPATH_PLUGINS.'/system/'.(self::isJ16()?'jbetolo/':'').'jbetolo.php';
+        public static function pluginLocation($dir = false) {
+                $d = JPATH_PLUGINS.'/system/'.(self::isJ16()?'jbetolo/':'');
+                if ($dir) return $d;
+                return $d.'jbetolo.php';
         }
 
         private static function settingAllowed() {
@@ -154,6 +156,48 @@ class jbetoloComponentHelper {
                 require_once self::pluginLocation();
 
                 return jbetoloHelper::smushItDirectory($dir, $recursive == 'recursive', $replace == 'replace', $fix);
+        }
+        
+        public static function cdnPurge() {
+                $file = JRequest::getVar('purge');
+                $cdn = JRequest::getVar('cdn');
+                $result = false;
+                
+                if ($cdn == 'cloudfront') {
+                        $keys = JRequest::getVar('keys', '');
+                        list($accessKeyId, $secretKey, $distributionId) = explode('::', $keys);
+                        
+                        if ($accessKeyId && $secretKey && $distributionId) {
+                                require_once self::pluginLocation(true).'jbetolo/CloudFront.php';
+                                $cf  = new CloudFront($accessKeyId, $secretKey, $distributionId);
+                                $result = $cf->invalidate($file);
+                        }
+                } else if ($cdn == 'maxcdn') {
+                        require_once self::pluginLocation(true).'jbetolo/xmlrpc/xmlrpc.inc';
+                        
+                        date_default_timezone_set('America/Los_Angeles');
+                        
+                        $cur = date('c');
+                        $keys = JRequest::getVar('keys', '');
+                        list($apiKey, $apiId) = explode('::', $keys);
+                        $namespace = 'cache';
+                        $method = 'purge';
+                        $authString = hash('sha256', $cur . ':' . $apiKey . ':' . $method);
+                        
+                        $f = new xmlrpcmsg(
+                                "$namespace.$method", 
+                                array(
+                                    php_xmlrpc_encode($apiUserId),
+                                    php_xmlrpc_encode($authString), 
+                                    php_xmlrpc_encode($cur),
+                                    php_xmlrpc_encode($file)
+                                )
+                        );
+                        $c = new xmlrpc_client("/xmlrpc/cache", "api.netdna.com", 80,'http11');
+                        $result = &$c->send($f);
+                }
+                
+                return JText::_($result ? 'PLG_SYSTEM_JBETOLO_CDN_PURGE_SUCCESS' : 'PLG_SYSTEM_JBETOLO_CDN_PURGE_FAILED');
         }
         
         public static function htaccess() {

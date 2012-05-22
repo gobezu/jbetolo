@@ -53,6 +53,10 @@ switch ($task) {
                 echo jbetoloComponentHelper::htaccess();
                 $app->close();
                 break;
+        case 'cdnpurge':
+                echo jbetoloComponentHelper::cdnPurge();
+                $app->close();
+                break;
         default:
                 jbetoloComponentHelper::redirectToPlg('jbetolo', 'system');
                 break;

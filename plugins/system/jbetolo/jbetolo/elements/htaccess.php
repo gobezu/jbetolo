@@ -17,15 +17,14 @@ class JbetoloHtaccess {
 
                 $document->addScriptDeclaration("
                         window.addEvent('domready', function() {
-                                new jbetolohtaccess({
-                                        base: '". JURI::base() ."',
-                                        PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_SUCCESS: '". JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_SUCCESS') ."',
-                                });
+                                new jbetolohtaccess({base: '". JURI::base() ."'});
                         });
                 ");
 
                 $ui = "
-                        <div><a id='htaccessBtn' title='".JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_BTN')."' href='#'>".JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_BTN')."</a></div>
+                        <div class='fieldContainer'>
+                                <button type='button' id='htaccessBtn'>".JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_BTN')."</button>
+                        </div>
                 "
                 ;
 
