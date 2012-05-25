@@ -5,7 +5,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
 
-require_once __DIR__ . '/jbetolo/helper.php';
+require_once dirname(__FILE__) . '/jbetolo/helper.php';
 
 class plgSystemJBetolo extends JPlugin {
         const EXCLUDE_REG_PREFIX = 'reg:';
@@ -34,6 +34,7 @@ class plgSystemJBetolo extends JPlugin {
             'cdn' => array()
         );
         private static $serializableParams = array('files', 'templates');
+        public static $conditionalTags = '';
         private static $conditionalTagScript = array(
             'js' => "/<\!--\[if[^\]]+?\]>.*?<\!\[endif\]-->/ims",
             'css' => "/<\!--\[if[^\]]+?\]>.*?<\!\[endif\]-->/ims"
@@ -136,7 +137,7 @@ class plgSystemJBetolo extends JPlugin {
                 
                 if (($in == 'none' || $in != $app) && $in != 'all') return;
                 
-                set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__.'/jbetolo/xhprof/');
+                set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__).'/jbetolo/xhprof/');
                 
                 include_once 'xhprof_lib/utils/xhprof_lib.php';
                 include_once 'xhprof_lib/utils/xhprof_runs.php';
@@ -165,7 +166,6 @@ class plgSystemJBetolo extends JPlugin {
                 if ($doctype != 'html') {
                         return true;
                 }
-
 
                 if ($type == 'cdn') {
                         if (!(bool) plgSystemJBetolo::param('cdn_enabled', false)) {
@@ -261,7 +261,8 @@ class plgSystemJBetolo extends JPlugin {
                 // find and consider IE conditionals as excluded from merging
                 preg_match_all(plgSystemJBetolo::$conditionalTagScript[$type], $body, $condTags);
                 $condTags = $condTags[0];
-                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], implode('', $condTags), $matches);
+                plgSystemJBetolo::$conditionalTags = implode('', $condTags);
+                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], plgSystemJBetolo::$conditionalTags, $matches);
                 
                 foreach ($matches[0] as $c => $conditional) {
                         $conds[] = jbetoloFileHelper::normalizeCall($matches[1][$c]);
