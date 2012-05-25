@@ -1,131 +1,160 @@
 <?php
-
+//$Copyright$
 /**
- * A PHP5 class for invalidating Amazon CloudFront objects via its API.
- *
  * Original source:
- * https://github.com/subchild/CloudFront-PHP-Invalidator
- *
- * codebynumbers - Remove dependencies by replacing PEAR/Http_request with Curl
+ * https://github.com/subchild/CloudFront-PHP-Invalidator and
+ * http://stevejenkins.com/blog/2011/09/simple-cloudfront-invalidation-of-a-single-file-via-http/
  */
-
 class CloudFront {
 
-	protected $serviceUrl;
-	protected $accessKeyId;
-	protected $responseBody;
-	protected $responseCode;
-	protected $distributionId;
-	protected $debug;
+        protected $secretKey, $accessKeyId, $distributionId;
+        protected $responseCode;
+        protected $responseBody;
+        protected $debug;
+        protected $cfVersion = '2010-11-01';
+        protected $host = 'cloudfront.amazonaws.com';
 
+        public function __construct($accessKeyId, $secretKey, $distributionId, $version = '2012-05-05') {
+                $this->accessKeyId = $accessKeyId;
+                $this->secretKey = $secretKey;
+                $this->distributionId = $distributionId;
+                $this->cfVersion = $version;
+        }
 
-	/**
-	 * Constructs a CloudFront object and assigns required account values
-	 * @param $accessKeyId		{String} AWS access key id
-	 * @param $secretKey		{String} AWS secret key
-	 * @param $distributionId	{String} CloudFront distribution id
-	 * @param $serviceUrl 		{String} Optional parameter for overriding cloudfront api URL
-	 */
-	public function __construct($accessKeyId, $secretKey, $distributionId, $serviceUrl="https://cloudfront.amazonaws.com/"){
-		$this->accessKeyId    = $accessKeyId;
-		$this->secretKey      = $secretKey;
-		$this->distributionId = $distributionId;
-		$this->serviceUrl     = $serviceUrl;
-	}
+        public function invalidate($files, $method = 'io') {
+                if (empty($files)) 
+                        return false;
+                
+                if (is_string($files) && strpos($files, '%%')) 
+                        $files = explode('%%', $files);
 
+                $files = (array) $files;
 
-	/**
-	 * Invalidates object with passed key on CloudFront
-	 * @param $key 	{String|Array} Key of object to be invalidated, or set of such keys
-	 */
-	public function invalidate($keys){
-		if (!is_array($keys)){
-			$keys = array($keys);
-		}
-		$date       = gmdate("D, d M Y G:i:s T");
-		$requestUrl = $this->serviceUrl."2010-08-01/distribution/" . $this->distributionId . "/invalidation";
-		// assemble request body
-		$body  = "<InvalidationBatch>";
-		foreach($keys as $key){
-			$key   = (preg_match("/^\//", $key)) ? $key : "/" . $key;
-			$body .= "<Path>".$key."</Path>";
-		}
-		$body .= "<CallerReference>".time()."</CallerReference>";
-		$body .= "</InvalidationBatch>";
-		// make and send request
+                $method = strtolower($method);
+                $result = '';
 
-		$cURL_Session = curl_init();
-		curl_setopt($cURL_Session, CURLOPT_URL, $requestUrl);
-		curl_setopt($cURL_Session, CURLOPT_HTTPHEADER,
-				array(
-					"Date: $date",
-					'Authorization: '.$this->makeKey($date),
-					"Content-Type: text/xml"
-					)
-				);
+                if ($method == 'io') {
+                        $result = $this->invalidateIO($files);
+                } else if ($method == 'curl') {
+                        $result = $this->invalidateCurl($files);
+                }
+                
+                return $result;
+        }
 
+        protected function invalidateIO($files) {
+                $body = $this->getBody($files);
+                $len = strlen($body);
+                $date = gmdate('D, d M Y G:i:s T');
+                
+                $msg = "POST /{$this->cfVersion}/distribution/{$this->distributionId}/invalidation HTTP/1.0\r\n";
+                $msg .= "Host: {$this->host}\r\n";
+                $msg .= "Date: {$date}\r\n";
+                $msg .= "Content-Type: text/xml; charset=UTF-8\r\n";
+                $msg .= $this->auth($date)."\r\n";
+                $msg .= "Content-Length: {$len}\r\n\r\n";
+                $msg .= $body;
+                
+                $fp = fsockopen('ssl://'.$this->host, 443, $errno, $errstr, 30);
+                
+                if (!$fp) {
+                        die("Connection failed: {$errno} {$errstr}\n");
+                }
+                
+                fwrite($fp, $msg);
+                $resp = '';
+                
+                while(! feof($fp)) {
+                        $resp .= fgets($fp, 1024);
+                }
+                
+                fclose($fp);                
 
-		curl_setopt($cURL_Session, CURLOPT_USERAGENT, 'Mozilla/5.0');
-		curl_setopt($cURL_Session, CURLOPT_POST, 1);
-		curl_setopt($cURL_Session, CURLOPT_POSTFIELDS, $body);
-		curl_setopt($cURL_Session, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($cURL_Session, CURLOPT_FOLLOWLOCATION, 1);
+                $this->responseBody = $this->debug = $resp;
 
-		$this->responseBody = curl_exec($cURL_Session);
-		$this->responseCode = curl_getinfo($cURL_Session, CURLINFO_HTTP_CODE);
+                return strpos($resp, 'HTTP/1.1 201 Created') !== false;
+        }
 
-		$er = array();
-		array_push($er, "CloudFront: Invalidating Object: $key");
-		array_push($er, $requestUrl);
-		array_push($er, "body: $body");
-		array_push($er, "response: $response");
-		array_push($er, "response string: " . $this->responseBody);
-		array_push($er, "");
-		array_push($er, "response code: " . $this->responseCode);
-		array_push($er, "");
-		$this->debug = implode("\n",$er);
+        protected function invalidateCurl($files) {
+                $date = gmdate("D, d M Y G:i:s T");
+                $requestUrl = "https://{$this->host}/{$this->cfVersion}/distribution/{$this->distributionId}/invalidation";
+                $body = $this->getBody($files);
 
-		return ($this->responseCode === 201);
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $requestUrl);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    "Date: $date",
+                    $this->auth($date),
+                    "Content-Type: text/xml; charset=UTF-8",
+                    "Host: {$this->host}"
+                        )
+                );
+                curl_setopt($ch, CURLOPT_HEADER, 1);
+                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 
-	}
+                $this->responseBody = curl_exec($ch);
+                $this->responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+                curl_close($ch);
 
-	/**
-	 * Returns header string containing encoded authentication key
-	 * @param 	$date 		{Date}
-	 * @return 	{String}
-	 */
-	public function makeKey($date){
-		return "AWS " . $this->accessKeyId . ":" . base64_encode($this->hmacSha1($this->secretKey, $date));
-	}
+                $er = array();
+                array_push($er, "CloudFront: Invalidating Object: " . implode(", ", $files));
+                array_push($er, $requestUrl);
+                array_push($er, "Sent body: $body");
+                array_push($er, "Response code: " . $this->responseCode);
+                array_push($er, "Response: " . $this->responseBody);
+                $this->debug = implode("\n", $er);
 
+                return ($this->responseCode === 201);
+        }
 
-	/**
-	 * Returns HMAC string
-	 * @param 	$key 		{String}
-	 * @param 	$date		{Date}
-	 * @return 	{String}
-	 */
-	public function hmacSha1($key, $date){
-		$blocksize = 64;
-		$hashfunc  = 'sha1';
-		if (strlen($key)>$blocksize){
-			$key = pack('H*', $hashfunc($key));
-		}
-		$key  = str_pad($key,$blocksize,chr(0x00));
-		$ipad = str_repeat(chr(0x36),$blocksize);
-		$opad = str_repeat(chr(0x5c),$blocksize);
-		$hmac = pack('H*', $hashfunc( ($key^$opad).pack('H*',$hashfunc(($key^$ipad).$date)) ));
-		return $hmac;
-	}
+        protected function getBody($files) {
+                $epoch = date('U');
+                $paths = '';
 
-	/**
-     * Returns debugging info
-	 * @return {String}
-     */
-	public function get_debug() {
-		return $this->debug;
-	}
+                foreach ($files as $file) {
+                        $file = strpos($file, '/') === 0 ? $file : '/' . $file;
+                        $paths .= '<Path>' . $file . '</Path>';
+                }
 
+                $qty = count($files);
+
+                if ($this->cfVersion == '2012-05-05') {
+                        $body = <<<XML
+<InvalidationBatch xmlns="http://cloudfront.amazonaws.com/doc/2012-05-05/">
+        <Paths>
+                <Quantity>{$qty}</Quantity>
+                <Items>
+                        {$paths}
+                </Items>
+        </Paths>
+        <CallerReference>jbetolo{$epoch}</CallerReference>
+</InvalidationBatch>
+XML;
+                } else {
+                        $body = <<<XML
+<InvalidationBatch>
+    {$paths}
+    <CallerReference>jbetolo{$epoch}</CallerReference>
+</InvalidationBatch>       
+XML;
+                }
+
+                return $body;
+        }
+
+        public function auth($date) {
+                return "Authorization: AWS " .$this->accessKeyId . ":" . base64_encode(hash_hmac('sha1', $date, $this->secretKey, true));
+        }
+
+        public function get_debug() {
+                return $this->debug;
+        }
 }
+
 ?>
