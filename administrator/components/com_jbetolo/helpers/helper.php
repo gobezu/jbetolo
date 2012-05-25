@@ -165,6 +165,7 @@ class jbetoloComponentHelper {
                 
                 if ($cdn == 'cloudfront') {
                         $keys = JRequest::getVar('keys', '');
+                        
                         list($accessKeyId, $secretKey, $distributionId) = explode('::', $keys);
                         
                         if ($accessKeyId && $secretKey && $distributionId) {
@@ -211,7 +212,7 @@ class jbetoloComponentHelper {
                 
                 $htaccess = JFile::read($htaccessFile);
                 
-                $patch = JPATH_SITE.'/plugins/system/jbetolo/jbetolo/assets/htaccess_cache_static.txt';
+                $patch = self::pluginLocation(true) . 'jbetolo/assets/htaccess_cache_static.txt';
                 
                 if (!JFile::exists($htaccessFile)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_MISSING');
                 
@@ -219,7 +220,8 @@ class jbetoloComponentHelper {
                 
                 if (strpos($htaccess, $patch) !== false) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_ALREADY_PATCHED');
                 
-                $time = JHtml::_('date', 'now', 'DATE_FORMAT_LC2');
+                $time = JHtml::_('date', 'now', '%Y-%m-%d %H:%M:%s');
+                
                 $htaccess = '# Patched on: '.$time."\n".$patch."\n".$htaccess;
                 
                 if (JFile::write($htaccessFile, $htaccess)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_SUCCESS');
