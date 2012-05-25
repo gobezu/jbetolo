@@ -237,6 +237,7 @@ class jbetoloHelper {
                 
                 define('JBETOLO_IS_MINIFY', 1);
                 define('JBETOLO_DEBUG', (bool) plgSystemJBetolo::param('debug_mode'));
+                define('JBETOLO_DEBUG_FILENAME', (bool) plgSystemJBetolo::param('debug_mode_filename'));
                 
                 $user = JFactory::getUser();
                 require_once JPATH_ADMINISTRATOR.'/components/com_jbetolo/helpers/helper.php';
@@ -306,7 +307,7 @@ class jbetoloHelper {
                         return false;
                 }
                 
-                require_once __DIR__ . '/class.smushit.php';
+                require_once dirname(__FILE__) . '/class.smushit.php';
 
                 $files = JFolder::files(JPATH_SITE.'/'.$path, '\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$', $recursive, true);
                 $smush = new SmushIt(true, $replace, $fix, JPATH_SITE.'/'.$path);
@@ -741,7 +742,7 @@ class jbetoloJS {
                                 $content .= "\n jQuery.noConflict();\n";
                         }
 
-                        $data[] = array('content' => (JBETOLO_DEBUG ? "/** $file **/\n" : '') . $content, 'file' => $file);
+                        $data[] = array('content' => (JBETOLO_DEBUG || JBETOLO_DEBUG_FILENAME ? "/** JBF: $file **/\n" : '') . $content, 'file' => $file);
                 }
 
                 $res = '';
@@ -773,6 +774,7 @@ class jbetoloJS {
                 $scripts = '';
 
                 foreach ($matches[0] as $m => $match) {
+                        if (strpos(plgSystemJBetolo::$conditionalTags, $match) !== false) continue;
                         $body = str_replace($match, '', $body);
                         $scripts .= $match . "\n";
                 }
@@ -870,7 +872,7 @@ class jbetoloCSS {
                                 $content
                 );
 
-                $content = (JBETOLO_DEBUG ? "/** $file **/\n" : '') . $content;
+                $content = (JBETOLO_DEBUG || JBETOLO_DEBUG_FILENAME ? "/** JBF: $file **/\n" : '') . $content;
 
                 self::$contents[] = array('file' => $file, 'content' => $content);
                 self::$files[] = $file;
@@ -1154,7 +1156,7 @@ class jbetoloFileHelper {
                                         // if files compressed and CDN can't compress, provide correct header
                                         if ($server == 'apache') {
                                                 JFile::copy(
-                                                        __DIR__.'/assets/htaccess_cdn_content_encoding.txt', 
+                                                        dirname(__FILE__).'/assets/htaccess_cdn_content_encoding.txt', 
                                                         JBETOLO_CACHE_DIR.'/.htaccess'
                                                 );
                                         }
@@ -1188,7 +1190,7 @@ class jbetoloFileHelper {
                                         $dst .= '.htaccess';
 
                                         if (!JFile::exists($dst)) {
-                                                $src = __DIR__. '/assets/.htaccess_' . $task;
+                                                $src = dirname(__FILE__). '/assets/.htaccess_' . $task;
 
                                                 if (JFile::exists($src)) {
                                                         $content = JFile::read($src);
@@ -1216,13 +1218,13 @@ class jbetoloFileHelper {
         }
 
         public static function createCDNPuller($dst) {
-                $src = __DIR__ . '/assets/puller.php';
+                $src = dirname(__FILE__) . '/assets/puller.php';
 
                 if (JFile::exists($src)) {
                         copy($src, $dst.'puller.php');
                 }
 
-                $src = __DIR__ . '/assets/jbetolo.cdn.conf';
+                $src = dirname(__FILE__) . '/assets/jbetolo.cdn.conf';
 
                 if (JFile::exists($src)) {
                         $content = JFile::read($src);
@@ -1644,94 +1646,128 @@ class jbetoloFileHelper {
                 $app = JFactory::getApplication()->getName();
                 $paramHasChanged = false;
 
+                /**
+                 * app[administrator|site],type[css|js],attr[css=media,js='']
+                 */
                 foreach ($src_files as $type => $_src_files) {
-                        if (empty($_src_files))
-                                continue;
+                        if (empty($_src_files)) continue;
                         
                         $skipFiles = array_merge($conds[$type], $comments[$type]);
-
                         $merge = plgSystemJBetolo::param($type . '_merge');
                         $is_gz = JBETOLO_IS_GZ && plgSystemJBetolo::param($type . '_gzip') && jbetoloHelper::clientEncoding();
                         $is_minify = JBETOLO_IS_MINIFY && plgSystemJBetolo::param($type . '_minify');
-
                         $excl_files = $excluded_files[$type];
 
                         if ($merge) {
+                                $isMono = plgSystemJBetolo::param($type.'_merge_mode', 'mono') == 'mono';
                                 $are_files_changed = $new_files_found = false;
 
                                 if (count($arr) == 0 || !isset($arr[$app]) || !isset($arr[$app][$type]) || !is_array($arr[$app][$type])) {
                                         $arr[$app][$type] = array();
                                 }
 
-                                if (count($arr[$app][$type])) {
-                                        foreach ($arr[$app][$type] as $attr => $rec) {
-                                                $merged = array();
-                                                $merged_file = JBETOLO_CACHE_DIR . $rec['merged'];
+                                if ($isMono) {
+                                        if (count($arr[$app][$type])) {
+                                                foreach ($arr[$app][$type] as $attr => $rec) {
+                                                        $merged = array();
+                                                        $merged_file = JBETOLO_CACHE_DIR . $rec['merged'];
 
-                                                $found_files = array();
-                                                $delete_merged_file = false;
+                                                        $found_files = array();
+                                                        $delete_merged_file = false;
 
-                                                foreach ($_src_files as $s => $src_file) {
-                                                        if ($type == 'js' || $attr == $indexes['css'][$s]['attr']) {
-                                                                if (!in_array($src_file, $rec['srcs'])) {
-                                                                        $found_files[] = $src_file;
+                                                        foreach ($_src_files as $s => $src_file) {
+                                                                if ($type == 'js' || $attr == $indexes['css'][$s]['attr']) {
+                                                                        if (!in_array($src_file, $rec['srcs'])) {
+                                                                                $found_files[] = $src_file;
+                                                                                $delete_merged_file = true;
+                                                                        }
+                                                                }
+                                                        }
+
+                                                        if (!empty($found_files)) {
+                                                                $merged = array_merge($merged, $found_files);
+                                                        }
+
+                                                        $merged_file_exists = JFile::exists($merged_file);
+
+                                                        if (empty($found_files) && $merged_file_exists) {
+                                                                $are_files_changed = jbetoloFileHelper::areFilesChanged($rec['parts']);
+
+                                                                if ($are_files_changed) {
                                                                         $delete_merged_file = true;
                                                                 }
                                                         }
-                                                }
 
-                                                if (!empty($found_files)) {
-                                                        $merged = array_merge($merged, $found_files);
-                                                }
-
-                                                $merged_file_exists = JFile::exists($merged_file);
-
-                                                if (empty($found_files) && $merged_file_exists) {
-                                                        $are_files_changed = jbetoloFileHelper::areFilesChanged($rec['parts']);
-
-                                                        if ($are_files_changed) {
-                                                                $delete_merged_file = true;
-                                                        }
-                                                }
-
-                                                if ($delete_merged_file && $merged_file_exists) {
-                                                        JFile::delete($merged_file);
-                                                }
-
-                                                $merged_file_exists = JFile::exists($merged_file);
-
-                                                if (!$merged_file_exists) {
-                                                        $merged = array_merge($merged, $rec['srcs']);
-                                                }
-
-                                                if (!empty($merged)) {
-                                                        $merged = array_unique($merged);
-                                                        $merged = jbetoloFileHelper::customOrder($merged, $type);
-                                                        
-                                                        if ($type == 'js') {
-                                                                jbetoloJS::setJqueryFile($merged, jbetoloHelper::getArrayValues($excl_files, 'src'));
-                                                                $res = jbetoloJS::build($merged);
-                                                        } else {
-                                                                $res = jbetoloCSS::build($merged, array_fill(0, count($merged), $attr));
+                                                        if ($delete_merged_file && $merged_file_exists) {
+                                                                JFile::delete($merged_file);
                                                         }
 
-                                                        $arr[$app][$type][$attr] = $res[$attr];
-                                                        $paramHasChanged = true;
+                                                        $merged_file_exists = JFile::exists($merged_file);
+
+                                                        if (!$merged_file_exists) {
+                                                                $merged = array_merge($merged, $rec['srcs']);
+                                                        }
+
+                                                        if (!empty($merged)) {
+                                                                $merged = array_unique($merged);
+                                                                $merged = jbetoloFileHelper::customOrder($merged, $type);
+
+                                                                if ($type == 'js') {
+                                                                        jbetoloJS::setJqueryFile($merged, jbetoloHelper::getArrayValues($excl_files, 'src'));
+                                                                        $res = jbetoloJS::build($merged);
+                                                                } else {
+                                                                        $res = jbetoloCSS::build($merged, array_fill(0, count($merged), $attr));
+                                                                }
+
+                                                                $arr[$app][$type][$attr] = $res[$attr];
+                                                                $paramHasChanged = true;
+                                                        }
                                                 }
+                                        } else {
+                                                $_src_files = array_unique($_src_files);
+
+                                                if ($type == 'js') {
+                                                        jbetoloJS::setJqueryFile($_src_files, jbetoloHelper::getArrayValues($excl_files, 'src'));
+                                                }
+
+                                                $arr[$app][$type] =
+                                                        $type == 'css' ?
+                                                        jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
+                                                        jbetoloJS::build($_src_files);
+
+                                                $paramHasChanged = true;
                                         }
+                                        
+                                        $imports = $arr[$app][$type];
                                 } else {
                                         $_src_files = array_unique($_src_files);
-
-                                        if ($type == 'js') {
-                                                jbetoloJS::setJqueryFile($_src_files, jbetoloHelper::getArrayValues($excl_files, 'src'));
+                                        $files_key = $_src_files;
+                                        sort($files_key);
+                                        $files_key = implode('', $files_key);
+                                        
+                                        if (isset($arr[$app][$type][$files_key])) {
+                                                $rec = $arr[$app][$type][$files_key];
+                                                
+                                                if (jbetoloFileHelper::areFilesChanged($rec['parts'])) {
+                                                        if (JFile::exists(JBETOLO_CACHE_DIR . $rec['merged'])) {
+                                                                JFile::delete(JBETOLO_CACHE_DIR . $rec['merged']);
+                                                        }
+                                                        
+                                                        $paramHasChanged = true;
+                                                }
+                                        } else {
+                                                $paramHasChanged = true;
                                         }
-
-                                        $arr[$app][$type] =
-                                                $type == 'css' ?
-                                                jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
-                                                jbetoloJS::build($_src_files);
-
-                                        $paramHasChanged = true;
+                                        
+                                        if ($paramHasChanged) {
+                                                $arr[$app][$type][$files_key] =
+                                                        $type == 'css' ?
+                                                        jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
+                                                        jbetoloJS::build($_src_files)
+                                                        ;
+                                        }
+                                        
+                                        $imports = $arr[$app][$type][$files_key];
                                 }
 
                                 jbetoloHelper::replaceTags($body, $replace_tags[$type], "");
@@ -1739,7 +1775,7 @@ class jbetoloFileHelper {
                                 /**
                                  * @@todo: if cdn enabled just provide the file and no dynamic url
                                  */
-                                foreach ($arr[$app][$type] as $attr => $rec) {
+                                foreach ($imports as $attr => $rec) {
                                         $url = jbetoloFileHelper::getServingURL($rec['merged'], $type, $is_gz, $age);
 
                                         if ($type == 'js') {
@@ -1842,10 +1878,10 @@ class jbetoloFileHelper {
         public static function minify($type, $cont) {
                 static $id = 0;
                 
-                $path = __DIR__ . '/minify-2.1.5/min/lib/';
+                $path = dirname(__FILE__) . '/minify-2.1.5/min/lib/';
                 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
                 
-                require_once __DIR__ . '/jbetolo.php';
+                require_once dirname(__FILE__) . '/jbetolo.php';
                 require_once 'Minify.php';
                 
                 switch ($type) {

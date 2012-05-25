@@ -32,7 +32,7 @@
                                 <field name="html_minify" type="radio" default="0" label="PLG_JBETOLO_HTML_MINIFY_LBL" description="PLG_JBETOLO_HTML_MINIFY_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
-                                </field>                                
+                                </field>  
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_TOOLS" addfieldpath="/plugins/system/jbetolo/jbetolo/elements">
                                 <field type="jbetolocss" name="jbetolocss" />
@@ -43,6 +43,10 @@
                                 <field type="cdnpurge" name="cdnpurge" default="" label="PLG_JBETOLO_CDNPURGE_LBL" description="PLG_JBETOLO_CDNPURGE_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CSS">
+                                <field name="css_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                                        <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
+                                        <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
+                                </field>
                                 <field name="css_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
                                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
@@ -77,6 +81,10 @@
                                 <field name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_JS">
+                                <field name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                                        <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
+                                        <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
+                                </field>
                                 <field name="js_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
                                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
@@ -174,6 +182,10 @@
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="1">PLG_JBETOLO_YES</option>
                                 </field>
+                                <field name="debug_mode_filename" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_FILENAME_LBL" description="PLG_JBETOLO_DEBUGMODE_FILENAME_DESC">
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                    <option value="1">PLG_JBETOLO_YES</option>
+                                </field>
                                 <field name="profile" type="list" default="none" label="PLG_JBETOLO_PROFILE_LBL" description="PLG_JBETOLO_PROFILE_DESC">
                                         <option value="none">PLG_JBETOLO_ALLOW_IN_NONE</option>
                                         <option value="site">PLG_JBETOLO_ALLOW_IN_SITE</option>
@@ -200,12 +212,19 @@
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
 
-                <param name="spacer_tools" type="spacer" default="PLG_JBETOLO_TOOLS_SPACER" />
+                <param name="spacer_tools" type="spacer" default="PLG_JBETOLO_TOOLS_SPACER" />                
+                <param type="jbetolocss" name="jbetolocss" />
                 <param type="clearcache" name="clear_cache" label="PLG_JBETOLO_CLEAR_CACHE_LBL" description="PLG_JBETOLO_CLEAR_CACHE_DESC" />
                 <param type="jbetolosettings" name="predefined_settings" default="1.6:molajo" hide_default="true" directory="/plugins/system/jbetolo/settings" stripext="true" exclude="^index\.htm" label="PLG_JBETOLO_PREDEFINED_LBL" description="PLG_JBETOLO_PREDEFINED_DESC" />
                 <param type="smushit" name="smushit" default="" label="PLG_JBETOLO_SMUSHIT_LBL" description="PLG_JBETOLO_SMUSHIT_DESC" />
+                <param type="htaccess" name="htaccess" default="" label="PLG_JBETOLO_HTACCESS_LBL" description="PLG_JBETOLO_HTACCESS_DESC" />
+                <param type="cdnpurge" name="cdnpurge" default="" label="PLG_JBETOLO_CDNPURGE_LBL" description="PLG_JBETOLO_CDNPURGE_DESC" />
 
                 <param name="spacer_css" type="spacer" default="PLG_JBETOLO_CSS_SPACER" />
+                <param name="css_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                        <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
+                        <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
+                </param>
                 <param name="css_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
@@ -240,6 +259,10 @@
                 <param name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
 
                 <param name="spacer_js" type="spacer" default="PLG_JBETOLO_JS_SPACER" />
+                <param name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                        <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
+                        <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
+                </param>
                 <param name="js_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
@@ -340,6 +363,9 @@
                         <option value="0">PLG_JBETOLO_NO</option>
                         <option value="1">PLG_JBETOLO_YES</option>
                 </param>
-                
+                <param name="debug_mode_filename" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_FILENAME_LBL" description="PLG_JBETOLO_DEBUGMODE_FILENAME_DESC">
+                        <option value="0">PLG_JBETOLO_NO</option>
+                        <option value="1">PLG_JBETOLO_YES</option>
+                </param>                
         </params>
 </install>
