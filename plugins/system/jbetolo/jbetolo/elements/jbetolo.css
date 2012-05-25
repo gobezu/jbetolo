@@ -5,6 +5,8 @@
         padding:3px;
         clear:both;
 }
-
 .fieldContainer * { float:none; }
 .fieldContainer button { font-size:large; }
+.fieldContainer ul { margin:0px; padding:0px; }
+.fieldContainer ul.btns li { display:inline-block; padding-left:10px; }
+.fieldContainer ul.btns li:first-child { padding-left: 0px; }

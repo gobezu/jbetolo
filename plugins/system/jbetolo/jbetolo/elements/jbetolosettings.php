@@ -4,7 +4,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
-require_once __DIR__ . '/../../jbetolo.php';
+require_once dirname(__FILE__) . '/../../jbetolo.php';
 
 class JbetoloSettingsElement {
         public static function ui($name, $fileList) {
@@ -36,21 +36,14 @@ class JbetoloSettingsElement {
                 ");
 
                 $ui = "
-                        <div style='float:left;'>
-                                <div style='clear:both;'>
-                                        " . $fileList . "
-                                </div>
-                                <div style='clear:both;'>
-                                        <a id='saveSettingBtn' title='".JText::_('PLG_JBETOLO_PREDEFINED_SAVE')."' href='#'>" . JText::_('PLG_JBETOLO_PREDEFINED_SAVE') . "</a>
-                                </div>
-                                <div style='clear:both;'>
-                                        <a id='readSettingBtn' title='".JText::_('PLG_JBETOLO_PREDEFINED_READ')."' href='#'>" . JText::_('PLG_JBETOLO_PREDEFINED_READ') . "</a>
-                                </div>
-                                <div style='clear:both;'>
-                                        <a id='pingBtn' title='".JText::_('PLG_JBETOLO_PING')."' href='#'>" . JText::_('PLG_JBETOLO_PING') . "</a>
-                                </div>
+                        <div class='fieldContainer'>
+                                <ul class='btns'>
+                                        <li>" . $fileList . "</li>
+                                        <li><a id='saveSettingBtn' title='".JText::_('PLG_JBETOLO_PREDEFINED_SAVE')."' href='#'>" . JText::_('PLG_JBETOLO_PREDEFINED_SAVE') . "</a></li>
+                                        <li><a id='readSettingBtn' title='".JText::_('PLG_JBETOLO_PREDEFINED_READ')."' href='#'>" . JText::_('PLG_JBETOLO_PREDEFINED_READ') . "</a></li>
+                                        <li><a id='pingBtn' title='".JText::_('PLG_JBETOLO_PING')."' href='#'>" . JText::_('PLG_JBETOLO_PING') . "</a></li>
+                                </ul>
                         </div>
-                        <div style='clear:both;'></div>
                 "
                 ;
 

@@ -4,7 +4,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
-require_once __DIR__ . '/../../jbetolo.php';
+require_once dirname(__FILE__) . '/../../jbetolo.php';
 
 class JbetoloClearcacheElement {
         public static function ui($name) {
@@ -29,10 +29,12 @@ class JbetoloClearcacheElement {
                 ");
 
                 $ui = "
-                        <ul style='list-style: none; padding-left: 0px;'>
-                                <li><a id='clearSiteCacheBtn' title='".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_SITE')."' href='#'>".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_SITE')."</a></li>
-                                <li><a id='clearAdministratorCacheBtn' title='".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_ADMINISTRATOR')."' href='#'>".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_ADMINISTRATOR')."</a></li>
-                        </ul>
+                        <div class='fieldContainer'>
+                                <ul class='btns'>
+                                        <li><a id='clearSiteCacheBtn' title='".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_SITE')."' href='#'>".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_SITE')."</a></li>
+                                        <li><a id='clearAdministratorCacheBtn' title='".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_ADMINISTRATOR')."' href='#'>".JText::_('PLG_SYSTEM_JBETOLO_CACHE_CLEAR_ADMINISTRATOR')."</a></li>
+                                </ul>
+                        </div>
                 "
                 ;
 

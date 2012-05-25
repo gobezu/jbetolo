@@ -4,7 +4,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
-require_once __DIR__ . '/../../jbetolo.php';
+require_once dirname(__FILE__) . '/../../jbetolo.php';
 
 class JbetoloHtaccess {
         public static function ui($name) {

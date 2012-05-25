@@ -4,7 +4,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
-require_once __DIR__ . '/../../jbetolo.php';
+require_once dirname(__FILE__) . '/../../jbetolo.php';
 
 class JbetoloSmushitElement {
         public static function ui($name) {
@@ -30,20 +30,12 @@ class JbetoloSmushitElement {
                 ");
 
                 $ui = '<div class="fieldContainer">
-                        <div style="clear:both;">
-                        <img id="smushitprogress" src="'.$loc.'progress.gif" style="visibility:hidden;" /><input type="text" name="'.$name.'" id="'.$name.'" value="" size="50" />
-                        <button type="button" id="smushItBtn">'.JText::_('PLG_JBETOLO_SMUSHIT_BTN').'</button>
-                        </div>
-                        <div style="clear:both;">
-                        <input type="checkbox" name="'.$name.'_replace" id="'.$name.'_replace" />'. JText::_('PLG_JBETOLO_SMUSHIT_REPLACE') .'
-                        </div>
-                        <div style="clear:both;">
-                        <input type="checkbox" name="'.$name.'_recursive" id="'.$name.'_recursive" />'. JText::_('PLG_JBETOLO_SMUSHIT_RECURSIVE') .'<br />
-                        </div>
-                        <div style="clear:both;padding-bottom:8px;">
-                        <input type="text" name="'.$name.'_fix" id="'.$name.'_fix" value="_smush" />'. JText::_('PLG_JBETOLO_SMUSHIT_FIX') .'
-                        </div>
-                       </div>'
+                                <ul>
+                                        <li><img id="smushitprogress" src="'.$loc.'progress.gif" style="visibility:hidden;" /><input type="text" name="'.$name.'" id="'.$name.'" value="" size="50" /><button type="button" id="smushItBtn">'.JText::_('PLG_JBETOLO_SMUSHIT_BTN').'</button></li>
+                                        <li><input type="checkbox" name="'.$name.'_replace" id="'.$name.'_replace" />'. JText::_('PLG_JBETOLO_SMUSHIT_REPLACE') .'</li>
+                                        <li><input type="checkbox" name="'.$name.'_recursive" id="'.$name.'_recursive" />'. JText::_('PLG_JBETOLO_SMUSHIT_RECURSIVE') .'</li>
+                                        <li><input type="text" name="'.$name.'_fix" id="'.$name.'_fix" value="_smush" />'. JText::_('PLG_JBETOLO_SMUSHIT_FIX') .'</li>
+                                </ul>'
                 ;
 
                 return $ui;
