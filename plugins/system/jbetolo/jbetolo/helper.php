@@ -529,9 +529,9 @@ class jbetoloHelper {
                 $reg = new JRegistry();
 
                 $setting = jbetoloHelper::settingsLocation($setting);
-
+                
                 if ($setting) {
-                        $setting = file_get_contents($setting);
+                        $setting = JFile::read($setting);
                         $reg->loadINI($setting);
                         plgSystemJBetolo::param('', $reg, 'set');
                         return true;
