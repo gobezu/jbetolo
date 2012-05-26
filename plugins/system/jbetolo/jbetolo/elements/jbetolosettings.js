@@ -66,7 +66,7 @@ var jbetolosettings = new Class({
                 var author = prompt(this.options.PLG_JBETOLO_PREDEFINED_SAVEAUTHOR);
 
                 var form = new Element('form', {action:'index.php?option=com_jbetolo&task=savesetting&name='+settingName});
-                var settings = this.getSettings();
+                var settings = this.getSettings('|||||');
                 
                 settings = settings.replace(/load_predefined_settings=.*/, 'load_predefined_settings=-1');
 

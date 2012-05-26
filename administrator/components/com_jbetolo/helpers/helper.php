@@ -139,6 +139,7 @@ class jbetoloComponentHelper {
                 
                 $name = JRequest::getString('name');
                 $setting = JRequest::getString('settings');
+                $setting = implode("\n", explode('|||||', $setting));
                 
                 require_once self::pluginLocation();
                 
