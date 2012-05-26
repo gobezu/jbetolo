@@ -69,7 +69,7 @@ class plgSystemJBetolo extends JPlugin {
                 } else {
                         $body = JResponse::getBody();
                 }
-
+                
                 if (JBETOLO_DEBUG) {
                         jbetoloHelper::timer();
                         jbetoloHelper::resetCache();
@@ -154,7 +154,7 @@ class plgSystemJBetolo extends JPlugin {
 
                 if (
                         $allowedIn == 'anonymous' && !$user->guest ||
-                        $app != $allowedIn && $allowedIn != 'all' ||
+                        $allowedIn != 'anonymous' && $app != $allowedIn && $allowedIn != 'all' ||
                         $app == 'administrator' && $user->guest
                    ) {
                         return true;
@@ -164,6 +164,7 @@ class plgSystemJBetolo extends JPlugin {
                 $doctype = $document->getType();
 
                 if ($doctype != 'html') {
+                        
                         return true;
                 }
 
