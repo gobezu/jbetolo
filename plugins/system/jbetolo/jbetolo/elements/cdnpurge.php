@@ -26,7 +26,7 @@ class JbetoloCdnpurge {
                                 <div style='clear:both;'><label for='cdnpurgeCDN'>CDN</label><select id='cdnpurgeCDN'><option>maxcdn</option><option>cloudfront</option></select></div>
                                 <div style='clear:both;'><label for='cdnpurgePurge'>File to purge</label><input id='cdnpurgePurge' type='text' size='90' /></div>
                                 <div style='clear:both;'><label for='cdnpurgeKeys'>Keys</label><input id='cdnpurgeKeys' type='text' size='90' /><ul style='clear:both;'><li>maxcdn = APIKEY::APIID</li><li>cloudfront = ACCESSKEYID::SECRETKEYID::DISTRIBUTIONID</li></ul></div>
-                                <div style='clear:both;'><button type='button' id='smushItBtn'>".JText::_('PLG_SYSTEM_JBETOLO_CDNPURGE_BTN')."</button></div>
+                                <div style='clear:both;'><button type='button' id='cdnpurgeBtn'>".JText::_('PLG_SYSTEM_JBETOLO_CDNPURGE_BTN')."</button></div>
                         </div>
                 "
                 ;
