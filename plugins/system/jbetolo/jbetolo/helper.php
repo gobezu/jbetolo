@@ -16,13 +16,23 @@ class jbetoloHelper {
                 $loc = JURI::base().'plugins/system/jbetolo/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : '').'lazyload/';
                 
                 if ($stage == 0 || $stage == 1) {
-                        $js = '
-                                <script type="text/javascript" src="'.$loc.$js.'" />
-                                <script type="text/javascript">jQuery(document).ready(function(){jQuery("img.lazy").show().lazyload({effect:"fadeIn"});});</script>
-                        ';
+                if ($stage == 0 || $stage == 1) {
+                        if ($js == 'mootools') {
+                                $src = 'LazyLoad.js';
+                        } else if ($js == 'jquery') {
+                                $src = 'jquery.lazyload.min.js';
+                        }
+
+                        $src = '<script type="text/javascript" src="'.$loc.$src.'" />';
+                        
+                        if ($js == 'mootools') {
+                                $src .= '<script type="text/javascript">window.addEvent("domready",function(){ $$("img.lazy").setStyle("display", "inline"); new LazyLoad({realSrcAttribute:"data-original"}); });</script>';
+                        } else if ($js == 'jquery') {
+                                $src .= '<script type="text/javascript">jQuery.ready(function(){jQuery("img.lazy").show().lazyload({effect:"fadeIn"});});</script>';
+                        }
                         
                         jbetoloFileHelper::placeTags($body, '<style>.lazy {display: none;}</style>', 'css', 3);
-                        jbetoloFileHelper::placeTags($body, $js, 'js', 4);
+                        jbetoloFileHelper::placeTags($body, $src, 'js', 4);
                 } 
                 
                 if ($stage == 0 || $stage == 2) {

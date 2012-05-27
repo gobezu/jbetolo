@@ -181,7 +181,7 @@
                         <fieldset name="PLG_JBETOLO_MISC">
                                 <field name="lazyload_img" type="list" default="0" label="PLG_JBETOLO_LAZYLOAD_IMG_LBL" description="PLG_JBETOLO_LAZYLOAD_IMG_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
-                                    <option value="jquery.lazyload.min.js">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
+                                    <option value="jquery">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
                                     <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                                 </field>
                                 <field name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></field>
@@ -369,7 +369,7 @@
                 <param name="spacer_misc" type="spacer" default="PLG_JBETOLO_MISC_SPACER" />
                 <param name="lazyload_img" type="list" default="0" label="PLG_JBETOLO_LAZYLOAD_IMG_LBL" description="PLG_JBETOLO_LAZYLOAD_IMG_DESC">
                         <option value="0">PLG_JBETOLO_NO</option>
-                        <option value="jquery.lazyload.min.js">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
+                        <option value="jquery">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
                         <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                 </param>
                 <param name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></param>

@@ -70,12 +70,12 @@ class plgSystemJBetolo extends JPlugin {
                         $body = JResponse::getBody();
                 }
                 
-                jbetoloHelper::lazyLoad($body, 1);
-                
                 if (JBETOLO_DEBUG) {
                         jbetoloHelper::timer();
                         jbetoloHelper::resetCache();
                 }
+                
+                jbetoloHelper::lazyLoad($body, 1);
                 
                 jbetoloHelper::handleChanges();
 
