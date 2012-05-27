@@ -70,6 +70,8 @@ class plgSystemJBetolo extends JPlugin {
                         $body = JResponse::getBody();
                 }
                 
+                jbetoloHelper::lazyLoad($body, 1);
+                
                 if (JBETOLO_DEBUG) {
                         jbetoloHelper::timer();
                         jbetoloHelper::resetCache();
@@ -90,6 +92,8 @@ class plgSystemJBetolo extends JPlugin {
                 jbetoloJS::moveInlineScripts($body);
                 
                 if (plgSystemJBetolo::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
+                
+                jbetoloHelper::lazyLoad($body, 2);
                 
                 jbetoloHelper::mapCDN($body);
                 

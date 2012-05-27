@@ -107,7 +107,9 @@
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
-                                <field name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></field>
+                                <field name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC" />
+                                <field name="js_external_custom_order_before" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_BEFORE_LBL" description="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_BEFORE_DESC" />
+                                <field name="js_external_custom_order_after" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_AFTER_LBL" description="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_AFTER_DESC" />
                                 <field name="spacer_js" type="spacer" default="" label="PLG_JBETOLO_JQUERY" />
                                 <field name="js_jquery_no_conflict" type="radio" default="1" label="PLG_JBETOLO_JQUERY_NO_CONFLICT_LBL" description="PLG_JBETOLO_JQUERY_NO_CONFLICT_DESC">
                                     <option value="1">PLG_JBETOLO_YES</option>
@@ -126,6 +128,7 @@
                                         <option value="3">PLG_JBETOLO_LAST_HEAD</option>
                                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                                 </field>
+                                <field name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_EXCLUDE_DELETE">
                                 <field name="skip_dynamic" type="radio" default="1" label="PLG_JBETOLO_SKIP_DYNAMIC_LBL" description="PLG_JBETOLO_SKIP_DYNAMIC_DESC">
@@ -172,11 +175,15 @@
                                         <option value="0">PLG_JBETOLO_NO</option>
                                         <option value="1">PLG_JBETOLO_YES</option>
                                 </field>
-                                
                                 <field name="cdn_types_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_CDN_EXCL_LBL" description="PLG_JBETOLO_CDN_EXCL_DESC" />
                                 <field name="cdn_exclude_components" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_CDN_EXCL_COMPONENTS_LBL" description="PLG_JBETOLO_CDN_EXCL_COMPONENTS_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_MISC">
+                                <field name="lazyload_img" type="list" default="0" label="PLG_JBETOLO_LAZYLOAD_IMG_LBL" description="PLG_JBETOLO_LAZYLOAD_IMG_DESC">
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                    <option value="jquery.lazyload.min.js">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
+                                    <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
+                                </field>
                                 <field name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></field>
                                 <field name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
@@ -285,7 +292,9 @@
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
-                <param name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></param>
+                <param name="js_custom_order" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC" />
+                <param name="js_external_custom_order_before" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_BEFORE_LBL" description="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_BEFORE_DESC" />
+                <param name="js_external_custom_order_after" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_AFTER_LBL" description="PLG_JBETOLO_EXTERNAL_CUSTOM_ORDER_AFTER_DESC" />
                 <param name="spacer_js" type="spacer" default="" label="PLG_JBETOLO_JQUERY" />
                 <param name="js_jquery_no_conflict" type="radio" default="1" label="PLG_JBETOLO_JQUERY_NO_CONFLICT_LBL" description="PLG_JBETOLO_JQUERY_NO_CONFLICT_DESC">
                         <option value="1">PLG_JBETOLO_YES</option>
@@ -304,6 +313,7 @@
                         <option value="3">PLG_JBETOLO_LAST_HEAD</option>
                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                 </param>
+                <param name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
 
                 <param name="spacer_exclude_delete" type="spacer" default="PLG_JBETOLO_EXCLUDE_DELETE_SPACER" />
                 <param name="spacer_css_js" type="spacer" default="" label="PLG_JBETOLO_CSSANDJS" />
@@ -357,6 +367,11 @@
                 <param name="cdn_exclude_components" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_CDN_EXCL_COMPONENTS_LBL" description="PLG_JBETOLO_CDN_EXCL_COMPONENTS_DESC" />
 
                 <param name="spacer_misc" type="spacer" default="PLG_JBETOLO_MISC_SPACER" />
+                <param name="lazyload_img" type="list" default="0" label="PLG_JBETOLO_LAZYLOAD_IMG_LBL" description="PLG_JBETOLO_LAZYLOAD_IMG_DESC">
+                        <option value="0">PLG_JBETOLO_NO</option>
+                        <option value="jquery.lazyload.min.js">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
+                        <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
+                </param>
                 <param name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></param>
                 <param name="debug_mode_spacer" type="spacer" default="" label="PLG_JBETOLO_DEBUGMODE" />
                 <param name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">

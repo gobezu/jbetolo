@@ -8,6 +8,42 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 class jbetoloHelper {
+        public static function lazyLoad(&$body, $stage) {
+                $js = plgSystemJBetolo::param('lazyload_img');
+                
+                if (!$js) return;
+                
+                $loc = JURI::base().'plugins/system/jbetolo/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : '').'lazyload/';
+                
+                if ($stage == 0 || $stage == 1) {
+                        $js = '
+                                <script type="text/javascript" src="'.$loc.$js.'" />
+                                <script type="text/javascript">jQuery(document).ready(function(){jQuery("img.lazy").show().lazyload({effect:"fadeIn"});});</script>
+                        ';
+                        
+                        jbetoloFileHelper::placeTags($body, '<style>.lazy {display: none;}</style>', 'css', 3);
+                        jbetoloFileHelper::placeTags($body, $js, 'js', 4);
+                } 
+                
+                if ($stage == 0 || $stage == 2) {
+                        if (preg_match_all("#<img(.+)(?:src=[\"\'])([^\"\']+)(?:[\"\'])([^>]+>)#Uim", $body, $matches))  {
+                                foreach ($matches[0] as $i => $tag) {
+                                        $stag = 
+                                                '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$matches[2][$i].'" '.$matches[1][$i].' '.$matches[3][$i].
+                                                '<noscript>'.$tag.'</noscript>';
+                                        
+                                        $body = str_ireplace($tag, $stag, $body);
+                                }
+                                
+                                return true;
+                        }
+                        
+                        return false;
+                }
+                
+                return true;
+        }
+        
         public static function sanityCheck() {
                 $arr = plgSystemJBetolo::param('files');
                 $app = JFactory::getApplication()->getName();
@@ -686,11 +722,34 @@ class jbetoloHelper {
                 return preg_replace("#(^\s*($|))#m", "", $cont);
         }
 
-        public static function replaceTags(&$subject, $tags, $replaceWith = "\n") {
-                foreach ($tags as $tag) {
-                        if ($tag == JBETOLO_EMPTYTAG) continue;
+        public static function replaceTags(&$subject, $tags, $replaceWith = "\n", $indexes, $before = '', $after = '') {
+                if (!empty($before) && is_string($before)) $before = explode(',', $before);
+                
+                if (!empty($after) && is_string($after)) $after = explode(',', $after);
+                
+                $toMove = array('before' => array(), 'after' => array());
+                
+                foreach ($tags as $s => $tag) {
+                        if ($tag == JBETOLO_EMPTYTAG) {
+                                // external resource to be left as is but lets see if it should be moved to
+                                // any of the designated positions
+                                if (jbetoloFileHelper::isIncluded($indexes[$s]['src'], $before)) {
+                                        $subject = str_ireplace($indexes[$s]['tag'], $replaceWith, $subject);
+                                        $toMove['before'][] = $indexes[$s]['tag'];
+                                }
+                                
+                                if (jbetoloFileHelper::isIncluded($indexes[$s]['src'], $after)) {
+                                        $subject = str_ireplace($indexes[$s]['tag'], $replaceWith, $subject);
+                                        $toMove['after'][] = $indexes[$s]['tag'];
+                                }
+                                
+                                continue;
+                        }
+                        
                         $subject = str_ireplace($tag, $replaceWith, $subject);
                 }
+                
+                return $toMove;
         }
 
         public static function endWith($str, $end) {
@@ -728,7 +787,7 @@ class jbetoloHelper {
 }
 
 class jbetoloJS {
-        public static function build($files, $is_generate_file = true) {
+        public static function build($files, $is_generate_file = true, $key = 'main') {
                 if (is_string($files)) $files = array($files);
 
                 $data = array();
@@ -772,9 +831,32 @@ class jbetoloJS {
                 preg_match_all($scriptRegex, $body, $matches);
 
                 $scripts = '';
+                $asis = plgSystemJBetolo::param('js_inline_dont_move', '');
+                
+                $asis = empty($asis) ? false : explode(',', $asis);
 
                 foreach ($matches[0] as $m => $match) {
                         if (strpos(plgSystemJBetolo::$conditionalTags, $match) !== false) continue;
+                        
+                        if ($asis) {
+                                $asFound = false;
+                                
+                                foreach ($asis as $as) {
+                                        $as = trim($as);
+                                        
+                                        if (strpos($as, plgSystemJBetolo::EXCLUDE_REG_PREFIX) === 0) {
+                                                $as = str_replace(plgSystemJBetolo::EXCLUDE_REG_PREFIX, '', $as);
+                                                $asFound = preg_match('#'.$as.'#i', $match);
+                                        } else {
+                                                $asFound = strpos($match, $as) !== false;
+                                        }
+                                        
+                                        if ($asFound) break;
+                                }
+                                
+                                if ($asFound) continue;
+                        }
+                        
                         $body = str_replace($match, '', $body);
                         $scripts .= $match . "\n";
                 }
@@ -1107,7 +1189,7 @@ class jbetoloFileHelper {
                 return jbetoloFileHelper::isIncluded($file_name, $include_list);
         }
 
-        private static function isIncluded($el, $list) {
+        public static function isIncluded($el, $list) {
                 if (empty($list)) return false;
 
                 if (!is_array($list)) $list = explode(',', $list);
@@ -1645,6 +1727,7 @@ class jbetoloFileHelper {
                 $age = plgSystemJBetolo::param('cache_age');
                 $app = JFactory::getApplication()->getName();
                 $paramHasChanged = false;
+                $external_custom_orders = array();
 
                 /**
                  * app[administrator|site],type[css|js],attr[css=media,js='']
@@ -1746,7 +1829,7 @@ class jbetoloFileHelper {
                                         $files_key = implode('', $files_key);
                                         
                                         if (isset($arr[$app][$type][$files_key])) {
-                                                $rec = $arr[$app][$type][$files_key];
+                                                $rec = $arr[$app][$type][$files_key]['main'];
                                                 
                                                 if (jbetoloFileHelper::areFilesChanged($rec['parts'])) {
                                                         if (JFile::exists(JBETOLO_CACHE_DIR . $rec['merged'])) {
@@ -1769,8 +1852,15 @@ class jbetoloFileHelper {
                                         
                                         $imports = $arr[$app][$type][$files_key];
                                 }
-
-                                jbetoloHelper::replaceTags($body, $replace_tags[$type], "");
+                                
+                                $external_custom_orders[$type] = jbetoloHelper::replaceTags(
+                                        $body, 
+                                        $replace_tags[$type], 
+                                        "",
+                                        $indexes[$type],
+                                        plgSystemJBetolo::param($type.'_external_custom_order_before'),
+                                        plgSystemJBetolo::param($type.'_external_custom_order_after')
+                                );
 
                                 /**
                                  * @@todo: if cdn enabled just provide the file and no dynamic url
@@ -1831,15 +1921,25 @@ class jbetoloFileHelper {
                 }
 
                 jbetoloFileHelper::placeTags($body, $excl_css_imports, 'css');
-                jbetoloFileHelper::placeTags($body, $js_imports, 'js', $js_placement);
+                
+                jbetoloFileHelper::placeTags(
+                        $body, 
+                        $js_imports, 
+                        'js', 
+                        $js_placement, 
+                        $external_custom_orders['js']['before'], 
+                        $external_custom_orders['js']['after']
+                );
+                
                 jbetoloFileHelper::placeTags($body, $excl_js_imports, 'js', $js_placement);
+                
                 jbetoloFileHelper::placeTags($body, $css_imports, 'css');
 
                 if ($paramHasChanged)
                         plgSystemJBetolo::param('files', $arr, 'set');
         }
 
-        public static function placeTags(&$body, $tags, $type, $rule = false) {
+        public static function placeTags(&$body, $tags, $type, $rule = false, $tagsBefore = null, $tagsAfter = null) {
                 if (empty($tags))
                         return;
 
@@ -1861,6 +1961,11 @@ class jbetoloFileHelper {
                 if (is_array($tags)) {
                         $tags = implode("\n", $tags);
                 }
+                
+                $tagsBefore = empty($tagsBefore) ? '' : implode("\n", $tagsBefore);
+                $tagsAfter = empty($tagsAfter) ? '' : implode("\n", $tagsAfter);
+                
+                $tags = $tagsBefore . $tags . $tagsAfter;
 
                 if (($rule == 1 || $rule == 2) && $titleExists) {
                         $body = str_ireplace('</title>', '</title>' . $tags, $body);
