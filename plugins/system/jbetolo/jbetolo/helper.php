@@ -38,8 +38,10 @@ class jbetoloHelper {
                 if ($stage == 0 || $stage == 2) {
                         if (preg_match_all("#<img(.+)(?:src=[\"\'])([^\"\']+)(?:[\"\'])([^>]+>)#Uim", $body, $matches))  {
                                 foreach ($matches[0] as $i => $tag) {
+                                        $orig = jbetoloFileHelper::normalizeCall($matches[2][$i], true, false);
+                                }
                                         $stag = 
-                                                '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$matches[2][$i].'" '.$matches[1][$i].' '.$matches[3][$i].
+                                                '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$orig.'" '.$matches[1][$i].' '.$matches[3][$i].
                                                 '<noscript>'.$tag.'</noscript>';
                                         
                                         $body = str_ireplace($tag, $stag, $body);
