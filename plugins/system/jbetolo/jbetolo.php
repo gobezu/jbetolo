@@ -444,11 +444,11 @@ class plgSystemJBetolo extends JPlugin {
          * (de)serializes indicated params before getting resp. setting
          */
         public static function param($name, $value = '', $dir = 'get') {
-                static $plg, $params, $plgId, $db, $plgT, $_params, $j16;
+                static $FILES_LOC, $FILES, $plg, $params, $plgId, $db, $plgT, $_params, $j16;
 
                 if (!isset($params)) {
                         $j16 = jbetoloHelper::isJ16();
-
+                        
                         if ($j16) {
                                 $query = "SELECT extension_id AS id, params FROM #__extensions WHERE type = 'plugin' AND folder = 'system' AND element = 'jbetolo' LIMIT 1";
                         } else {
@@ -465,19 +465,27 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 if ($dir == 'set') {
+                        $files = '';
+                        
                         if ($value instanceof JRegistry) {
                                 $params = $value;
+                                $files = $params->get('files');
                         } else {
                                 if (in_array($name, plgSystemJBetolo::$serializableParams)) {
                                         $value = serialize($value);
                                 }
-
-                                $params->set($name, $value);
+                                
+                                if ($name == 'files') $files = $value;
+                                else $params->set($name, $value);
                         }
                         
+                        $params->set('files', null);
                         JTable::addIncludePath(JPATH_SITE.'/libraries/joomla/database/table/');
                         $plgT = JTable::getInstance(!$j16 ? 'plugin' : 'extension');
                         $key = $j16 ? "extension_id" : 'id';
+                        
+                        if ($files) JFile::write(JBETOLO_FILES_CACHE, $files);
+                        
                         $data = array($key => $plgId, "params" => $params->toString($j16 ? 'JSON' : 'INI'));
 
                         $plgT->bind($data);
@@ -491,6 +499,12 @@ class plgSystemJBetolo extends JPlugin {
                 } else {
                         if (!isset($_params[$name]) ||
                                 (in_array($name, plgSystemJBetolo::$serializableParams) && !is_array($_params[$name]))) {
+                                if ($name == 'files') {
+                                        $files = JFile::exists(JBETOLO_FILES_CACHE) ? JFile::read(JBETOLO_FILES_CACHE) : '';
+                                        $params->set('files', $files);
+                                        $files = null;
+                                }
+                                        
                                 $_params[$name] = $params->get($name);
 
                                 if (is_string($_params[$name])) {

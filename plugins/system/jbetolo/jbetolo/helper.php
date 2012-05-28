@@ -206,7 +206,7 @@ class jbetoloHelper {
         
         public static function defineConstants() {
                 if (defined('JBETOLO_URI_BASE')) return;
-
+                
                 $app = JFactory::getApplication();
                 $uri = JUri::base();
                 $path = JUri::base(true) . '/';
@@ -271,9 +271,7 @@ class jbetoloHelper {
                 }
 
                 define('JBETOLO_URI_PATH', $path);
-
                 define("JBETOLO_EMPTYTAG", "_JBETOLO_");
-                define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
                 
                 $gz = extension_loaded('zlib') || ini_get('zlib.output_compression');
                 
@@ -282,6 +280,10 @@ class jbetoloHelper {
                 }
                 
                 define('JBETOLO_IS_GZ', $gz);
+                
+                define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
+                jbetoloFileHelper::createCacheDir();
+                define('JBETOLO_FILES_CACHE', JBETOLO_CACHE_DIR . 'jbetolo.files.ini');
                 
                 define('JBETOLO_IS_MINIFY', 1);
                 define('JBETOLO_DEBUG', (bool) plgSystemJBetolo::param('debug_mode'));
