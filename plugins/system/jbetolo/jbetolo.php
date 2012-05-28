@@ -444,7 +444,7 @@ class plgSystemJBetolo extends JPlugin {
          * (de)serializes indicated params before getting resp. setting
          */
         public static function param($name, $value = '', $dir = 'get') {
-                static $FILES_LOC, $FILES, $plg, $params, $plgId, $db, $plgT, $_params, $j16;
+                static $plg, $params, $plgId, $db, $plgT, $_params, $j16;
 
                 if (!isset($params)) {
                         $j16 = jbetoloHelper::isJ16();

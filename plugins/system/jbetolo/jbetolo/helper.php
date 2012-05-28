@@ -265,7 +265,9 @@ class jbetoloHelper {
 
                 define('JBETOLO_URI_BASE', $uri);
                 
-
+                define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
+                define('JBETOLO_FILES_CACHE', JBETOLO_CACHE_DIR . 'jbetolo.files.ini');
+                
                 if (JBETOLO_CDN_MAP && JBETOLO_CDN_OWN) {
                         jbetoloHelper::setupOwnCDN();
                 }
@@ -280,10 +282,6 @@ class jbetoloHelper {
                 }
                 
                 define('JBETOLO_IS_GZ', $gz);
-                
-                define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
-                jbetoloFileHelper::createCacheDir();
-                define('JBETOLO_FILES_CACHE', JBETOLO_CACHE_DIR . 'jbetolo.files.ini');
                 
                 define('JBETOLO_IS_MINIFY', 1);
                 define('JBETOLO_DEBUG', (bool) plgSystemJBetolo::param('debug_mode'));
@@ -302,7 +300,9 @@ class jbetoloHelper {
                                         setcookie('JBETOLO_NGINX_NOTICE', 'YES');
                                 }                                                                
                         }
-                }                
+                }
+                
+                jbetoloFileHelper::createCacheDir();
         }
         
         public static function isApache() {
