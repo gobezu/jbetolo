@@ -27,17 +27,15 @@ class jbetoloComponentHelper {
         private static function doSendFile($type, $cache_file, $is_gz, $age) {
                 $m_time = self::gmdateStr(filemtime($cache_file));
                 
+                if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $m_time) {
+                        header('Last-Modified: ' . $m_time, true, 304);
+                        exit;
+                }
+                
                 $document = JFactory::getDocument();
                 
                 header("Content-type: ".self::$contentTypes[$type]."; charset: " . $document->getCharset());
 
-                if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $m_time) {
-                        header('Last-Modified: ' . $m_time);
-                        header('Content-Length: 0');
-                        header("HTTP/1.0 304 Not Modified");
-                        return;
-                }
-                
                 jimport('joomla.plugin.plugin');
                 JPluginHelper::importPlugin('system', 'jbetolo');
                 

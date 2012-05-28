@@ -1841,7 +1841,9 @@ class jbetoloFileHelper {
                                         $files_key = implode('', $files_key);
                                         
                                         if (isset($arr[$app][$type][$files_key])) {
-                                                $rec = $arr[$app][$type][$files_key]['main'];
+                                                $rec = $arr[$app][$type][$files_key];
+                                                $add_key = key($rec);
+                                                $rec = $rec[$add_key];
                                                 
                                                 if (jbetoloFileHelper::areFilesChanged($rec['parts'])) {
                                                         if (JFile::exists(JBETOLO_CACHE_DIR . $rec['merged'])) {
