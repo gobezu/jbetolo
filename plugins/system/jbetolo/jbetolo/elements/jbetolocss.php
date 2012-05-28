@@ -30,7 +30,7 @@ if (jbetoloHelper::isJ16()) {
                 protected function getLabel() { return false; }
         }
 } else {
-        class JElementCdnpurge extends JElement {
+        class JElementJbetolocss extends JElement {
                 var $_name = 'JbetoloJbetolocss';
 
                 public function fetchElement($name, $value, &$node, $control_name) {
