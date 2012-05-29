@@ -8,6 +8,11 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 class jbetoloHelper {
+        public static function logClientsiderError($data) {
+                $logFile = JPath::clean(JPATH_SITE.'/'.plgSystemJBetolo::param('clientsideerrorlog'));
+                JFile::write($logFile, $log);
+        }
+        
         public static function lazyLoad(&$body, $stage) {
                 $js = plgSystemJBetolo::param('lazyload_img');
                 
@@ -63,7 +68,7 @@ class jbetoloHelper {
                 $errors = '';
                 
                 foreach ($types as $type) {
-                        $set = $arr[$app][$type];
+                        $set = $arr[$app][$tmpl][$type];
                         
                         if (empty($set)) continue;
                         
@@ -456,28 +461,28 @@ class jbetoloHelper {
          * where the latter is applicable only to J1.5 versions.
          */
         public static function handleChanges() {
-                $app = JFactory::getApplication();
-                $saved = plgSystemJBetolo::param('templates');
-                $curr = $app->getTemplate();
-                $appName = $app->getName();
-
-                if (!isset($saved[$appName]) || $saved[$appName] != $curr) {
-                        jbetoloHelper::resetCache($appName);
-                        $saved[$appName] = $curr;
-                        plgSystemJBetolo::param('templates', $saved, 'set');
-                }
-
-                if (!jbetoloHelper::isJ16()) {
-                        $saved = plgSystemJBetolo::param('mooversion');
-
-                        jimport('joomla.plugin.plugin');
-                        $curr = JPluginHelper::getPlugin('system', 'mtupgrade') ? '+1.2' : '1.1';
-
-                        if (!isset($saved) || $saved != $curr) {
-                                jbetoloHelper::resetCache();
-                                plgSystemJBetolo::param('mooversion', $curr, 'set');
-                        }
-                }
+//                $app = JFactory::getApplication();
+//                $saved = plgSystemJBetolo::param('templates');
+//                $curr = $app->getTemplate();
+//                $appName = $app->getName();
+//
+//                if (!isset($saved[$appName]) || $saved[$appName] != $curr) {
+//                        jbetoloHelper::resetCache($appName);
+//                        $saved[$appName] = $curr;
+//                        plgSystemJBetolo::param('templates', $saved, 'set');
+//                }
+//
+//                if (!jbetoloHelper::isJ16()) {
+//                        $saved = plgSystemJBetolo::param('mooversion');
+//
+//                        jimport('joomla.plugin.plugin');
+//                        $curr = JPluginHelper::getPlugin('system', 'mtupgrade') ? '+1.2' : '1.1';
+//
+//                        if (!isset($saved) || $saved != $curr) {
+//                                jbetoloHelper::resetCache();
+//                                plgSystemJBetolo::param('mooversion', $curr, 'set');
+//                        }
+//                }
         }
 
         public static function isJ16() {
@@ -1733,13 +1738,12 @@ class jbetoloFileHelper {
                         $abs_excl_gzip = explode(',', $abs_excl_gzip);
                 }
 
-                jbetoloFileHelper::createCacheDir();
-
                 $excl_js_imports = $excl_css_imports = '';
                 $css_imports = $js_imports = array();
                 $js_placement = plgSystemJBetolo::param('js_placement');
                 $age = plgSystemJBetolo::param('cache_age');
                 $app = JFactory::getApplication()->getName();
+                $tmpl = JFactory::getApplication()->getTemplate();
                 $paramHasChanged = false;
                 $external_custom_orders = array();
 
@@ -1759,13 +1763,13 @@ class jbetoloFileHelper {
                                 $isMono = plgSystemJBetolo::param($type.'_merge_mode', 'mono') == 'mono';
                                 $are_files_changed = $new_files_found = false;
 
-                                if (count($arr) == 0 || !isset($arr[$app]) || !isset($arr[$app][$type]) || !is_array($arr[$app][$type])) {
-                                        $arr[$app][$type] = array();
+                                if (count($arr) == 0 || !isset($arr[$app]) || !isset($arr[$app][$tmpl]) || !isset($arr[$app][$tmpl][$type]) || !is_array($arr[$app][$tmpl][$type])) {
+                                        $arr[$app][$tmpl][$type] = array();
                                 }
 
                                 if ($isMono) {
-                                        if (count($arr[$app][$type])) {
-                                                foreach ($arr[$app][$type] as $attr => $rec) {
+                                        if (count($arr[$app][$tmpl][$type])) {
+                                                foreach ($arr[$app][$tmpl][$type] as $attr => $rec) {
                                                         $merged = array();
                                                         $merged_file = JBETOLO_CACHE_DIR . $rec['merged'];
 
@@ -1816,7 +1820,7 @@ class jbetoloFileHelper {
                                                                         $res = jbetoloCSS::build($merged, array_fill(0, count($merged), $attr));
                                                                 }
 
-                                                                $arr[$app][$type][$attr] = $res[$attr];
+                                                                $arr[$app][$tmpl][$type][$attr] = $res[$attr];
                                                                 $paramHasChanged = true;
                                                         }
                                                 }
@@ -1827,7 +1831,7 @@ class jbetoloFileHelper {
                                                         jbetoloJS::setJqueryFile($_src_files, jbetoloHelper::getArrayValues($excl_files, 'src'));
                                                 }
 
-                                                $arr[$app][$type] =
+                                                $arr[$app][$tmpl][$type] =
                                                         $type == 'css' ?
                                                         jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
                                                         jbetoloJS::build($_src_files);
@@ -1835,15 +1839,15 @@ class jbetoloFileHelper {
                                                 $paramHasChanged = true;
                                         }
                                         
-                                        $imports = $arr[$app][$type];
+                                        $imports = $arr[$app][$tmpl][$type];
                                 } else {
                                         $_src_files = array_unique($_src_files);
                                         $files_key = $_src_files;
                                         sort($files_key);
                                         $files_key = implode('', $files_key);
                                         
-                                        if (isset($arr[$app][$type][$files_key])) {
-                                                $rec = $arr[$app][$type][$files_key];
+                                        if (isset($arr[$app][$tmpl][$type][$files_key])) {
+                                                $rec = $arr[$app][$tmpl][$type][$files_key];
                                                 $add_key = key($rec);
                                                 $rec = $rec[$add_key];
                                                 
@@ -1859,14 +1863,14 @@ class jbetoloFileHelper {
                                         }
                                         
                                         if ($paramHasChanged) {
-                                                $arr[$app][$type][$files_key] =
+                                                $arr[$app][$tmpl][$type][$files_key] =
                                                         $type == 'css' ?
                                                         jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
                                                         jbetoloJS::build($_src_files)
                                                         ;
                                         }
                                         
-                                        $imports = $arr[$app][$type][$files_key];
+                                        $imports = $arr[$app][$tmpl][$type][$files_key];
                                 }
                                 
                                 $external_custom_orders[$type] = jbetoloHelper::replaceTags(
