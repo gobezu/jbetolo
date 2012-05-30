@@ -8,6 +8,7 @@ jimport('joomla.plugin.plugin');
 require_once dirname(__FILE__) . '/jbetolo/helper.php';
 
 class plgSystemJBetolo extends JPlugin {
+        public static $allowAll = false;
         const EXCLUDE_REG_PREFIX = 'reg:';
         public static $jquery = null;
         private static $tagRegex = array(
@@ -156,11 +157,11 @@ class plgSystemJBetolo extends JPlugin {
                 $user = JFactory::getUser();
                 $allowedIn = $type == 'jbetolo' ? plgSystemJBetolo::param('allow_in') : 'site';
 
-                if (
+                if (!self::$allowAll && (
                         $allowedIn == 'anonymous' && !$user->guest ||
                         $allowedIn != 'anonymous' && $app != $allowedIn && $allowedIn != 'all' ||
                         $app == 'administrator' && $user->guest
-                   ) {
+                   )) {
                         return true;
                 }
 

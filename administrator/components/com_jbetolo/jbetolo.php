@@ -14,6 +14,10 @@ $lang->load('plg_system_jbetolo');
 $app = JFactory::getApplication();
 
 switch ($task) {
+        case 'logclientsideerror':
+                jbetoloComponentHelper::logClientsideError();
+                $app->close();
+                break;
         case 'serve':
                 $file = JRequest::getString('file', false);
                 $type = JRequest::getString('type', false);

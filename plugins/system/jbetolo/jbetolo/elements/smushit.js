@@ -32,7 +32,7 @@ var jbetolosmushit = new Class({
                 request += dir + '&replace='+replace + '&recursive=' + recursive + '&fix=' + fix;
 
                 if (MooTools.version.substr(2, 1) != 1) {
-                        new Request({'url':request, onSuccess:function(response) { alert(response); this.toggle(); }.bind(this)}).send();
+                        new Request({'url':request, noCache:true, onSuccess:function(response) { alert(response); this.toggle(); }.bind(this)}).send();
                 } else {
                         new Ajax(request, {onSuccess:function(response) { alert(response); this.toggle(); }.bind(this)}).request();
                 }

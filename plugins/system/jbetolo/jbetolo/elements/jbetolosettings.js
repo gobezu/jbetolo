@@ -41,6 +41,7 @@ var jbetolosettings = new Class({
 
                         if (MooTools.version.substr(2, 1) != 1) {
                                 opts['url'] = request;
+                                opts['noCache'] = true;
                                 new Request(opts).send();
                         } else {
                                 new Ajax(request, opts).request();

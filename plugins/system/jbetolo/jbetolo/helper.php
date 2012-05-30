@@ -8,10 +8,11 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 class jbetoloHelper {
-        public static function logClientsiderError($data) {
+        public static function logClientsiderError($data, $reset = false) {
                 $logFile = JPath::clean(JPATH_SITE.'/'.plgSystemJBetolo::param('clientsideerrorlog'));
                 $logSep = "\t";
                 $data = implode($logSep, $data);
+                if (!$reset && JFile::exists($logFile)) $data = JFile::read($logFile) . "\n" . $data;
                 JFile::write($logFile, $data);
         }
         
@@ -223,6 +224,8 @@ class jbetoloHelper {
                 $uri = JUri::base();
                 $path = JUri::base(true) . '/';
 
+                plgSystemJbetolo::$allowAll = JRequest::getCmd('option') == 'com_jbetolo' && $app->getName() == 'administrator';
+                
                 if ($app->getName() != 'site') {
                         $uri = str_replace('/administrator', '', $uri);
                         $path = str_replace('/administrator', '', $path);
