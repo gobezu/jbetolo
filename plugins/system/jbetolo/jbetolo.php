@@ -76,8 +76,8 @@ class plgSystemJBetolo extends JPlugin {
                 }
                 
                 jbetoloHelper::lazyLoad($body, 1);
-                
-                jbetoloHelper::handleChanges();
+                jbetoloHelper::loadClientsiderErrorLogger($body);
+                //jbetoloHelper::handleChanges();
 
                 $_comments = $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
 

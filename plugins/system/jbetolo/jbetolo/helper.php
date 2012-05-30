@@ -10,7 +10,17 @@ jimport('joomla.filesystem.file');
 class jbetoloHelper {
         public static function logClientsiderError($data) {
                 $logFile = JPath::clean(JPATH_SITE.'/'.plgSystemJBetolo::param('clientsideerrorlog'));
-                JFile::write($logFile, $log);
+                $logSep = "\t";
+                $data = implode($logSep, $data);
+                JFile::write($logFile, $data);
+        }
+        
+        public static function loadClientsiderErrorLogger(&$body) {
+                $js = plgSystemJBetolo::param('logclientsideerror');
+                if (!$js) return;
+                $js = JURI::base().'plugins/system/jbetolo/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : '').'clientsideerrorlog/'.$js.'.js';
+                $js = '<script type="text/javascript" src="'.$js.'" />';
+                jbetoloFileHelper::placeTags($body, $js, 'js', 4);
         }
         
         public static function lazyLoad(&$body, $stage) {
@@ -20,7 +30,6 @@ class jbetoloHelper {
                 
                 $loc = JURI::base().'plugins/system/jbetolo/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : '').'lazyload/';
                 
-                if ($stage == 0 || $stage == 1) {
                 if ($stage == 0 || $stage == 1) {
                         if ($js == 'mootools') {
                                 $src = 'LazyLoad.js';
@@ -45,19 +54,17 @@ class jbetoloHelper {
                                 foreach ($matches[0] as $i => $tag) {
                                         $orig = jbetoloFileHelper::normalizeCall($matches[2][$i], true, false);
                                 }
-                                        $stag = 
-                                                '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$orig.'" '.$matches[1][$i].' '.$matches[3][$i].
-                                                '<noscript>'.$tag.'</noscript>';
-                                        
-                                        $body = str_ireplace($tag, $stag, $body);
-                                }
                                 
-                                return true;
+                                $stag = 
+                                        '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$orig.'" '.$matches[1][$i].' '.$matches[3][$i].
+                                        '<noscript>'.$tag.'</noscript>';
+
+                                $body = str_ireplace($tag, $stag, $body);
                         }
-                        
-                        return false;
+                                
+                        return true;
                 }
-                
+                        
                 return true;
         }
         
@@ -461,28 +468,28 @@ class jbetoloHelper {
          * where the latter is applicable only to J1.5 versions.
          */
         public static function handleChanges() {
-//                $app = JFactory::getApplication();
-//                $saved = plgSystemJBetolo::param('templates');
-//                $curr = $app->getTemplate();
-//                $appName = $app->getName();
-//
-//                if (!isset($saved[$appName]) || $saved[$appName] != $curr) {
-//                        jbetoloHelper::resetCache($appName);
-//                        $saved[$appName] = $curr;
-//                        plgSystemJBetolo::param('templates', $saved, 'set');
-//                }
-//
-//                if (!jbetoloHelper::isJ16()) {
-//                        $saved = plgSystemJBetolo::param('mooversion');
-//
-//                        jimport('joomla.plugin.plugin');
-//                        $curr = JPluginHelper::getPlugin('system', 'mtupgrade') ? '+1.2' : '1.1';
-//
-//                        if (!isset($saved) || $saved != $curr) {
-//                                jbetoloHelper::resetCache();
-//                                plgSystemJBetolo::param('mooversion', $curr, 'set');
-//                        }
-//                }
+                /*$app = JFactory::getApplication();
+                $saved = plgSystemJBetolo::param('templates');
+                $curr = $app->getTemplate();
+                $appName = $app->getName();
+
+                if (!isset($saved[$appName]) || $saved[$appName] != $curr) {
+                        jbetoloHelper::resetCache($appName);
+                        $saved[$appName] = $curr;
+                        plgSystemJBetolo::param('templates', $saved, 'set');
+                }
+
+                if (!jbetoloHelper::isJ16()) {
+                        $saved = plgSystemJBetolo::param('mooversion');
+
+                        jimport('joomla.plugin.plugin');
+                        $curr = JPluginHelper::getPlugin('system', 'mtupgrade') ? '+1.2' : '1.1';
+
+                        if (!isset($saved) || $saved != $curr) {
+                                jbetoloHelper::resetCache();
+                                plgSystemJBetolo::param('mooversion', $curr, 'set');
+                        }
+                }*/
         }
 
         public static function isJ16() {
@@ -1248,33 +1255,6 @@ class jbetoloFileHelper {
 
                         if (!JBETOLO_CDN_MAP) {
                                 jbetoloFileHelper::allowRewrite('create', JBETOLO_CACHE_DIR);
-                        } else {
-                                $gz = JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0);
-                                
-                                if ($gz) {
-                                        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-                                        
-                                        // if files compressed and CDN can't compress, provide correct header
-                                        if ($server == 'apache') {
-                                                JFile::copy(
-                                                        dirname(__FILE__).'/assets/htaccess_cdn_content_encoding.txt', 
-                                                        JBETOLO_CACHE_DIR.'/.htaccess'
-                                                );
-                                        }
-                                }
-                        }
-                } else {
-                        $remove = !JBETOLO_CDN_MAP || !(JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0));
-                        
-                        if ($remove) {
-                                $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-                                $file = '';        
-                                
-                                if ($server == 'apache') {
-                                        $file = JBETOLO_CACHE_DIR.'/.htaccess';
-                                }
-                                
-                                if ($file && JFile::exists($file)) JFile::delete($file);
                         }
                 }
         }
