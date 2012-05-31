@@ -184,6 +184,12 @@
                                     <option value="jquery">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
                                     <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                                 </field>
+                                <field name="logclientsideerror" type="list" default="0" label="PLG_JBETOLO_LOG_CLIENTSIDE_ERROR_LBL" description="PLG_JBETOLO_LOG_CLIENTSIDE_ERROR_DESC">
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                    <option value="jquery">PLG_JBETOLO_CLIENTSIDE_ERROR_JQUERY</option>
+                                    <option value="mootools">PLG_JBETOLO_CLIENTSIDE_ERROR_MOOTOOLS</option>
+                                </field>
+                                <field name="clientsideerrorlog" type="text" default="tmp/jbetolo.js-error.log" size="50" label="PLG_JBETOLO_CLIENTSIDE_ERROR_LOG_LBL" description="PLG_JBETOLO_CLIENTSIDE_ERROR_LOG_DESC" />
                                 <field name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></field>
                                 <field name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
@@ -224,7 +230,7 @@
                 <param type="clearcache" name="clear_cache" label="PLG_JBETOLO_CLEAR_CACHE_LBL" description="PLG_JBETOLO_CLEAR_CACHE_DESC" />
                 <param type="jbetolosettings" name="predefined_settings" default="1.6:molajo" hide_default="true" directory="/plugins/system/jbetolo/settings" stripext="true" exclude="^index\.htm" label="PLG_JBETOLO_PREDEFINED_LBL" description="PLG_JBETOLO_PREDEFINED_DESC" />
                 <param type="smushit" name="smushit" default="" label="PLG_JBETOLO_SMUSHIT_LBL" description="PLG_JBETOLO_SMUSHIT_DESC" />
-                <param type="htaccess" name="htaccess" default="" label="PLG_JBETOLO_HTACCESS_LBL" description="PLG_JBETOLO_HTACCESS_DESC" />
+                <param type="htaccess" name="htaccess" default="" label="PLG_JBETOLO_HTACCESS_PATCH_LBL" description="PLG_JBETOLO_HTACCESS_PATCH_DESC" />
                 <param type="cdnpurge" name="cdnpurge" default="" label="PLG_JBETOLO_CDNPURGE_LBL" description="PLG_JBETOLO_CDNPURGE_DESC" />
 
                 <param name="spacer_css" type="spacer" default="PLG_JBETOLO_CSS_SPACER" />

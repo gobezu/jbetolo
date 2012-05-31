@@ -36,6 +36,10 @@ if (jbetoloHelper::isJ16()) {
                 public function fetchElement($name, $value, &$node, $control_name) {
                         return JbetoloJbetolocss::ui($name);
                 }
+                
+                function fetchTooltip($label, $description, &$node, $control_name, $name){
+                        return NULL;
+                }                
         }
 }
 

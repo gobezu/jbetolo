@@ -222,16 +222,14 @@ class jbetoloComponentHelper {
                 if (!JFile::exists($htaccessFile)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_MISSING');
                 
                 $patch = JFile::read($patchFile);
-                $cdnPatch = '';
                 
                 // if files compressed and CDN can't compress, provide correct header
                 if (JBETOLO_CDN_MAP && JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0)) {
                         $server = strtolower($_SERVER['SERVER_SOFTWARE']);
 
-                        if ($server == 'apache') {
+                        if (strpos($server, 'apache') === 0) {
                                 $patchFile = self::pluginLocation(true) . 'jbetolo/assets/htaccess_cdn_content_encoding.txt';
-                                $cdnPatch = JFile::read($patchFile);
-                                if (strpos($htaccess, $cdnPatch) !== false) $cdnPatch = '';
+                                JFile::copy($patchFile, JBETOLO_CACHE_DIR.'.htaccess');
                         }
                 }                
                 
@@ -239,7 +237,7 @@ class jbetoloComponentHelper {
                 
                 $time = JHtml::_('date', 'now', '%Y-%m-%d %H:%M:%s');
                 
-                $htaccess = '# Patched on: '.$time."\n".$patch."\n".$cdnPatch."\n".$htaccess;
+                $htaccess = '# Patched on: '.$time."\n".$patch."\n".$htaccess;
                 
                 if (JFile::write($htaccessFile, $htaccess)) return JText::_('PLG_SYSTEM_JBETOLO_HTACCESS_PATCH_SUCCESS');
                 

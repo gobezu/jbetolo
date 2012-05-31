@@ -230,7 +230,7 @@ class jbetoloHelper {
                         $uri = str_replace('/administrator', '', $uri);
                         $path = str_replace('/administrator', '', $path);
                 }
-
+                
                 define('JBETOLO_CDN_MAP', !plgSystemJBetolo::dontJbetolo('cdn'));
 
                 $cdn = '';
@@ -280,7 +280,12 @@ class jbetoloHelper {
 
                 define('JBETOLO_URI_BASE', $uri);
                 
-                define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
+                if (plgSystemJbetolo::$allowAll) {
+                        define('JBETOLO_CACHE_DIR', JPATH_SITE . '/cache/jbetolo/');
+                } else {
+                        define('JBETOLO_CACHE_DIR', JPATH_CACHE . '/jbetolo/');
+                }
+                
                 define('JBETOLO_FILES_CACHE', JBETOLO_CACHE_DIR . 'jbetolo.files.ini');
                 
                 if (JBETOLO_CDN_MAP && JBETOLO_CDN_OWN) {
