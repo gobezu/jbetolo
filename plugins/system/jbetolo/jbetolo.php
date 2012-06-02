@@ -202,6 +202,50 @@ class plgSystemJBetolo extends JPlugin {
                                 $donts['option'] = $excludeComponents;
                         }
                 }
+                
+                $excludeURLs = plgSystemJBetolo::param('exclude_urls', array());
+                
+                if (!empty($excludeURLs)) {
+                        $excludeURLs = explode(',', $excludeURLs);
+                        foreach ($excludeURLs as &$url) {
+                                if (strpos($url, self::EXCLUDE_REG_PREFIX) === false) parse_str($url, $url);
+                                else $url = str_replace(self::EXCLUDE_REG_PREFIX, '', $url);
+                        }
+                }
+                
+                if (jbetoloHelper::isJ16()) {
+                        $excludeURLs[] = array('option' => 'com_content', 'task' => 'article.add');
+                        $excludeURLs[] = array('option' => 'com_content', 'task' => 'article.edit');
+                } else {
+                        $excludeURLs[] = array('option' => 'com_content', 'task' => 'new');
+                        $excludeURLs[] = array('option' => 'com_content', 'task' => 'edit');
+                }
+                
+                $excludeURLs[] = array('option' => 'com_k2', 'task' => 'article.add');
+                $excludeURLs[] = array('option' => 'com_k2', 'task' => 'article.edit');
+                
+                if (!empty($excludeURLs)) {
+                        $uri = JURI::getInstance();
+			$curr = $uri->toString(array('scheme', 'host', 'port', 'path', 'query'));                        
+                        
+                        foreach ($excludeURLs as $url) {
+                                $match = true;
+                                
+                                if (is_string($url)) {
+                                        $match = preg_match('#'.preg_quote($url).'#', $curr);
+                                } else {
+                                        foreach ($url as $k => $v) {
+                                                $val = JRequest::getVar($k, plgSystemJBetolo::$dontsEmpty);
+                                                if ($val != $v) {
+                                                        $match = false;
+                                                        break;
+                                                }
+                                        }
+                                }
+                                
+                                if ($match) return true;
+                        }
+                }
 
                 if (plgSystemJBetolo::checkDonts($donts)) {
                         return true;

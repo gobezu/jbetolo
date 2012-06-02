@@ -1265,6 +1265,16 @@ class jbetoloFileHelper {
                                 jbetoloFileHelper::allowRewrite('create', JBETOLO_CACHE_DIR);
                         }
                 }
+                
+                // if files compressed and CDN can't compress, provide correct header
+                if (JBETOLO_CDN_MAP && JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0)) {
+                        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+
+                        if (strpos($server, 'apache') === 0) {
+                                $patchFile = dirname(__FILE__) . '/assets/htaccess_cdn_content_encoding.txt';
+                                JFile::copy($patchFile, JBETOLO_CACHE_DIR.'.htaccess');
+                        }
+                }                
         }
 
         public static function allowRewrite($task, $dst = '') {

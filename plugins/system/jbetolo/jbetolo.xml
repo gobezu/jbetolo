@@ -139,6 +139,7 @@
                                 <field name="minify_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_MINIFY_LBL" description="PLG_JBETOLO_EXCL_MINIFY_DESC"></field>
                                 <field name="delete" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_DELETE_LBL" description="PLG_JBETOLO_DELETE_DESC"></field>
                                 <field name="exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></field>
+                                <field name="exclude_urls" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_URL_LBL" description="PLG_JBETOLO_EXCL_URL_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CDN">
                                 <field name="cdn_enabled" type="radio" default="0" label="PLG_JBETOLO_CDN_ENABLED_LBL" description="PLG_JBETOLO_CDN_ENABLED_DESC">
@@ -331,6 +332,7 @@
                 <param name="minify_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_MINIFY_LBL" description="PLG_JBETOLO_EXCL_MINIFY_DESC"></param>
                 <param name="delete" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_DELETE_LBL" description="PLG_JBETOLO_DELETE_DESC"></param>
                 <param name="exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></param>
+                <param name="exclude_urls" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_URL_LBL" description="PLG_JBETOLO_EXCL_URL_DESC" />
                 
                 <param name="spacer_cdn" type="spacer" default="PLG_JBETOLO_CDN_SPACER" />
                 <param name="cdn_enabled" type="radio" default="0" label="PLG_JBETOLO_CDN_ENABLED_LBL" description="PLG_JBETOLO_CDN_ENABLED_DESC">
