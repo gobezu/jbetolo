@@ -647,7 +647,7 @@ class jbetoloHelper {
                 }
                 
                 if ($app == 'all' || $app == 'site') {
-                        $loc = JPATH_SITE . '/cache/jbetolo';
+                        $loc = JBETOLO_CACHE_DIR;
 
                         if (JFolder::exists($loc)) {
                                 JFolder::delete($loc);
@@ -1349,8 +1349,10 @@ class jbetoloFileHelper {
                 array_multisort($src_files, SORT_ASC, SORT_STRING);
                 $gz = JBETOLO_IS_GZ && plgSystemJBetolo::param($type . '_gzip') ? '-gz' : '';
                 $minify = plgSystemJBetolo::param($type . '_minify', 0) ? '-min' : '';
+                $cdn = JBETOLO_CDN_MAP ? '-cdn' : '';
+                $fn = JBETOLO_DEBUG_FILENAME ? '-fn' : '';
 
-                $key = md5(implode($src_files) . $minify . $gz);
+                $key = md5(implode($src_files) . $minify . $gz . $cdn . $fn);
 
                 return array('merged' => $key . "." . $type, 'parts' => $res);
         }
