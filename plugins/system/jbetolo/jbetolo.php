@@ -489,30 +489,37 @@ class plgSystemJBetolo extends JPlugin {
          * (de)serializes indicated params before getting resp. setting
          */
         public static function param($name, $value = '', $dir = 'get') {
-                static $plg, $params, $plgId, $db, $plgT, $_params, $j16;
+                static $plg, $params, $_params;
 
                 if (!isset($params)) {
-                        $j16 = jbetoloHelper::isJ16();
-                        
-                        if ($j16) {
-                                $query = "SELECT extension_id AS id, params FROM #__extensions WHERE type = 'plugin' AND folder = 'system' AND element = 'jbetolo' LIMIT 1";
-                        } else {
-                                $query = "SELECT id, params FROM #__plugins WHERE folder = 'system' AND element = 'jbetolo' LIMIT 1";
-                        }
-
-                        $db = JFactory::getDBO();
-                        $db->setQuery($query);
-                        $plg = $db->loadObject();
-
+                        $plg = JPluginHelper::getPlugin('system', 'jbetolo');
                         jimport('joomla.html.parameter');
                         $params = new JParameter($plg->params);
-                        $plgId = $plg->id;
                 }
 
                 if ($dir == 'set') {
+                        static $plgT, $db, $plgId, $j16;
+                        
+                        if (!isset($db)) {
+                                $j16 = jbetoloHelper::isJ16();
+                                $db = JFactory::getDBO();
+                                JTable::addIncludePath(JPATH_SITE.'/libraries/joomla/database/table/');
+                                $plgT = JTable::getInstance(!$j16 ? 'plugin' : 'extension');
+                                
+                                if ($j16) {
+                                        $query = "SELECT extension_id FROM #__extensions WHERE type = 'plugin' AND folder = 'system' AND element = 'jbetolo' LIMIT 1";
+                                } else {
+                                        $query = "SELECT id FROM #__plugins WHERE folder = 'system' AND element = 'jbetolo' LIMIT 1";
+                                }
+
+                                $db = JFactory::getDBO();
+                                $db->setQuery($query);
+                                $plgId = $db->loadResult();                                
+                        }
+                        
                         $files = '';
                         
-                        if ($value instanceof JRegistry) {
+                        if ($value instanceof JRegistry || $value instanceof JParameter) {
                                 $params = $value;
                                 $files = $params->get('files');
                         } else {
@@ -524,16 +531,10 @@ class plgSystemJBetolo extends JPlugin {
                                 else $params->set($name, $value);
                         }
                         
-                        $params->set('files', null);
-                        JTable::addIncludePath(JPATH_SITE.'/libraries/joomla/database/table/');
-                        $plgT = JTable::getInstance(!$j16 ? 'plugin' : 'extension');
-                        $key = $j16 ? "extension_id" : 'id';
-                        
                         if ($files) JFile::write(JBETOLO_FILES_CACHE, $files);
                         
-                        $data = array($key => $plgId, "params" => $params->toString($j16 ? 'JSON' : 'INI'));
-
-                        $plgT->bind($data);
+                        $params->set('files', null);
+                        $plgT->bind(array(($j16 ? 'extension_id' : 'id') => $plgId, 'params' => $params->toString($j16 ? 'JSON' : 'INI')));
 
                         if (!$plgT->store()) {
                                 return JError::raiseWarning(500, $db->getError());

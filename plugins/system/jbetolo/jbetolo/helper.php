@@ -2001,6 +2001,8 @@ class jbetoloFileHelper {
         }
         
         public static function minify($type, $cont) {
+                if ($type == 'css') return self::cssMinimize($cont);
+                
                 static $id = 0;
                 
                 $path = dirname(__FILE__) . '/minify-2.1.5/min/lib/';
@@ -2013,7 +2015,7 @@ class jbetoloFileHelper {
                         case 'js': 
                                 $type = Minify::TYPE_JS;
                         break;
-                        case 'css': 
+                        case 'css':
                                 $type = Minify::TYPE_CSS;
                         break;
                         case 'htm': 
@@ -2037,6 +2039,51 @@ class jbetoloFileHelper {
                 );
                 
                 return $cont['content'];
+        }
+        
+        private static function cssMinimize($contents) {
+                // Adapted from Drupal core
+                $contents = preg_replace('/^@charset\s+[\'"](\S*)\b[\'"];/i', '', $contents);
+
+                // Perform some safe CSS optimizations.
+                // Regexp to match comment blocks.
+                $comment     = '/\*[^*]*\*+(?:[^/*][^*]*\*+)*/';
+                // Regexp to match double quoted strings.
+                $double_quot = '"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"';
+                // Regexp to match single quoted strings.
+                $single_quot = "'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'";
+                // Strip all comment blocks, but keep double/single quoted strings.
+                $contents = preg_replace(
+                        "<($double_quot|$single_quot)|$comment>Ss",
+                        "$1",
+                        $contents
+                );
+                // Remove certain whitespace.
+                // There are different conditions for removing leading and trailing
+                // whitespace.
+                // @see http://php.net/manual/en/regexp.reference.subpatterns.php
+                $contents = preg_replace('<
+                                # Strip leading and trailing whitespace.
+                                \s*([@{};,])\s*
+                                # Strip only leading whitespace from:
+                                # - Closing parenthesis: Retain "@media (bar) and foo".
+                                | \s+([\)])
+                                # Strip only trailing whitespace from:
+                                # - Opening parenthesis: Retain "@media (bar) and foo".
+                                # - Colon: Retain :pseudo-selectors.
+                                | ([\(:])\s+
+                        >xS',
+                        // Only one of the three capturing groups will match, so its reference
+                        // will contain the wanted value and the references for the
+                        // two non-matching groups will be replaced with empty strings.
+                        '$1$2$3',
+                        $contents
+                );
+                // End the file with a new line.
+                $contents = trim($contents);
+                $contents .= "\n";
+                
+                return $contents;
         }
 
         public static function writeToFile($to_file, $data, $type, $overrideGZ = false) {
