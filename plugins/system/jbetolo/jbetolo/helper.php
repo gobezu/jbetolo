@@ -52,15 +52,23 @@ class jbetoloHelper {
                 
                 if ($stage == 0 || $stage == 2) {
                         if (preg_match_all("#<img(.+)(?:src=[\"\'])([^\"\']+)(?:[\"\'])([^>]+>)#Uim", $body, $matches))  {
-                                foreach ($matches[0] as $i => $tag) {
-                                        $orig = jbetoloFileHelper::normalizeCall($matches[2][$i], true, false);
-                                }
+                                $excludes = plgSystemJBetolo::param('lazyload_exclude', '');
                                 
-                                $stag = 
-                                        '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$orig.'" '.$matches[1][$i].' '.$matches[3][$i].
-                                        '<noscript>'.$tag.'</noscript>';
+                                if (!empty($excludes)) $excludes = explode(',', $excludes);
+                                
+                                foreach ($matches[0] as $i => $tag) {
+                                        $f = $matches[2][$i];
+                                        
+                                        if (jbetoloFileHelper::isFileExcluded($f, $excludes)) continue;
+                                        
+                                        $orig = jbetoloFileHelper::normalizeCall($f, true, false);
+                                        
+                                        $stag = 
+                                                '<img class="lazy" src="'.$loc.'blank.jpg" data-original="'.$orig.'" '.$matches[1][$i].' '.$matches[3][$i].
+                                                '<noscript>'.$tag.'</noscript>';
 
-                                $body = str_ireplace($tag, $stag, $body);
+                                        $body = str_ireplace($tag, $stag, $body);
+                                }
                         }
                                 
                         return true;

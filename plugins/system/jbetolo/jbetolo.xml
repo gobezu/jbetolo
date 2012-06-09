@@ -189,6 +189,7 @@
                                     <option value="jquery">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
                                     <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                                 </field>
+                                <field name="lazyload_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_LAZYLOAD_EXCL_LBL" description="PLG_JBETOLO_LAZYLOAD_EXCL_DESC" />
                                 <field name="logclientsideerror" type="list" default="0" label="PLG_JBETOLO_LOG_CLIENTSIDE_ERROR_LBL" description="PLG_JBETOLO_LOG_CLIENTSIDE_ERROR_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="jquery">PLG_JBETOLO_CLIENTSIDE_ERROR_JQUERY</option>
@@ -392,6 +393,7 @@
                         <option value="jquery">PLG_JBETOLO_LAZYLOAD_JQUERY</option>
                         <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                 </param>
+                <param name="lazyload_exclude" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_LAZYLOAD_EXCL_LBL" description="PLG_JBETOLO_LAZYLOAD_EXCL_DESC" />
                 <param name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></param>
                 <param name="listen_request" type="radio" default="0" label="PLG_JBETOLO_LISTEN_REQUEST_LBL" description="PLG_JBETOLO_LISTEN_REQUEST_DESC">
                         <option value="0">PLG_JBETOLO_NO</option>
