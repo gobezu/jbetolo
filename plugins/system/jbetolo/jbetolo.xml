@@ -32,6 +32,10 @@
                                 <field name="html_minify" type="radio" default="0" label="PLG_JBETOLO_HTML_MINIFY_LBL" description="PLG_JBETOLO_HTML_MINIFY_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
+                                </field>
+                                <field name="dont_stat" type="radio" default="0" label="PLG_JBETOLO_DONT_STAT_LBL" description="PLG_JBETOLO_DONT_STAT_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
                                 </field>  
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_TOOLS" addfieldpath="/plugins/system/jbetolo/jbetolo/elements">
@@ -192,6 +196,10 @@
                                 </field>
                                 <field name="clientsideerrorlog" type="text" default="tmp/jbetolo.js-error.log" size="50" label="PLG_JBETOLO_CLIENTSIDE_ERROR_LOG_LBL" description="PLG_JBETOLO_CLIENTSIDE_ERROR_LOG_DESC" />
                                 <field name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></field>
+                                <field name="listen_request" type="radio" default="0" label="PLG_JBETOLO_LISTEN_REQUEST_LBL" description="PLG_JBETOLO_LISTEN_REQUEST_DESC">
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                    <option value="1">PLG_JBETOLO_YES</option>
+                                </field>
                                 <field name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="1">PLG_JBETOLO_YES</option>
@@ -225,6 +233,10 @@
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
+                <param name="dont_stat" type="radio" default="0" label="PLG_JBETOLO_DONT_STAT_LBL" description="PLG_JBETOLO_DONT_STAT_DESC">
+                        <option value="1">PLG_JBETOLO_YES</option>
+                        <option value="0">PLG_JBETOLO_NO</option>
+                </param>  
 
                 <param name="spacer_tools" type="spacer" default="PLG_JBETOLO_TOOLS_SPACER" />                
                 <param type="jbetolocss" name="jbetolocss" />
@@ -381,6 +393,10 @@
                         <option value="mootools">PLG_JBETOLO_LAZYLOAD_MOOTOOLS</option>
                 </param>
                 <param name="cache_age" type="text"  cols="40" default="5184000" label="PLG_JBETOLO_CACHEAGE_LBL" description="PLG_JBETOLO_CACHEAGE_DESC"></param>
+                <param name="listen_request" type="radio" default="0" label="PLG_JBETOLO_LISTEN_REQUEST_LBL" description="PLG_JBETOLO_LISTEN_REQUEST_DESC">
+                        <option value="0">PLG_JBETOLO_NO</option>
+                        <option value="1">PLG_JBETOLO_YES</option>
+                </param>
                 <param name="debug_mode_spacer" type="spacer" default="" label="PLG_JBETOLO_DEBUGMODE" />
                 <param name="debug_mode" type="radio" default="0" label="PLG_JBETOLO_DEBUGMODE_LBL" description="PLG_JBETOLO_DEBUGMODE_DESC">
                         <option value="0">PLG_JBETOLO_NO</option>

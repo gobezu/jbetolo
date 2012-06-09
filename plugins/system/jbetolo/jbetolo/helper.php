@@ -1186,6 +1186,8 @@ class jbetoloFileHelper {
         }
 
         private static function areFilesChanged($files) {
+                if (plgSystemJBetolo::param('dont_stat', 0)) return false;
+                
                 foreach ($files as $file) {
                         $f = jbetoloFileHelper::normalizeCall($file['file'], true);
                         $curr_f_time = filemtime($f);

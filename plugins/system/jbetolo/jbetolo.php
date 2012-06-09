@@ -27,7 +27,7 @@ class plgSystemJBetolo extends JPlugin {
         private static $dontsEmpty = '__EMPTY__';
         private static $donts = array(
             'jbetolo' => array(
-                'option' => array(),
+                'option' => array('com_contentsubmit'),
                 'task' => array('edit', 'add'),
                 'layout' => array('form', 'edit'),
                 'view' => array('edit')
@@ -153,6 +153,8 @@ class plgSystemJBetolo extends JPlugin {
         }
         
         public static function dontJbetolo($type = 'jbetolo') {
+                if (self::param('listen_request', 0) && JRequest::getCmd('nojbetolo', 0) == 1) return true;
+                       
                 $app = JFactory::getApplication()->getName();
                 $user = JFactory::getUser();
                 $allowedIn = $type == 'jbetolo' ? plgSystemJBetolo::param('allow_in') : 'site';
