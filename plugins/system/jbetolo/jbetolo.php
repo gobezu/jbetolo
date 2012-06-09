@@ -476,6 +476,11 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 if ($type == 'js') {
+                        if (plgSystemJBetolo::param('add_local_jquery', 0)) {
+                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY;
+                                plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
+                        }
+                        
                         jbetoloJS::setJqueryFile($srcs, $_excludedSrcs);
                 }
                 

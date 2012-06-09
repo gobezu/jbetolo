@@ -133,6 +133,10 @@
                                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                                 </field>
                                 <field name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
+                                <field name="add_local_jquery" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_EXCLUDE_DELETE">
                                 <field name="skip_dynamic" type="radio" default="1" label="PLG_JBETOLO_SKIP_DYNAMIC_LBL" description="PLG_JBETOLO_SKIP_DYNAMIC_DESC">
@@ -334,6 +338,10 @@
                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                 </param>
                 <param name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
+                <param name="add_local_jquery" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
+                        <option value="1">PLG_JBETOLO_YES</option>
+                        <option value="0">PLG_JBETOLO_NO</option>
+                </param>
 
                 <param name="spacer_exclude_delete" type="spacer" default="PLG_JBETOLO_EXCLUDE_DELETE_SPACER" />
                 <param name="spacer_css_js" type="spacer" default="" label="PLG_JBETOLO_CSSANDJS" />

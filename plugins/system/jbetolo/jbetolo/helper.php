@@ -48,7 +48,7 @@ class jbetoloHelper {
                         
                         jbetoloFileHelper::placeTags($body, '<style>.lazy {display: none;}</style>', 'css', 3);
                         jbetoloFileHelper::placeTags($body, $src, 'js', 4);
-                } 
+                }
                 
                 if ($stage == 0 || $stage == 2) {
                         if (preg_match_all("#<img(.+)(?:src=[\"\'])([^\"\']+)(?:[\"\'])([^>]+>)#Uim", $body, $matches))  {
@@ -287,6 +287,8 @@ class jbetoloHelper {
                 }
 
                 define('JBETOLO_URI_BASE', $uri);
+                define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
+                define('JBETOLO_JQUERY', 'jquery-1.7.2.min.js');
                 
                 if (plgSystemJbetolo::$allowAll) {
                         define('JBETOLO_CACHE_DIR', JPATH_SITE . '/cache/jbetolo/');
@@ -1164,7 +1166,11 @@ class jbetoloFileHelper {
                         }
                         
                         $customOrder = implode(',', $customOrder);
-                        $customOrder = implode(',', $moos) . ($customOrder ? ','  . $customOrder : '');
+                        $jquery = '';
+                        if (plgSystemJBetolo::param('add_local_jquery', 0)) {
+                                $jquery = (empty($moos) ? '' : ',') . JBETOLO_JQUERY;
+                        }
+                        $customOrder = implode(',', $moos).$jquery.($customOrder ? ','  . $customOrder : '');
                 }
                 
                 if (!empty($customOrder)) {
