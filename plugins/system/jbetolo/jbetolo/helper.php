@@ -875,7 +875,16 @@ class jbetoloJS {
                 preg_match_all($scriptRegex, $body, $matches);
 
                 $scripts = '';
+                
                 $asis = plgSystemJBetolo::param('js_inline_dont_move', '');
+                
+                // we shoudln't move away any script block dependent of the position it is placed in such as document.write
+                $asis .= (empty($asis) ? '' : ',') . 'document.write';
+                
+                // If email cloaking plugin is enabled we shouldn't move away the code rendered by it
+                if (JPluginHelper::isEnabled('content', 'emailcloak')) {
+                        $asis = (empty($asis) ? '' : ',') . 'var prefix';
+                }
                 
                 $asis = empty($asis) ? false : explode(',', $asis);
 
