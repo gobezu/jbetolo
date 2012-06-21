@@ -152,6 +152,25 @@ class plgSystemJBetolo extends JPlugin {
                 self::$isProfiling = true;
         }
         
+        public function onUserLogin($user, $options = array()) {
+                setcookie('JBETOLO_PASS', '1');
+                return true;
+        }
+        
+        public function onUserLogout($user, $options = array()) {
+                setcookie('JBETOLO_PASS', '');
+                return true;
+        }
+        
+        // J1.5 ditto
+        public function onLoginUser($user, $options = array()) {
+                return $this->onUserLogin($user, $options);
+        }
+        
+        public function onLogoutUser($user, $options = array()) {
+                return $this->onUserLogout($user, $options);
+        }
+        
         public static function dontJbetolo($type = 'jbetolo') {
                 if (self::param('listen_request', 0) && JRequest::getCmd('nojbetolo', 0) == 1) return true;
                        
@@ -457,7 +476,7 @@ class plgSystemJBetolo extends JPlugin {
                                 if (!$isDeleted) $tags[$s] = JBETOLO_EMPTYTAG;
                         }
                 }
-
+                
                 // resources to be deleted are removed from found ones
                 if ($deleteSrcs) {
                         foreach ($deleteSrcs as $d) {

@@ -697,14 +697,14 @@ class jbetoloHelper {
                 if (preg_match("|<link[^>]+title=[\"\']([^\"\']+)[\"\'][^>]+[/]?>((.*)</[^>]+>)?|Ui", $tag, $m)) {
                         $media = explode(',', strtolower($m[1]));
                         sort($media);
-                        $attr .= ':'.$m[1];
+                        $attr .= '%%%'.$m[1];
                 }
 
                 return $attr;
         }
 
         public static function returnAttributes($attr) {
-                $attr = explode(':', $attr);
+                $attr = explode('%%%', $attr);
                 return ' media="' . $attr[0] . '"' . (count($attr) > 1 ? ' title="' . $attr[1] . '" ' : '');
         }
 
@@ -883,7 +883,7 @@ class jbetoloJS {
                 
                 // If email cloaking plugin is enabled we shouldn't move away the code rendered by it
                 if (JPluginHelper::isEnabled('content', 'emailcloak')) {
-                        $asis = (empty($asis) ? '' : ',') . 'var prefix';
+                        $asis .= (empty($asis) ? '' : ',') . 'var prefix';
                 }
                 
                 $asis = empty($asis) ? false : explode(',', $asis);
@@ -1954,7 +1954,7 @@ class jbetoloFileHelper {
                                                                 "\n" . '<script type="text/javascript" src="' . $src . '"></script>';
                                                 } else if ($type == 'css') {
                                                         $attrs = jbetoloHelper::returnAttributes($attr);
-
+                                                        
                                                         $excl_css_imports .=
                                                                 "\n" . '<link rel="stylesheet" type="text/css" href="' . $src . '" ' . $attrs . ' />';
                                                 }
