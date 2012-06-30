@@ -1171,6 +1171,9 @@ class jbetoloFileHelper {
                                         if ($f) unset($customOrder[$f[0]]);
                                         
                                         $moos[] = $file;
+                                        
+                                        if (strpos($file, 'mootools-core') !== false) array_unshift($moos, $file);
+                                        else $moos[] = $file;
                                 }
                         }
                         
