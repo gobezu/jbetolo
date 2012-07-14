@@ -943,6 +943,21 @@ class jbetoloJS {
 
 class jbetoloCSS {
         private static $contents, $files, $root, $cdn_merged, $deleteSrcs;
+        
+        private static function replace(&$css) {
+                $from = trim(plgSystemJBetolo::param('css_replace_from'));
+
+                if (empty($from)) return;
+
+                $from = explode("\n", $from);
+
+                $to = trim(plgSystemJBetolo::param('css_replace_to'));
+                $to = explode("\n", $to);
+
+                if (count($to) != count($from)) $to = array_fill(0, count($from), $to[0]);
+
+                $css = str_replace($from, $to, $css);
+        }
 
         public static function build($files, $attrs, $is_generate_file = true) {
                 if (is_string($files)) $files = array($files);
@@ -1008,6 +1023,8 @@ class jbetoloCSS {
                 );
 
                 $content = (JBETOLO_DEBUG || JBETOLO_DEBUG_FILENAME ? "/** JBF: $file **/\n" : '') . $content;
+                
+                self::replace($content);
 
                 self::$contents[] = array('file' => $file, 'content' => $content);
                 self::$files[] = $file;
@@ -1438,7 +1455,6 @@ class jbetoloFileHelper {
                 $cdn = false
                 ) {
                 $path = $call;
-                
                 if (jbetoloHelper::beginWith($path, JBETOLO_URI_BASE)) {
                         $path = str_ireplace(JBETOLO_URI_BASE, '', $path);
                 } else if (jbetoloHelper::beginWith($path, JBETOLO_URI_CDN)) {
@@ -1805,7 +1821,7 @@ class jbetoloFileHelper {
                                                         $delete_merged_file = false;
 
                                                         foreach ($_src_files as $s => $src_file) {
-                                                                if ($type == 'js' || $attr == $indexes['css'][$s]['attr']) {
+                                                                if ($type == 'js' || isset($indexes['css'][$s]['attr']) && $attr == $indexes['css'][$s]['attr']) {
                                                                         if (!in_array($src_file, $rec['srcs'])) {
                                                                                 $found_files[] = $src_file;
                                                                                 $delete_merged_file = true;

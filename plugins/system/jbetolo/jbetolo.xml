@@ -83,6 +83,9 @@
                                 <field name="css_datauri" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_DATAURI_LBL" description="PLG_JBETOLO_CSS_DATAURI_DESC" />
                                 <field name="css_datauri_files" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_DATAURI_FILES_LBL" description="PLG_JBETOLO_CSS_DATAURI_FILES_DESC" />
                                 <field name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
+				<field name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
+				<field name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
+                                
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_JS">
                                 <field name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
@@ -288,6 +291,8 @@
                 <param name="css_datauri" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_DATAURI_LBL" description="PLG_JBETOLO_CSS_DATAURI_DESC" />
 		<param name="css_datauri_files" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_DATAURI_FILES_LBL" description="PLG_JBETOLO_CSS_DATAURI_FILES_DESC" />
                 <param name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
+                <param name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
+                <param name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
 
                 <param name="spacer_js" type="spacer" default="PLG_JBETOLO_JS_SPACER" />
                 <param name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
