@@ -290,7 +290,7 @@ class jbetoloHelper {
                 define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
                 define('JBETOLO_JQUERY', 'jquery-1.7.2.min.js');
                 define('JBETOLO_JQUERY_UI', 'jquery-ui-1.8.22.custom.min.js');
-                 define('JBETOLO_JQUERY_UI_CSS', 'jquery-ui-1.8.22.custom.css');
+                define('JBETOLO_JQUERY_UI_CSS', 'jquery-ui-1.8.22.custom.css');
                 
                 if (plgSystemJbetolo::$allowAll) {
                         define('JBETOLO_CACHE_DIR', JPATH_SITE . '/cache/jbetolo/');
