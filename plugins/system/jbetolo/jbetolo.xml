@@ -85,7 +85,10 @@
                                 <field name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
 				<field name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
 				<field name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
-                                
+                                <field name="add_local_jquery_ui_css" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>                                
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_JS">
                                 <field name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
@@ -140,6 +143,10 @@
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
+                                <field name="add_local_jquery_ui" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>                                
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_EXCLUDE_DELETE">
                                 <field name="skip_dynamic" type="radio" default="1" label="PLG_JBETOLO_SKIP_DYNAMIC_LBL" description="PLG_JBETOLO_SKIP_DYNAMIC_DESC">
@@ -293,6 +300,10 @@
                 <param name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
                 <param name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
                 <param name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
+                <param name="add_local_jquery_ui_css" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
+                        <option value="1">PLG_JBETOLO_YES</option>
+                        <option value="0">PLG_JBETOLO_NO</option>
+                </param>                
 
                 <param name="spacer_js" type="spacer" default="PLG_JBETOLO_JS_SPACER" />
                 <param name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
@@ -347,6 +358,10 @@
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
+                <param name="add_local_jquery_ui" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
+                        <option value="1">PLG_JBETOLO_YES</option>
+                        <option value="0">PLG_JBETOLO_NO</option>
+                </param>                
 
                 <param name="spacer_exclude_delete" type="spacer" default="PLG_JBETOLO_EXCLUDE_DELETE_SPACER" />
                 <param name="spacer_css_js" type="spacer" default="" label="PLG_JBETOLO_CSSANDJS" />

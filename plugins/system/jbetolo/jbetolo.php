@@ -190,7 +190,6 @@ class plgSystemJBetolo extends JPlugin {
                 $doctype = $document->getType();
 
                 if ($doctype != 'html') {
-                        
                         return true;
                 }
 
@@ -421,7 +420,7 @@ class plgSystemJBetolo extends JPlugin {
                         $indexes[] = array('src' => $src, 'tag' => $tags[$s], 'srci' => '', 'media' => 'screen');
 
                         $src = jbetoloFileHelper::normalizeCall($src, false, false, true, $type);
-
+                        
                         if ($src) {
                                 $asDynamic = jbetoloFileHelper::isSkippedAsDynamic($src);
 
@@ -430,7 +429,7 @@ class plgSystemJBetolo extends JPlugin {
                                 } else {
                                         $shouldIgnore = true;
                                 }
-
+                                
                                 if ($type == 'css') {
                                         $attr = jbetoloHelper::extractAttributes($tags[$s]);
                                         $indexes[$s]['attr'] = $attr;
@@ -498,15 +497,23 @@ class plgSystemJBetolo extends JPlugin {
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY;
                                 plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
+                                
+                                if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
+                                        $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI;
+                                }
                         }
                         
                         jbetoloJS::setJqueryFile($srcs, $_excludedSrcs);
+                } else if ($type == 'css') {
+                        if (plgSystemJBetolo::param('add_local_jquery_ui_css', 0)) {
+                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS;
+                        }                              
                 }
                 
                 // apply merging ordering 
                 $orderedSrcs = jbetoloFileHelper::customOrder($srcs, $type);
                 $orderedExcludedSrcs = jbetoloFileHelper::customOrder($excludedSrcs, $type, $_excludedSrcs);
-
+                
                 return array($orderedSrcs, $orderedExcludedSrcs, $tags, $conds, $comments, $indexes);
         }
 

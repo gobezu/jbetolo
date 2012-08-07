@@ -289,6 +289,8 @@ class jbetoloHelper {
                 define('JBETOLO_URI_BASE', $uri);
                 define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
                 define('JBETOLO_JQUERY', 'jquery-1.7.2.min.js');
+                define('JBETOLO_JQUERY_UI', 'jquery-ui-1.8.22.custom.min.js');
+                 define('JBETOLO_JQUERY_UI_CSS', 'jquery-ui-1.8.22.custom.css');
                 
                 if (plgSystemJbetolo::$allowAll) {
                         define('JBETOLO_CACHE_DIR', JPATH_SITE . '/cache/jbetolo/');
@@ -1198,29 +1200,44 @@ class jbetoloFileHelper {
                         $jquery = '';
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
                                 $jquery = (empty($moos) ? '' : ',') . JBETOLO_JQUERY;
+                                
+                                if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
+                                        $jquery .= ',' . JBETOLO_JQUERY_UI;
+                                }
+                                
                         }
                         $customOrder = implode(',', $moos).$jquery.($customOrder ? ','  . $customOrder : '');
                 }
                 
                 if (!empty($customOrder)) {
                         $customOrder = explode(',', $customOrder);
+                        $lastSrcs = array();
 
                         foreach ($customOrder as $co) {
+                                $isLast = jbetoloHelper::endWith($co, '*');
+                                
+                                if ($isLast) $co = str_replace('*', '', $co);
+                                
                                 $_co = jbetoloFileHelper::normalizeCall($co);
 
-                                if ($_co !== false) {
-                                        $co = $_co;
-                                }
+                                if ($_co !== false) $co = $_co;
 
                                 $f = jbetoloFileHelper::fileInArray($co, $index ? $index : $files);
                                 
                                 if ($f) {
-                                        $orderedSrcs[] = $index ? $files[$f[1]] : $f[1];
+                                        if ($isLast) {
+                                                $lastSrcs[] = $index ? $files[$f[1]] : $f[1];
+                                        } else {
+                                                $orderedSrcs[] = $index ? $files[$f[1]] : $f[1];
+                                        }
+                                        
                                         unset($files[$f[$index ? 1 : 0]]);
                                 }
                         }
-
+                        
                         $orderedSrcs = array_merge($orderedSrcs, $index ? array_values($files) : $files);
+                        
+                        if (!empty($lastSrcs)) $orderedSrcs = array_merge($orderedSrcs, $lastSrcs);
                 } else {
                         $orderedSrcs = $files;
                 }
