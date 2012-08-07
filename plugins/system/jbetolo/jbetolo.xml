@@ -85,7 +85,7 @@
                                 <field name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
 				<field name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
 				<field name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
-                                <field name="add_local_jquery_ui_css" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
+                                <field name="add_local_jquery_ui_css" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>                                
@@ -139,11 +139,11 @@
                                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                                 </field>
                                 <field name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
-                                <field name="add_local_jquery" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
+                                <field name="add_local_jquery" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
-                                <field name="add_local_jquery_ui" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
+                                <field name="add_local_jquery_ui" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>                                
@@ -300,7 +300,7 @@
                 <param name="css_datauri_max" type="text" cols="40" default="15000" label="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_LBL" description="PLG_JBETOLO_CSS_DATAURI_MAXSIZE_DESC" />
                 <param name="css_replace_from" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_FROM_LBL" description="PLG_JBETOLO_CSS_REPLACE_FROM_DESC" />
                 <param name="css_replace_to" type="textarea" cols="40" default="" label="PLG_JBETOLO_CSS_REPLACE_TO_LBL" description="PLG_JBETOLO_CSS_REPLACE_TO_DESC" />
-                <param name="add_local_jquery_ui_css" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
+                <param name="add_local_jquery_ui_css" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>                
@@ -354,11 +354,11 @@
                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                 </param>
                 <param name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
-                <param name="add_local_jquery" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
+                <param name="add_local_jquery" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
-                <param name="add_local_jquery_ui" type="radio" default="1" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
+                <param name="add_local_jquery_ui" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>                
