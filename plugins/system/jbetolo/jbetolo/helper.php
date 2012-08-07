@@ -1183,7 +1183,7 @@ class jbetoloFileHelper {
                         $_files = !empty($index) ? $index : $files;
                         
                         foreach ($_files as $file) {
-                                if (preg_match('#mootools-(core|more){1}(\-[\d\.]+){0,1}\.js$#i', $file)) {
+                                if (preg_match('#mootools-(core|more){1}(\-[\d\.]+){0,1}\.js$#i', $file) || preg_match('#mootools\.js$#i', $file)) {
                                         $b = basename($file);
                                         $f = jbetoloFileHelper::fileInArray($b, $customOrder);
                                         
