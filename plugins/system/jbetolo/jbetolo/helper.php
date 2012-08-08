@@ -706,7 +706,10 @@ class jbetoloHelper {
         }
 
         public static function returnAttributes($attr) {
+                if (!$attr) return '';
+                
                 $attr = explode('%%%', $attr);
+                
                 return ' media="' . $attr[0] . '"' . (count($attr) > 1 ? ' title="' . $attr[1] . '" ' : '');
         }
 
@@ -961,7 +964,7 @@ class jbetoloCSS {
                 $css = str_replace($from, $to, $css);
         }
 
-        public static function build($files, $attrs, $is_generate_file = true) {
+        public static function build($files, $attrs, $is_generate_file = true, $index = array()) {
                 if (is_string($files)) $files = array($files);
 
                 $categorized = array();
@@ -973,8 +976,13 @@ class jbetoloCSS {
                         self::$root = null;
                         self::$contents = self::$files = array();
                         self::load($file);
+                        $attr = '';
+                        
+                        if (!empty($index)) {
+                                
+                        }
 
-                        $attr = $attrs[$f];
+                        if (empty($attr)) $attr = $attrs[$f];
 
                         if (is_array($attr))
                                 $attr = implode(',', $attr);
@@ -1181,7 +1189,7 @@ class jbetoloFileHelper {
                         $customOrder = explode(',', $customOrder);
                         $moos = array();
                         $_files = !empty($index) ? $index : $files;
-                        
+
                         foreach ($_files as $file) {
                                 if (preg_match('#mootools-(core|more){1}(\-[\d\.]+){0,1}\.js$#i', $file) || preg_match('#mootools\.js$#i', $file)) {
                                         $b = basename($file);
@@ -1238,6 +1246,8 @@ class jbetoloFileHelper {
                         $orderedSrcs = array_merge($orderedSrcs, $index ? array_values($files) : $files);
                         
                         if (!empty($lastSrcs)) $orderedSrcs = array_merge($orderedSrcs, $lastSrcs);
+                        
+                        $orderedSrcs = array_filter($orderedSrcs);
                 } else {
                         $orderedSrcs = $files;
                 }

@@ -404,7 +404,7 @@ class plgSystemJBetolo extends JPlugin {
                         $tags = array_values($tags);
                 }
 
-                $excludedSrcs = $_excludedSrcs = $srcs = $indexes = array();
+                $excludedSrcs = $_excludedSrcs = $srcs = $indexes = $srcsIndexes = array();
                 
                 // prepare required input for the merging by processing each found resource
                 // 1. separate the excluded ones by considering the choosen merging method
@@ -438,6 +438,7 @@ class plgSystemJBetolo extends JPlugin {
                                 if (!$shouldIgnore && !$asDynamic) {
                                         $srcs[] = $src;
                                         $indexes[$s]['srci'] = count($srcs) - 1;
+                                        $srcsIndexes[$src] = $indexes[$s];
                                 } else {
                                         $isDeleted = false;
 
@@ -488,6 +489,7 @@ class plgSystemJBetolo extends JPlugin {
                                 $f = jbetoloFileHelper::fileInArray($d, $srcs);
 
                                 if ($f) {
+                                        unset($srcsIndexes[$srcs[$f[0]]]);
                                         unset($srcs[$f[0]]);
                                 }
                         }
@@ -496,10 +498,24 @@ class plgSystemJBetolo extends JPlugin {
                 if ($type == 'js') {
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY;
+                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY] = 
+                                        array(
+                                            'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY, 
+                                            'tag' => '',
+                                            'srci' => '', 
+                                            'media' => 'screen'
+                                        );
                                 plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
                                 
                                 if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
                                         $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI;
+                                        $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI] = 
+                                                array(
+                                                    'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI, 
+                                                    'tag' => '',
+                                                    'srci' => '', 
+                                                    'media' => 'screen'
+                                                );
                                 }
                         }
                         
@@ -507,11 +523,19 @@ class plgSystemJBetolo extends JPlugin {
                 } else if ($type == 'css') {
                         if (plgSystemJBetolo::param('add_local_jquery_ui_css', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS;
+                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS] = 
+                                        array(
+                                            'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS, 
+                                            'tag' => '',
+                                            'srci' => '', 
+                                            'media' => 'screen'
+                                        );
                         }                              
                 }
                 
                 // apply merging ordering 
-                $orderedSrcs = jbetoloFileHelper::customOrder($srcs, $type);
+                $orderedSrcs = jbetoloFileHelper::customOrder($srcsIndexes, $type, $srcs);
+                $orderedSrcs = jbetoloHelper::getArrayValues($orderedSrcs, 'src');
                 $orderedExcludedSrcs = jbetoloFileHelper::customOrder($excludedSrcs, $type, $_excludedSrcs);
                 
                 return array($orderedSrcs, $orderedExcludedSrcs, $tags, $conds, $comments, $indexes);
