@@ -987,10 +987,9 @@ class jbetoloCSS {
                                 }
                         }
 
-                        if (empty($attr)) $attr = $attrs[$f];
+                        if (empty($attr) && !empty($attrs)) $attr = $attrs[$f];
 
-                        if (is_array($attr))
-                                $attr = implode(',', $attr);
+                        if (is_array($attr)) $attr = implode(',', $attr);
 
                         if (!isset($categorized[$attr])) {
                                 $categorized[$attr] = array('files' => array(), 'contents' => array(), 'srcs' => array());
@@ -1086,10 +1085,12 @@ class jbetoloCSS {
                                                 $path = jbetoloFileHelper::normalizeTOCDN(self::$root . '/' . $match);
                                         }
                                 } else {
-                                        $path = jbetoloFileHelper::normalizeCall($base . '/' . $match, false, false);
+                                        $abs = plgSystemJBetolo::param('css_map_resources_absolute', false);
+                                        
+                                        $path = jbetoloFileHelper::normalizeCall($base . '/' . $match, $abs, false);
 
                                         if (!$path) {
-                                                $path = jbetoloFileHelper::normalizeCall(self::$root . '/' . $match, false, false);
+                                                $path = jbetoloFileHelper::normalizeCall(self::$root . '/' . $match, $abs, false);
                                         }
                                 }
                                 

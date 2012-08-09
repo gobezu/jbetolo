@@ -73,6 +73,10 @@
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
+                                <field name="css_map_resources_absolute" type="radio" default="0" label="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_LBL" description="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>                                
                                 <field name="css_custom_order" type="textarea" rows="3" cols="40" default="template.css" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></field>
                                 <field name="css_compress_resources" type="text" rows="3" size="70" default="eot,ttf,svg,otf" label="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_LBL" description="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_DESC" />
                                 <field name="css_datauri_allow_in" type="list" default="all" label="PLG_JBETOLO_CSS_DATAURI_ENABLE_LBL" description="PLG_JBETOLO_CSS_DATAURI_ENABLE_DESC">
@@ -288,6 +292,10 @@
                         <option value="1">PLG_JBETOLO_YES</option>
                         <option value="0">PLG_JBETOLO_NO</option>
                 </param>
+                <param name="css_map_resources_absolute" type="radio" default="0" label="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_LBL" description="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_DESC">
+                        <option value="1">PLG_JBETOLO_YES</option>
+                        <option value="0">PLG_JBETOLO_NO</option>
+                </param>                                
                 <param name="css_custom_order" type="textarea" rows="3" cols="40" default="template.css" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></param>
                 <param name="css_compress_resources" type="text" rows="3" size="70" default="eot,ttf,svg,otf" label="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_LBL" description="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_DESC" />
                 <param name="css_datauri_allow_in" type="list" default="all" label="PLG_JBETOLO_CSS_DATAURI_ENABLE_LBL" description="PLG_JBETOLO_CSS_DATAURI_ENABLE_DESC">
