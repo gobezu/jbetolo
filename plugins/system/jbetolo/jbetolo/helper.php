@@ -693,7 +693,7 @@ class jbetoloHelper {
                         sort($media);
                         $attr .= implode(',', $media);
                 } else {
-                        $attr .= 'screen';
+                        $attr .= '';
                 }
 
                 if (preg_match("|<link[^>]+title=[\"\']([^\"\']+)[\"\'][^>]+[/]?>((.*)</[^>]+>)?|Ui", $tag, $m)) {
@@ -979,7 +979,12 @@ class jbetoloCSS {
                         $attr = '';
                         
                         if (!empty($index)) {
-                                
+                                foreach ($index as $ind) {
+                                        if ($ind['src'] == $file) {
+                                                $attr = $ind['attr'];
+                                                break;
+                                        }
+                                }
                         }
 
                         if (empty($attr)) $attr = $attrs[$f];
@@ -1204,8 +1209,11 @@ class jbetoloFileHelper {
                                 }
                         }
                         
+                        $moos = array_unique($moos);
+                        
                         $customOrder = implode(',', $customOrder);
                         $jquery = '';
+                        
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
                                 $jquery = (empty($moos) ? '' : ',') . JBETOLO_JQUERY;
                                 
@@ -1220,7 +1228,7 @@ class jbetoloFileHelper {
                 if (!empty($customOrder)) {
                         $customOrder = explode(',', $customOrder);
                         $lastSrcs = array();
-
+                        
                         foreach ($customOrder as $co) {
                                 $isLast = jbetoloHelper::endWith($co, '*');
                                 
@@ -1904,9 +1912,9 @@ class jbetoloFileHelper {
 
                                                 $arr[$app][$tmpl][$type] =
                                                         $type == 'css' ?
-                                                        jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
+                                                        jbetoloCSS::build($_src_files, '', true, $indexes['css']) :
                                                         jbetoloJS::build($_src_files);
-
+                                                
                                                 $paramHasChanged = true;
                                         }
                                         
@@ -1936,7 +1944,7 @@ class jbetoloFileHelper {
                                         if ($paramHasChanged) {
                                                 $arr[$app][$tmpl][$type][$files_key] =
                                                         $type == 'css' ?
-                                                        jbetoloCSS::build($_src_files, jbetoloHelper::getArrayValues($indexes['css'], 'attr')) :
+                                                        jbetoloCSS::build($_src_files, '', true, $indexes['css']) :
                                                         jbetoloJS::build($_src_files)
                                                         ;
                                         }
@@ -1967,7 +1975,7 @@ class jbetoloFileHelper {
                                         }
                                 }
                         }
-
+                        
                         $gzip_excluded = plgSystemJBetolo::param($type . '_gzip_excluded');
                         $minify_excluded = plgSystemJBetolo::param($type . '_minify_excluded');
 

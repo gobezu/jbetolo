@@ -417,7 +417,7 @@ class plgSystemJBetolo extends JPlugin {
                 }
                 
                 foreach ($matches[1] as $s => $src) {
-                        $indexes[] = array('src' => $src, 'tag' => $tags[$s], 'srci' => '', 'media' => 'screen');
+                        $indexes[] = array('src' => $src, 'tag' => $tags[$s], 'srci' => '');
 
                         $src = jbetoloFileHelper::normalizeCall($src, false, false, true, $type);
                         
@@ -494,7 +494,7 @@ class plgSystemJBetolo extends JPlugin {
                                 }
                         }
                 }
-
+                
                 if ($type == 'js') {
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY;
@@ -502,8 +502,7 @@ class plgSystemJBetolo extends JPlugin {
                                         array(
                                             'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY, 
                                             'tag' => '',
-                                            'srci' => '', 
-                                            'media' => 'screen'
+                                            'srci' => ''
                                         );
                                 plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
                                 
@@ -513,8 +512,7 @@ class plgSystemJBetolo extends JPlugin {
                                                 array(
                                                     'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI, 
                                                     'tag' => '',
-                                                    'srci' => '', 
-                                                    'media' => 'screen'
+                                                    'srci' => ''
                                                 );
                                 }
                         }
@@ -527,8 +525,7 @@ class plgSystemJBetolo extends JPlugin {
                                         array(
                                             'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS, 
                                             'tag' => '',
-                                            'srci' => '', 
-                                            'media' => 'screen'
+                                            'srci' => ''
                                         );
                         }                              
                 }
@@ -536,6 +533,7 @@ class plgSystemJBetolo extends JPlugin {
                 // apply merging ordering 
                 $orderedSrcs = jbetoloFileHelper::customOrder($srcsIndexes, $type, $srcs);
                 $orderedSrcs = jbetoloHelper::getArrayValues($orderedSrcs, 'src');
+                
                 $orderedExcludedSrcs = jbetoloFileHelper::customOrder($excludedSrcs, $type, $_excludedSrcs);
                 
                 return array($orderedSrcs, $orderedExcludedSrcs, $tags, $conds, $comments, $indexes);
