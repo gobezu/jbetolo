@@ -81,6 +81,14 @@ class plgSystemJBetolo extends JPlugin {
                 //jbetoloHelper::handleChanges();
 
                 $_comments = $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
+                
+                if (plgSystemJBetolo::param('cdnjs', false)) {
+                        $jss = plgSystemJBetolo::param('cdnjs', false);
+                        foreach ($jss as &$js) {
+                                $js = '<script type="text/javascript" src="'.$js.'"></script>';
+                        }
+                        jbetoloFileHelper::placeTags($body, $jss, 'js');
+                }
 
                 list($_srcs['css'], $_esrcs['css'], $_tags['css'], $_conds['css'], $_comments['css'], $_indexes['css']) =
                         $this->parseBody($body, 'css');
@@ -497,20 +505,21 @@ class plgSystemJBetolo extends JPlugin {
                 
                 if ($type == 'js') {
                         if (plgSystemJBetolo::param('add_local_jquery', 0)) {
-                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY;
-                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY] = 
+                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY;
+                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY] = 
                                         array(
-                                            'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY, 
+                                            'src' => JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY, 
                                             'tag' => '',
                                             'srci' => ''
                                         );
+                                
                                 plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
                                 
                                 if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
-                                        $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI;
-                                        $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI] = 
+                                        $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI;
+                                        $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI] = 
                                                 array(
-                                                    'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI, 
+                                                    'src' => JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI, 
                                                     'tag' => '',
                                                     'srci' => ''
                                                 );

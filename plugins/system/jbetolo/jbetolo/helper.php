@@ -288,7 +288,7 @@ class jbetoloHelper {
 
                 define('JBETOLO_URI_BASE', $uri);
                 define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
-                define('JBETOLO_JQUERY', 'jquery-1.7.2.min.js');
+                define('JBETOLO_JQUERY', plgSystemJBetolo::param('add_local_jquery_version', 'jquery-1.7.2.min').'.js');
                 define('JBETOLO_JQUERY_UI', 'jquery-ui-1.8.22.custom.min.js');
                 define('JBETOLO_JQUERY_UI_CSS', 'jquery-ui-1.8.22.custom.css');
                 
@@ -2027,8 +2027,8 @@ class jbetoloFileHelper {
                         $js_imports, 
                         'js', 
                         $js_placement, 
-                        $external_custom_orders['js']['before'], 
-                        $external_custom_orders['js']['after']
+                        isset($external_custom_orders['js']) ? $external_custom_orders['js']['before'] : array(), 
+                        isset($external_custom_orders['js']['after']) ? $external_custom_orders['js']['after'] : array()
                 );
                 
                 jbetoloFileHelper::placeTags($body, $excl_js_imports, 'js', $js_placement);
