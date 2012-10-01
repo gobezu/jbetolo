@@ -39,7 +39,7 @@ class Com_JbetoloInstallerScript {
                 $aerror = array();
                 $error = false;
                 $db = JFactory::getDbo();
-
+                
                 for ($i = 0; $i < count($extensions); $i++) {
                         $extension =& $extensions[$i];
 
@@ -161,15 +161,15 @@ class Com_JbetoloInstallerScript {
                 $add = $installer->manifest->xpath('additional');
                 
                 if ($add) $add = $add[0];
-
+                
                 $extensions = array();
 
-                if ((is_a($add, 'JSimpleXMLElement') || is_a($add, 'JXMLElement')) && count($add->children())) {
+                if ((is_a($add, 'JSimpleXMLElement') || is_a($add, 'JXMLElement') || is_a($add, 'SimpleXMLElement')) && count($add->children())) {
                         $exts =& $add->children();
                         foreach ($exts as $ext) {
                                 $extensions[] = array(
                                         'ename' => (string) $ext->attributes()->name,
-                                        'name' => (string) $ext->data(),
+                                        'name' => (string) (is_a($add, 'SimpleXMLElement') ? $ext : $ext->data()),
                                         'type' => $ext->getName(),
                                         'folder' => $installer->getPath('source').'/'.(string) $ext->attributes()->folder,
                                         'installer' => new JInstaller(),

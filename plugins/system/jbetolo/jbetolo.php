@@ -557,9 +557,15 @@ class plgSystemJBetolo extends JPlugin {
 
                 if (!isset($params)) {
                         $plg = JPluginHelper::getPlugin('system', 'jbetolo');
+                        
                         if (!$plg) return;
-                        jimport('joomla.html.parameter');
-                        $params = new JParameter($plg->params);
+                        
+                        if (version_compare(JVERSION, '2.5', 'ge')) {
+                                $params = new JRegistry($plg->params);
+                        } else {
+                                jimport('joomla.html.parameter');
+                                $params = new JParameter($plg->params);
+                        }
                 }
 
                 if ($dir == 'set') {
