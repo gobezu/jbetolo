@@ -1174,16 +1174,16 @@ class jbetoloFileHelper {
         }
         public static function getServingURL($file, $type, $gz, $age = null) {
                 if (JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged')) {
-                        return jbetoloFileHelper::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
+                        return self::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
                 } else if ($gz) {
-                        if (jbetoloFileHelper::allowRewrite('serve')) {
+                        if (self::allowRewrite('serve')) {
                                 $file = $gz.'_'.$age.'_'.$type.'_'.$file;
                                 return JUri::base() . 'cache/jbetolo/' . $file;
                         } else {
                                 return JUri::base() . 'index.php?option=com_jbetolo&amp;task=serve&amp;gz=1&amp;file=' . $file . '&amp;type=' . $type . ($age ? '&amp;ag=' . $age : '');
                         }
                 } else {
-                        return jbetoloFileHelper::normalizeCall(JBETOLO_CACHE_DIR.$file, true, false);
+                        return self::normalizeCall(JBETOLO_CACHE_DIR.$file, true, false);
                 }
         }
 
@@ -1343,7 +1343,7 @@ class jbetoloFileHelper {
                         }
 
                         if (!JBETOLO_CDN_MAP) {
-                                jbetoloFileHelper::allowRewrite('create', JBETOLO_CACHE_DIR);
+                                self::allowRewrite('create', JBETOLO_CACHE_DIR);
                         }
                 }
                 
@@ -1370,7 +1370,7 @@ class jbetoloFileHelper {
                                         $dst .= '.htaccess';
 
                                         if (!JFile::exists($dst)) {
-                                                $src = dirname(__FILE__). '/assets/.htaccess_' . $task;
+                                                $src = dirname(__FILE__). '/assets/htaccess_' . $task.'.txt';
 
                                                 if (JFile::exists($src)) {
                                                         $content = JFile::read($src);
