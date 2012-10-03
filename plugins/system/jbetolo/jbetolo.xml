@@ -152,7 +152,7 @@
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>                                
-                                <field name="cdnjs" type="cdnjs" default="" multiple="true" label="PLG_JBETOLO_CDNJS_LBL" />
+                                <field name="cdnjs" type="cdnjs" default="" multiple="true" label="PLG_JBETOLO_CDNJS_LBL" description="PLG_JBETOLO_CDNJS_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_EXCLUDE_DELETE">
                                 <field name="skip_dynamic" type="radio" default="1" label="PLG_JBETOLO_SKIP_DYNAMIC_LBL" description="PLG_JBETOLO_SKIP_DYNAMIC_DESC">

@@ -610,7 +610,7 @@ class jbetoloHelper {
                 jimport('joomla.registry.registry');
                 $reg = new JRegistry();
 
-                $setting = jbetoloHelper::settingsLocation($setting);
+                $setting = self::settingsLocation($setting);
                 
                 if ($setting) {
                         $setting = JFile::read($setting);
@@ -1172,7 +1172,7 @@ class jbetoloFileHelper {
                 return JFile::getExt($file);
                 //return substr($file, strripos($file, '.') + 1);
         }
-        function getServingURL($file, $type, $gz, $age = null) {
+        public static function getServingURL($file, $type, $gz, $age = null) {
                 if (JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged')) {
                         return jbetoloFileHelper::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
                 } else if ($gz) {
@@ -1297,11 +1297,11 @@ class jbetoloFileHelper {
          * @param $file_name that will end_with any of the given files in $exclude_list
          */
         public static function isFileExcluded($file_name, $exclude_list) {
-                return jbetoloFileHelper::isIncluded($file_name, $exclude_list);
+                return self::isIncluded($file_name, $exclude_list);
         }
 
         public static function isFileIncluded($file_name, $include_list) {
-                return jbetoloFileHelper::isIncluded($file_name, $include_list);
+                return self::isIncluded($file_name, $include_list);
         }
 
         public static function isIncluded($el, $list) {
@@ -1537,7 +1537,7 @@ class jbetoloFileHelper {
                         }
                 }
 
-                $isPHP = jbetoloFileHelper::isPHP($path);
+                $isPHP = self::isPHP($path);
                 
                 if ($is_file_path && $isPHP && !$passPHP) {
                         return false;
@@ -1566,15 +1566,16 @@ class jbetoloFileHelper {
         }
 
         public static function isSkippedAsDynamic($call) {
-                return jbetoloFileHelper::isPHP($call) && (bool) plgSystemJBetolo::param('skip_dynamic');
+                return self::isPHP($call) && (bool) plgSystemJBetolo::param('skip_dynamic');
         }
 
+        // NOT USED
         function normalizeCalls(&$files, $key = '', $is_absolute = false, $is_file_path = true, $maintain_query_string = true) {
                 if (!isset($files) || count($files) <= 0)
                         return;
 
                 foreach ($files as $f => $file) {
-                        $file = jbetoloFileHelper::normalizeCall($key == '' ? $file : $file[$key], $is_absolute, $is_file_path, $maintain_query_string);
+                        $file = self::normalizeCall($key == '' ? $file : $file[$key], $is_absolute, $is_file_path, $maintain_query_string);
 
                         if ($key == '') {
                                 $files[$f] = $file;
@@ -1585,14 +1586,14 @@ class jbetoloFileHelper {
         }
 
         public static function getDirectoryName($call) {
-                $call = jbetoloFileHelper::normalizeCall($call, true, true, false, null, true, false);
+                $call = self::normalizeCall($call, true, true, false, null, true, false);
                 return dirname($call);
         }
 
         /*
          * adapted version of JURI::_cleanPath
          */
-        function cleanUpCall($path, $sep = '', $delete_query_string = false, $enforce_file_path = false) {
+        public static function cleanUpCall($path, $sep = '', $delete_query_string = false, $enforce_file_path = false) {
                 if (!$sep) {
                         $sep = '/';
                 }
@@ -1626,14 +1627,14 @@ class jbetoloFileHelper {
                         $path = $path[0];
                 }
 
-                if (!$enforce_file_path && jbetoloFileHelper::isHttpCall($path)) {
+                if (!$enforce_file_path && self::isHttpCall($path)) {
                         $path = preg_replace('/(http[s]?:)([\/]{1})([^\/])/i', '\1\2/\3', $path);
                 }
 
                 return $path;
         }
 
-        function isHttpCall($call) {
+        private static function isHttpCall($call) {
                 $_call = jbetoloFileHelper::normalizeCall($call, true, false, true);
                 return stripos($_call, $call);
         }
@@ -1872,7 +1873,7 @@ class jbetoloFileHelper {
                                                         $merged_file_exists = JFile::exists($merged_file);
 
                                                         if (empty($found_files) && $merged_file_exists) {
-                                                                $are_files_changed = jbetoloFileHelper::areFilesChanged($rec['parts']);
+                                                                $are_files_changed = self::areFilesChanged($rec['parts']);
 
                                                                 if ($are_files_changed) {
                                                                         $delete_merged_file = true;
@@ -1931,7 +1932,7 @@ class jbetoloFileHelper {
                                                 $add_key = key($rec);
                                                 $rec = $rec[$add_key];
                                                 
-                                                if (jbetoloFileHelper::areFilesChanged($rec['parts'])) {
+                                                if (self::areFilesChanged($rec['parts'])) {
                                                         if (JFile::exists(JBETOLO_CACHE_DIR . $rec['merged'])) {
                                                                 JFile::delete(JBETOLO_CACHE_DIR . $rec['merged']);
                                                         }
@@ -2083,6 +2084,8 @@ class jbetoloFileHelper {
         public static function minify($type, $cont) {
                 if ($type == 'css') return self::cssMinimize($cont);
                 
+                if ($type == 'js') return self::jsMinimize($cont);
+                
                 static $id = 0;
                 
                 $path = dirname(__FILE__) . '/minify-2.1.5/min/lib/';
@@ -2119,6 +2122,11 @@ class jbetoloFileHelper {
                 );
                 
                 return $cont['content'];
+        }
+        
+        private static function jsMinimize($contents) {
+                require_once dirname(__FILE__).'/jsminplus-1.4/jsminplus.php';
+                return JSMinPlus::minify($contents);
         }
         
         private static function cssMinimize($contents) {
@@ -2210,7 +2218,8 @@ class jbetoloFileHelper {
                 }
 
                 if (JBETOLO_IS_GZ && (plgSystemJBetolo::param($type . '_gzip') || $overrideGZ)) {
-                        JFile::write($to_file, gzencode($data));
+                        $data = gzencode($data);
+                        JFile::write($to_file, $data);
                 } else {
                         JFile::write($to_file, $data);
                 }
