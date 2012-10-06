@@ -165,7 +165,7 @@ class Com_JbetoloInstallerScript {
                 $extensions = array();
 
                 if ((is_a($add, 'JSimpleXMLElement') || is_a($add, 'JXMLElement') || is_a($add, 'SimpleXMLElement')) && count($add->children())) {
-                        $exts =& $add->children();
+                        $exts = $add->children();
                         foreach ($exts as $ext) {
                                 $extensions[] = array(
                                         'ename' => (string) $ext->attributes()->name,
