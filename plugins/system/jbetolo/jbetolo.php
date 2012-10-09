@@ -55,7 +55,6 @@ class plgSystemJBetolo extends JPlugin {
         }
         
         function onAfterInitialise() {
-                self::initProfile();
         }
         
         function onAfterRender() {
@@ -110,54 +109,6 @@ class plgSystemJBetolo extends JPlugin {
                 
                 JResponse::setBody($body);
                 // jbetoloHelper::sanityCheck();
-        }
-        
-        private static $isProfiling = false;
-        
-        private static function finalizeProfile(&$body) {
-                if (!self::$isProfiling) return;
-                
-                $in = plgSystemJBetolo::param('profile', 'none');
-                $app = JFactory::getApplication()->getName();
-                
-                if (($in == 'none' || $in != $app) && $in != 'all') return;
-                
-                $profiler_namespace = 'jbetolo';
-                $xhprof_data = xhprof_disable();
-                
-                $dbtype = JFactory::getApplication()->getCfg('dbtype');
-                
-                require_once 'xhprof_lib/utils/xhprof_runs_'.$dbtype.'.php';
-                require_once "xhprof_lib/config.php";
-                $xhprof_runs = new XHProfRuns_Default($_xhprof);
-                $run_id = $xhprof_runs->save_run($xhprof_data, $profiler_namespace);
-                $profiler_url = sprintf(JURI::base().'plugins/system/jbetolo/jbetolo/xhprof/xhprof_html/index.php?run=%s&source=%s', $run_id, $profiler_namespace);
-                
-                $body = str_ireplace(
-                        '</body>', 
-                        '<a href="'. $profiler_url .'" target="_blank">Profiler output</a>' . '</body>', 
-                        $body
-                );
-                
-                self::$isProfiling = false;
-        }
-        
-        private static function initProfile() {
-                if (!in_array('xhproc', get_loaded_extensions())) return;
-                        
-                $in = plgSystemJBetolo::param('profile', 'none');
-                $app = JFactory::getApplication()->getName();
-                
-                if (($in == 'none' || $in != $app) && $in != 'all') return;
-                
-                set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__).'/jbetolo/xhprof/');
-                
-                include_once 'xhprof_lib/utils/xhprof_lib.php';
-                include_once 'xhprof_lib/utils/xhprof_runs.php';
-                
-                xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY); 
-                
-                self::$isProfiling = true;
         }
         
         public function onUserLogin($user, $options = array()) {

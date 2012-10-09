@@ -229,12 +229,6 @@
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="1">PLG_JBETOLO_YES</option>
                                 </field>
-                                <field name="profile" type="list" default="none" label="PLG_JBETOLO_PROFILE_LBL" description="PLG_JBETOLO_PROFILE_DESC">
-                                        <option value="none">PLG_JBETOLO_ALLOW_IN_NONE</option>
-                                        <option value="site">PLG_JBETOLO_ALLOW_IN_SITE</option>
-                                        <option value="administrator">PLG_JBETOLO_ALLOW_IN_ADMIN</option>
-                                        <option value="all">PLG_JBETOLO_ALLOW_IN_ALL</option>
-                                </field>
                         </fieldset>
                 </fields>
         </config>
