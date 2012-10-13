@@ -58,8 +58,8 @@ class plgSystemJBetolo extends JPlugin {
         }
         
         function onAfterRender() {
-                if (plgSystemJBetolo::dontJbetolo()) {
-                        if (!plgSystemJBetolo::dontJbetolo('cdn')) {
+                if (self::dontJbetolo()) {
+                        if (!self::dontJbetolo('cdn')) {
                                 $body = JResponse::getBody();
                                 
                                 if (jbetoloHelper::mapCDN($body)) JResponse::setBody($body);
@@ -81,8 +81,8 @@ class plgSystemJBetolo extends JPlugin {
 
                 $_comments = $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
                 
-                if (plgSystemJBetolo::param('cdnjs', false)) {
-                        $jss = plgSystemJBetolo::param('cdnjs', false);
+                if (self::param('cdnjs', false)) {
+                        $jss = self::param('cdnjs', false);
                         foreach ($jss as &$js) {
                                 $js = '<script type="text/javascript" src="'.$js.'"></script>';
                         }
@@ -99,7 +99,7 @@ class plgSystemJBetolo extends JPlugin {
 
                 jbetoloJS::moveInlineScripts($body);
                 
-                if (plgSystemJBetolo::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
+                if (self::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
                 
                 jbetoloHelper::lazyLoad($body, 2);
                 
@@ -135,7 +135,7 @@ class plgSystemJBetolo extends JPlugin {
                        
                 $app = JFactory::getApplication()->getName();
                 $user = JFactory::getUser();
-                $allowedIn = $type == 'jbetolo' ? plgSystemJBetolo::param('allow_in') : 'site';
+                $allowedIn = $type == 'jbetolo' ? self::param('allow_in') : 'site';
 
                 if (!self::$allowAll && (
                         $allowedIn == 'anonymous' && !$user->guest ||
@@ -153,17 +153,17 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 if ($type == 'cdn') {
-                        if (!(bool) plgSystemJBetolo::param('cdn_enabled', false)) {
+                        if (!(bool) self::param('cdn_enabled', false)) {
                                 return true;
                         }
                 }
 
-                $donts = plgSystemJBetolo::$donts[$type];
+                $donts = self::$donts[$type];
                 
                 if ($type == 'jbetolo') {
-			$excludeComponents = plgSystemJBetolo::param('exclude_components');
+			$excludeComponents = self::param('exclude_components');
                 } else {
-			$excludeComponents = plgSystemJBetolo::param($type . '_exclude_components');
+			$excludeComponents = self::param($type . '_exclude_components');
                 }
 
                 if (!empty($excludeComponents)) {
@@ -182,7 +182,7 @@ class plgSystemJBetolo extends JPlugin {
                         }
                 }
                 
-                $excludeURLs = plgSystemJBetolo::param('exclude_urls', array());
+                $excludeURLs = self::param('exclude_urls', array());
                 
                 if (!empty($excludeURLs)) {
                         $excludeURLs = explode(',', $excludeURLs);
@@ -214,7 +214,7 @@ class plgSystemJBetolo extends JPlugin {
                                         $match = preg_match('#'.preg_quote($url).'#', $curr);
                                 } else {
                                         foreach ($url as $k => $v) {
-                                                $val = JRequest::getVar($k, plgSystemJBetolo::$dontsEmpty);
+                                                $val = JRequest::getVar($k, self::$dontsEmpty);
                                                 if ($val != $v) {
                                                         $match = false;
                                                         break;
@@ -226,7 +226,7 @@ class plgSystemJBetolo extends JPlugin {
                         }
                 }
 
-                if (plgSystemJBetolo::checkDonts($donts)) {
+                if (self::checkDonts($donts)) {
                         return true;
                 }
 
@@ -241,13 +241,13 @@ class plgSystemJBetolo extends JPlugin {
                                 continue;
 
                         if (is_array($rule) && !in_array($rule[0], $cmds) || is_string($rule)) {
-                                $val = JRequest::getCmd($key, plgSystemJBetolo::$dontsEmpty);
+                                $val = JRequest::getCmd($key, self::$dontsEmpty);
 
                                 if (is_array($rule) && in_array($val, $rule) || is_string($rule) && $val == $rule) {
                                         return true;
                                 }
                         } else {
-                                return plgSystemJBetolo::checkDonts($rule);
+                                return self::checkDonts($rule);
                         }
                 }
 
@@ -255,17 +255,17 @@ class plgSystemJBetolo extends JPlugin {
         }
 
         private function parseBody($body, $type) {
-                $merge = plgSystemJBetolo::param($type . '_merge');
-                $gzip = JBETOLO_IS_GZ && plgSystemJBetolo::param($type . '_gzip');
-                $gzip_excluded = $gzip && plgSystemJBetolo::param($type . '_gzip_excluded');
-                $minify = JBETOLO_IS_MINIFY && plgSystemJBetolo::param($type . '_minify');
-                $minify_excluded = $minify && plgSystemJBetolo::param($type . '_minify_excluded');
+                $merge = self::param($type . '_merge');
+                $gzip = JBETOLO_IS_GZ && self::param($type . '_gzip');
+                $gzip_excluded = $gzip && self::param($type . '_gzip_excluded');
+                $minify = JBETOLO_IS_MINIFY && self::param($type . '_minify');
+                $minify_excluded = $minify && self::param($type . '_minify_excluded');
 
                 if (!$merge && !$gzip_excluded && !$minify_excluded)
                         return;
 
                 // absolutely included resources are appended to body 
-                $included = plgSystemJBetolo::param($type . '_include');
+                $included = self::param($type . '_include');
 
                 if (isset($included) && $included) {
                         $included = @explode(',', $included);
@@ -288,10 +288,10 @@ class plgSystemJBetolo extends JPlugin {
                 $excluded = $comments = $conds = $excludedSrcs = array();
 
                 // find and consider IE conditionals as excluded from merging
-                preg_match_all(plgSystemJBetolo::$conditionalTagScript[$type], $body, $condTags);
+                preg_match_all(self::$conditionalTagScript[$type], $body, $condTags);
                 $condTags = $condTags[0];
-                plgSystemJBetolo::$conditionalTags = implode('', $condTags);
-                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], plgSystemJBetolo::$conditionalTags, $matches);
+                self::$conditionalTags = implode('', $condTags);
+                preg_match_all(self::$conditionalSrcScript[$type], self::$conditionalTags, $matches);
                 
                 foreach ($matches[0] as $c => $conditional) {
                         $conds[] = jbetoloFileHelper::normalizeCall($matches[1][$c]);
@@ -299,7 +299,7 @@ class plgSystemJBetolo extends JPlugin {
                 }
                 
                 // find and exclude commented resources from merging
-                preg_match_all(plgSystemJBetolo::$commentedTagScript[$type], $body, $matches);
+                preg_match_all(self::$commentedTagScript[$type], $body, $matches);
                 
                 if (!empty($matches[0]) && !empty($condTags)) {
                         foreach ($matches[0] as $m => $match) {
@@ -308,7 +308,7 @@ class plgSystemJBetolo extends JPlugin {
                 }
                 
                 $matches = implode('', $matches[0]);
-                preg_match_all(plgSystemJBetolo::$conditionalSrcScript[$type], $matches, $matches);
+                preg_match_all(self::$conditionalSrcScript[$type], $matches, $matches);
                 
                 foreach ($matches[0] as $c => $conditional) {
                         $comments[] = jbetoloFileHelper::normalizeCall($matches[1][$c]);
@@ -317,7 +317,7 @@ class plgSystemJBetolo extends JPlugin {
                 
                 // collect resources to be excluded from merging
                 if ($merge) {
-                        $excluded = plgSystemJBetolo::param($type . '_merge_exclude');
+                        $excluded = self::param($type . '_merge_exclude');
 
                         if (isset($excluded) && $excluded) {
                                 $excluded = @explode(',', $excluded);
@@ -325,13 +325,13 @@ class plgSystemJBetolo extends JPlugin {
                                 $excluded = array();
                         }
 
-                        $excluded = array_merge($excluded, plgSystemJBetolo::$predefinedExclude[$type], $excludedSrcs);
+                        $excluded = array_merge($excluded, self::$predefinedExclude[$type], $excludedSrcs);
 
                         // Gzip operates at file level, therefore if a file is indicated to be non-gzipped
                         // and gzipping of merged file is enabled then we need to exclude it
                         // (the analogus doesn't apply for minify as merged file can contain a mix of
                         //  minified and non-minified code)
-                        $abs_excl = plgSystemJBetolo::param('gzip_exclude');
+                        $abs_excl = self::param('gzip_exclude');
 
                         if ($abs_excl && $gzip) {
                                 $abs_excl = explode(',', $abs_excl);
@@ -340,9 +340,9 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 // find all resources
-                preg_match_all(plgSystemJBetolo::$tagRegex[$type], $body, $matches);
+                preg_match_all(self::$tagRegex[$type], $body, $matches);
                 $tags = $matches[0];
-                preg_match_all(plgSystemJBetolo::$srcRegex[$type], implode('', $tags), $matches);
+                preg_match_all(self::$srcRegex[$type], implode('', $tags), $matches);
                 
                 if (count($matches[0]) != count($tags)) {
                         // Due to incorrect syntax some tags has not found corresponding source entry and will be discarded
@@ -369,7 +369,7 @@ class plgSystemJBetolo extends JPlugin {
                 // 1. separate the excluded ones by considering the choosen merging method
                 // 2. if css identify and assign correct media type
                 // 3. if resource is not locally available no further processing
-                $deleteSrcs = plgSystemJBetolo::param('delete');
+                $deleteSrcs = self::param('delete');
                 
                 if ($deleteSrcs) {
                         $deleteSrcs = explode(',', $deleteSrcs);
@@ -455,7 +455,7 @@ class plgSystemJBetolo extends JPlugin {
                 }
                 
                 if ($type == 'js') {
-                        if (plgSystemJBetolo::param('add_local_jquery', 0)) {
+                        if (self::param('add_local_jquery', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY;
                                 $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY] = 
                                         array(
@@ -464,9 +464,9 @@ class plgSystemJBetolo extends JPlugin {
                                             'srci' => ''
                                         );
                                 
-                                plgSystemJBetolo::param('js_jquery', JBETOLO_JQUERY, 'set');
+                                self::param('js_jquery', JBETOLO_JQUERY, 'set');
                                 
-                                if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
+                                if (self::param('add_local_jquery_ui', 0)) {
                                         $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI;
                                         $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI] = 
                                                 array(
@@ -479,7 +479,7 @@ class plgSystemJBetolo extends JPlugin {
                         
                         jbetoloJS::setJqueryFile($srcs, $_excludedSrcs);
                 } else if ($type == 'css') {
-                        if (plgSystemJBetolo::param('add_local_jquery_ui_css', 0)) {
+                        if (self::param('add_local_jquery_ui_css', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS;
                                 $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS] = 
                                         array(
@@ -545,7 +545,7 @@ class plgSystemJBetolo extends JPlugin {
                                 $params = $value;
                                 $files = $params->get('files');
                         } else {
-                                if (in_array($name, plgSystemJBetolo::$serializableParams)) {
+                                if (in_array($name, self::$serializableParams)) {
                                         $value = serialize($value);
                                 }
                                 
@@ -566,7 +566,7 @@ class plgSystemJBetolo extends JPlugin {
                                 unset($_params[$name]);
                 } else {
                         if (!isset($_params[$name]) ||
-                                (in_array($name, plgSystemJBetolo::$serializableParams) && !is_array($_params[$name]))) {
+                                (in_array($name, self::$serializableParams) && !is_array($_params[$name]))) {
                                 if ($name == 'files') {
                                         $files = JFile::exists(JBETOLO_FILES_CACHE) ? JFile::read(JBETOLO_FILES_CACHE) : '';
                                         $params->set('files', $files);
@@ -583,7 +583,7 @@ class plgSystemJBetolo extends JPlugin {
                                         $_params[$name] = $value;
                                 }
 
-                                if (in_array($name, plgSystemJBetolo::$serializableParams)) {
+                                if (in_array($name, self::$serializableParams)) {
                                         if (isset($_params[$name]) && !empty($_params[$name])) {
                                                 $_params[$name] = @unserialize($_params[$name]);
                                         }
