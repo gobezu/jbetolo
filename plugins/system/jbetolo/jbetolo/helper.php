@@ -8,6 +8,12 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 class jbetoloHelper {
+        public static function browser($browser) {
+                if ($browser == 'ie' || $browser == 'internet explorer') return 'msie';
+                else if ($browser == 'ff' || $browser == 'firefox') return 'mozilla';
+                return $browser;
+        }
+        
         public static function logClientsiderError($data, $reset = false) {
                 $logFile = JPath::clean(JPATH_SITE.'/'.plgSystemJBetolo::param('clientsideerrorlog'));
                 $logSep = "\t";

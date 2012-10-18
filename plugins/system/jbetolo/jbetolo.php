@@ -48,10 +48,12 @@ class plgSystemJBetolo extends JPlugin {
             'js' => "/<\!--.*?-->/ims",
             'css' => "/<\!--.*?-->/ims"
         );
+        private static $ua = null;
         
         function plgSystemJBetolo(& $subject, $config) {                
                 parent::__construct($subject, $config);
-                $this->loadLanguage('', JPATH_ADMINISTRATOR);
+                
+                $this->loadLanguage('', JPATH_ADMINISTRATOR);                
         }
         
         function onAfterInitialise() {
@@ -229,10 +231,68 @@ class plgSystemJBetolo extends JPlugin {
                 if (self::checkDonts($donts)) {
                         return true;
                 }
+                
+                $excludeBrowsers = self::param('exclude_browsers');
+                
+                if (!empty($excludeBrowsers)) {
+                        $excludeBrowsers = explode("\n", $excludeBrowsers);
+                        
+                        jimport('joomla.environment.browser');
+			$navigator = JBrowser::getInstance();
+                        
+                        foreach ($excludeBrowsers as $excludeBrowser) {
+                                $excludeBrowser = strtolower($excludeBrowser);
+                                $excludeBrowser = trim($excludeBrowser);
+                                $additionalCheck = false;
+                                
+                                $_excludeBrowser = explode('-version', $excludeBrowser);
+                                $_excludeBrowser[0] = jbetoloHelper::browser($_excludeBrowser[0]);
+                                
+                                if (count($_excludeBrowser) > 1) {
+                                        if ($navigator->isBrowser($_excludeBrowser[0])) {
+                                                if (self::browserCompare($_excludeBrowser, 'version', $navigator)) {
+                                                        return true;
+                                                }
+                                        }
+                                        
+                                        $additionalCheck = true;
+                                }
+                                
+                                if (!$additionalCheck) {
+                                        $excludeBrowser = jbetoloHelper::browser($excludeBrowser);
+                                        
+                                        if ($navigator->isBrowser($excludeBrowser)) {
+                                                return true;
+                                        }
+                                }
+                        }
+                }
 
                 return false;
         }
+        
+        private static function browserCompare($compareData, $compareOn, $navigator) {
+                $found = true;
+                
+                for ($i = 1, $n = count($compareData); $i < $n; $i++) {
+                        $data = $compareData[$i];
+                        
+                        if ($compareOn == 'version') {
+                                $op = substr($data, 0, 2);
+                                $version = substr($data, 2);
+                                $ver = $navigator->getVersion();
+                                $ver = preg_replace('#(\.0+)$#', '', $ver);
 
+                                if (!version_compare($ver, $version, $op)) {
+                                        $found = false;
+                                        break;
+                                }
+                        }
+                }
+                
+                return $found;
+        }
+        
         private static function checkDonts($rules) {
                 $cmds = array_keys($rules);
 
@@ -265,24 +325,25 @@ class plgSystemJBetolo extends JPlugin {
                         return;
 
                 // absolutely included resources are appended to body 
-                $included = self::param($type . '_include');
-
-                if (isset($included) && $included) {
+                $included = plgSystemJBetolo::param($type . '_include', '');
+                $included = trim($included);
+				
+                if ($included) {
                         $included = @explode(',', $included);
 
-                        $includedStr = '';
-
-                        foreach ($included as $include) {
+                        foreach ($included as $i => $include) {
                                 $include = jbetoloFileHelper::normalizeCall($include);
-
+								
                                 if ($type == 'js') {
-                                        $includedStr .= '<script type="text/javascript" src="' . $include . '"></script>' . "\n";
+                                        $included[$i] = "<script type=\"text/javascript\" src=\"" . $include . "\"></script>\n";
                                 } else if ($type == 'css') {
-                                        $includedStr .= '<link rel="stylesheet" href="' . $include . '" type="text/css" media="screen" />' . "\n";
+                                        $included[$i] = "<link rel=\"stylesheet\" href=\"" . $include . "\" type=\"text/css\" media=\"screen\" />\n";
                                 }
                         }
+						
+                        $included = implode('', $included);
 
-                        $body = str_ireplace('</title>', '</title>' . $includedStr, $body);
+                        $body = str_ireplace('</title>', '</title>' . $included, $body);
                 }
 
                 $excluded = $comments = $conds = $excludedSrcs = array();
