@@ -267,6 +267,14 @@ class plgSystemJBetolo extends JPlugin {
                                 }
                         }
                 }
+                
+                if ((bool) self::param('exclude_mobile', 0)) {
+                        jimport('joomla.environment.browser');
+                        
+			$navigator = JBrowser::getInstance();
+                        
+                        if ($navigator->isMobile()) return true;
+                }
 
                 return false;
         }

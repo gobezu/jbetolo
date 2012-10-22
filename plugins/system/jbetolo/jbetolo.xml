@@ -165,6 +165,10 @@
                                 <field name="exclude_components" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_COMP_LBL" description="PLG_JBETOLO_EXCL_COMP_DESC"></field>
                                 <field name="exclude_urls" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_EXCL_URL_LBL" description="PLG_JBETOLO_EXCL_URL_DESC" />
                                 <field name="exclude_browsers" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_BROWSER_LBL" description="PLG_JBETOLO_EXCL_BROWSER_DESC" />
+                                <field name="exclude_mobile" type="radio" default="1" label="PLG_JBETOLO_EXCL_MOBILE_LBL" description="PLG_JBETOLO_EXCL_MOBILE_DESC">
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                </field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CDN">
                                 <field name="cdn_enabled" type="radio" default="0" label="PLG_JBETOLO_CDN_ENABLED_LBL" description="PLG_JBETOLO_CDN_ENABLED_DESC">
