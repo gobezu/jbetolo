@@ -873,12 +873,18 @@ class jbetoloJS {
 
                 return $res;
         }
-
-        public static function moveInlineScripts(&$body) {
+        
+        public static function modifyInlineScripts(&$body) {
                 $js_move_inline = plgSystemJBetolo::param('js_move_inline');
+                $js_add_inline = plgSystemJBetolo::param('js_add_inline');
+                $js_remove_inline = plgSystemJBetolo::param('js_remove_inline');
 
-                if ($js_move_inline == 1) {
+                if ($js_move_inline == 1 && empty($js_add_inline) && empty($js_remove_inline)) {
                         return;
+                }
+                
+                if (!empty($js_remove_inline)) {
+                        $js_remove_inline = explode('#jsbr#', $js_remove_inline);
                 }
 
                 $scriptRegex = "/<script\s*(?(?<!src=)[^>])*>(.*?)<\/script>/ims";
@@ -898,31 +904,85 @@ class jbetoloJS {
                 }
                 
                 $asis = empty($asis) ? false : explode(',', $asis);
-
+                $removes = array();
+                
                 foreach ($matches[0] as $m => $match) {
+                        if (!empty($js_remove_inline)) {
+                                $found = false;
+                                
+                                foreach ($js_remove_inline as $js_remove) {
+                                        $js_remove = trim($js_remove);
+                                        
+                                        if (empty($js_remove)) continue;
+                                        
+                                        if (stripos($js_remove, plgSystemJBetolo::EXCLUDE_REG_PREFIX) === 0) {
+                                                $js_remove = str_replace(plgSystemJBetolo::EXCLUDE_REG_PREFIX, '', $js_remove);
+                                                $found = preg_match('#'.$js_remove.'#i', $match);
+                                        } else if (stripos($js_remove, plgSystemJBetolo::DELETE_REG_START_PREFIX) === 0) {
+                                                $js_remove = str_replace(plgSystemJBetolo::DELETE_REG_START_PREFIX, '', $js_remove);
+                                                
+                                                if (stripos($js_remove, plgSystemJBetolo::DELETE_REG_END_PREFIX)) {
+                                                        $js_remove = explode(plgSystemJBetolo::DELETE_REG_END_PREFIX, $js_remove);
+                                                        
+                                                        if (($js_remove[0] = stripos($match, $js_remove[0])) !== false) {
+                                                                if (($js_remove[1] = stripos($match, $js_remove[1])) !== false) {
+                                                                        if ($js_remove[1] > $js_remove[0]) {
+                                                                                $found = true;
+                                                                                $match = substr($match, 0, $js_remove[0]) .
+                                                                                        substr($match, $js_remove[1]);
+                                                                        }
+                                                                }
+                                                        }
+                                                } else if (stripos($match, $js_remove) !== false) {
+                                                        $found = true;
+                                                        $match = $js_remove;
+                                                }
+                                        } else {
+                                                $found = stripos($match, $js_remove) !== false;
+                                                $match = $js_remove;
+                                        }
+                                        
+                                        if ($found) break;
+                                }
+                                
+                                if ($found) {
+                                        $removes[] = $match;
+                                        continue;
+                                }
+                        }
+                        
                         if (strpos(plgSystemJBetolo::$conditionalTags, $match) !== false) continue;
                         
                         if ($asis) {
-                                $asFound = false;
+                                $found = false;
                                 
                                 foreach ($asis as $as) {
                                         $as = trim($as);
                                         
                                         if (strpos($as, plgSystemJBetolo::EXCLUDE_REG_PREFIX) === 0) {
                                                 $as = str_replace(plgSystemJBetolo::EXCLUDE_REG_PREFIX, '', $as);
-                                                $asFound = preg_match('#'.$as.'#i', $match);
+                                                $found = preg_match('#'.$as.'#i', $match);
                                         } else {
-                                                $asFound = strpos($match, $as) !== false;
+                                                $found = strpos($match, $as) !== false;
                                         }
                                         
-                                        if ($asFound) break;
+                                        if ($found) break;
                                 }
                                 
-                                if ($asFound) continue;
+                                if ($found) continue;
                         }
                         
-                        $body = str_replace($match, '', $body);
+                        if ($found) $removes[] = $match;
+                        
                         $scripts .= $match . "\n";
+                }
+                
+                if (!empty($removes)) {
+                        $body = str_replace($removes, '', $body);
+                }
+                
+                if (!empty($js_add_inline)) {
+                        $scripts .= $js_add_inline . "\n";
                 }
 
                 if ($scripts) {
@@ -1438,8 +1498,11 @@ class jbetoloFileHelper {
                 $minify = plgSystemJBetolo::param($type . '_minify', 0) ? '-min' : '';
                 $cdn = JBETOLO_CDN_MAP ? '-cdn' : '';
                 $fn = JBETOLO_DEBUG_FILENAME ? '-fn' : '';
-
-                $key = md5(implode($src_files) . $minify . $gz . $cdn . $fn);
+                $browsers = plgSystemJBetolo::param('exclude_browsers');
+                if ($browsers) $browsers = '-b'.$browsers;
+                
+                $key = md5(implode($src_files) . $minify . $gz . $cdn . $fn . $browsers);
+                $key = JFile::makeSafe($key);
 
                 return array('merged' => $key . "." . $type, 'parts' => $res);
         }

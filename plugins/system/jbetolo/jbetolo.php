@@ -10,6 +10,8 @@ require_once dirname(__FILE__) . '/jbetolo/helper.php';
 class plgSystemJBetolo extends JPlugin {
         public static $allowAll = false;
         const EXCLUDE_REG_PREFIX = 'reg:';
+        const DELETE_REG_START_PREFIX = 'regs:';
+        const DELETE_REG_END_PREFIX = 'rege:';
         public static $jquery = null;
         private static $tagRegex = array(
             'js' => "/<script [^>]+(\/>|><\/script>)/i",
@@ -97,10 +99,10 @@ class plgSystemJBetolo extends JPlugin {
                 list($_srcs['js'], $_esrcs['js'], $_tags['js'], $_conds['js'], $_comments['js'], $_indexes['js']) =
                         $this->parseBody($body, 'js');
 
+                jbetoloJS::modifyInlineScripts($body);
+                
                 jbetoloFileHelper::createFile($body, $_srcs, $_esrcs, $_tags, $_conds, $_comments, $_indexes);
 
-                jbetoloJS::moveInlineScripts($body);
-                
                 if (self::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
                 
                 jbetoloHelper::lazyLoad($body, 2);

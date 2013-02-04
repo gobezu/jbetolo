@@ -92,7 +92,7 @@
                                 <field name="add_local_jquery_ui_css" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_CSS_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
-                                </field>                                
+                                </field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_JS">
                                 <field name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
@@ -153,6 +153,8 @@
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>                                
                                 <field name="cdnjs" type="cdnjs" default="" multiple="true" label="PLG_JBETOLO_CDNJS_LBL" description="PLG_JBETOLO_CDNJS_DESC" />
+				<field name="js_add_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_ADD_INLINE_LBL" description="PLG_JBETOLO_JS_ADD_INLINE_DESC" />
+				<field name="js_remove_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_REMOVE_INLINE_LBL" description="PLG_JBETOLO_JS_REMOVE_INLINE_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_EXCLUDE_DELETE">
                                 <field name="skip_dynamic" type="radio" default="1" label="PLG_JBETOLO_SKIP_DYNAMIC_LBL" description="PLG_JBETOLO_SKIP_DYNAMIC_DESC">
