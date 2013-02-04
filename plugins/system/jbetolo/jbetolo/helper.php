@@ -937,8 +937,8 @@ class jbetoloJS {
                                                         $found = true;
                                                         $match = $js_remove;
                                                 }
-                                        } else {
-                                                $found = stripos($match, $js_remove) !== false;
+                                        } else if (stripos($match, $js_remove) !== false) {
+                                                $found = true;
                                                 $match = $js_remove;
                                         }
                                         
