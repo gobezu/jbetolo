@@ -1239,18 +1239,29 @@ class jbetoloFileHelper {
                 //return substr($file, strripos($file, '.') + 1);
         }
         public static function getServingURL($file, $type, $gz, $age = null) {
+                $url = '';
                 if (JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged')) {
-                        return self::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
+                        $url = self::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
                 } else if ($gz) {
                         if (self::allowRewrite('serve')) {
-                                $file = $gz.'_'.$age.'_'.$type.'_'.$file;
-                                return JUri::base() . 'cache/jbetolo/' . $file;
+                                if (plgSystemJBetolo::param('dont_stat', 0)) {
+                                        $url = JUri::base() . 'cache/jbetolo/' . $file;
+                                } else {
+                                        $file = $gz.'_'.$age.'_'.$type.'_'.$file;
+                                        $url = JUri::base() . 'cache/jbetolo/' . $file;
+                                }
                         } else {
-                                return JUri::base() . 'index.php?option=com_jbetolo&amp;task=serve&amp;gz=1&amp;file=' . $file . '&amp;type=' . $type . ($age ? '&amp;ag=' . $age : '');
+                                if (plgSystemJBetolo::param('dont_stat', 0)) {
+                                        $url = JUri::base() . 'cache/jbetolo/' . $file;
+                                } else {
+                                        $url = JUri::base() . 'index.php?option=com_jbetolo&amp;task=serve&amp;gz=1&amp;file=' . $file . '&amp;type=' . $type . ($age ? '&amp;ag=' . $age : '');
+                                }
                         }
                 } else {
-                        return self::normalizeCall(JBETOLO_CACHE_DIR.$file, true, false);
+                        $url = self::normalizeCall(JBETOLO_CACHE_DIR.$file, true, false);
                 }
+                
+                return $url;
         }
 
         public static function customOrder($files, $type, $index = null) {
@@ -1436,7 +1447,8 @@ class jbetoloFileHelper {
                                         $dst .= '.htaccess';
 
                                         if (!JFile::exists($dst)) {
-                                                $src = dirname(__FILE__). '/assets/htaccess_' . $task.'.txt';
+                                                $post = plgSystemJBetolo::param('dont_stat') ? '_dontstat' : '';
+                                                $src = dirname(__FILE__). '/assets/htaccess_' . $task . $post . '.txt';
 
                                                 if (JFile::exists($src)) {
                                                         $content = JFile::read($src);
@@ -1453,7 +1465,7 @@ class jbetoloFileHelper {
 
                                                         JFile::write($dst, $content);
 
-                                                        return true;
+                                                        return !plgSystemJBetolo::param('dont_stat');
                                                 }
                                         }
                                 }

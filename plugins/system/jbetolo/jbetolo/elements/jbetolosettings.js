@@ -1,6 +1,8 @@
 //$Copyright$
 
 var jbetolosettings = new Class({
+        Implements: [Options],
+        
         initialize: function(options) {
                 this.setOptions(options);
 
@@ -10,9 +12,9 @@ var jbetolosettings = new Class({
         },
 
         assignActions: function() {
-                $('saveSettingBtn').addEvent('click', function() { this.saveCurrent(); }.bind(this));
-                $('readSettingBtn').addEvent('click', function() { this.readCurrent(); }.bind(this));
-                $('pingBtn').addEvent('click', function() { this.ping(); }.bind(this));
+                document.id('saveSettingBtn').addEvent('click', function() { this.saveCurrent(); }.bind(this));
+                document.id('readSettingBtn').addEvent('click', function() { this.readCurrent(); }.bind(this));
+                document.id('pingBtn').addEvent('click', function() { this.ping(); }.bind(this));
 
                 this.settingsSelector().addEvent('change', function(e) { this.resetSettings(e); }.bind(this));
         },
@@ -151,7 +153,7 @@ var jbetolosettings = new Class({
         },
 
         settingsSelector: function() {
-                return $(this.settingsSelectorID());
+                return document.id(this.settingsSelectorID());
         },
 
         form: function() {
@@ -163,7 +165,7 @@ var jbetolosettings = new Class({
         removeFormElementValue: function(el, val) {
                 if (!el) return;
 
-                el = $(el);
+                el = document.id(el);
 
                 var type = el.tagName.toLowerCase();
 
@@ -193,7 +195,7 @@ var jbetolosettings = new Class({
         resetFormElementValue: function(el) {
                 if (!el) return;
 
-                el = $(el);
+                el = document.id(el);
 
                 var type = el.tagName.toLowerCase();
 
@@ -211,14 +213,14 @@ var jbetolosettings = new Class({
         },
 
         selected: function(sel, type) {
-                if (!$(sel)) return;
-                return $(sel).options[$(sel).selectedIndex][type ? type : 'value'];
+                if (!document.id(sel)) return;
+                return document.id(sel).options[document.id(sel).selectedIndex][type ? type : 'value'];
         },
 
         setFormElementValue: function(el, val, src) {
                 if (!el) return;
 
-                el = $(src ? src  + el : $(el).getProperty('id'));
+                el = document.id(src ? src  + el : document.id(el).getProperty('id'));
 
                 var type = el.tagName.toLowerCase();
 
@@ -243,7 +245,7 @@ var jbetolosettings = new Class({
         getFormElementValue: function(el) {
                 if (!el) return;
 
-                el = $(el);
+                el = document.id(el);
 
                 var type = el.tagName.toLowerCase(), val;
 
@@ -262,7 +264,7 @@ var jbetolosettings = new Class({
                                 val = this.selected(el);
                         }
                 } else if (type == 'input' && el.getProperty('type') == 'radio') {
-                        $(el.form).getElements('input[type=radio]').each(function(e) {
+                        document.id(el.form).getElements('input[type=radio]').each(function(e) {
                                 if (e.getProperty('name') == el.getProperty('name') && e.checked) {
                                         val = e.value;
                                 }
@@ -313,7 +315,7 @@ var jbetolosettings = new Class({
                         sels = selectors;
                 }
 
-                form = $(form);
+                form = document.id(form);
 
                 var values = {}, value, name;
 
@@ -330,7 +332,7 @@ var jbetolosettings = new Class({
 
                         if (value || includeEmpty) {
                                 if (value) {
-                                        if ($type(value) == 'array') {
+                                        if (typeOf(value) == 'array') {
                                                 value = value.join(separator);
                                         }
 
@@ -357,7 +359,7 @@ var jbetolosettings = new Class({
                                 
                                 val = values[name];
 
-                                if (val && quote && $type(val) != 'number' && !/[0-9]+/.test(val)) {
+                                if (val && quote && typeOf(val) != 'number' && !/[0-9]+/.test(val)) {
                                         val = '"' + val + '"';
                                 }
                                 
@@ -391,7 +393,7 @@ var jbetolosettings = new Class({
                 }
 
                 for (var i = 0; i < values.length; i++) {
-                        if ($type(values[i]) == 'array' || $type(values[i]) == 'object') {
+                        if (typeOf(values[i]) == 'array' || typeOf(values[i]) == 'object') {
                                 val = values[i][valName];
                                 txt = values[i][txtName];
                         } else {
@@ -407,7 +409,7 @@ var jbetolosettings = new Class({
         addOptionToSelect: function(val, txt, sel, activate) {
                 if (!txt) txt = val;
 
-                sel = $(sel)
+                sel = document.id(sel)
 
                 for (var i = 0; i < sel.options.length; i++) {
                         if (sel.options[i].value == val) {
@@ -418,8 +420,8 @@ var jbetolosettings = new Class({
 
                 var opt = new Option(txt, val);
 
-                $(opt).injectInside(sel);
-                $(opt).innerHTML = txt;
+                document.id(opt).injectInside(sel);
+                document.id(opt).innerHTML = txt;
 
                 if (activate) {
                         this.setFormElementValue(sel, val);
@@ -427,7 +429,7 @@ var jbetolosettings = new Class({
         },
 
         isSelectMember: function(sel, val) {
-                sel = $(sel)
+                sel = document.id(sel)
 
                 for (var i = 0; i < sel.options.length; i++) {
                         if (sel.options[i].value == val) {
@@ -438,5 +440,3 @@ var jbetolosettings = new Class({
                 return false;
         }
 });
-
-jbetolosettings.implement(new Options);

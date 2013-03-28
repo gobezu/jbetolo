@@ -7,6 +7,8 @@
         </IfModule>
 </FilesMatch>
 
-Options +FollowSymLinks
-RewriteEngine On
-RewriteRule (.*) HTTP_HOST_REPLACEindex.php?option=com_jbetolo&task=serve&cfile=$1 [L]
+<IfModule mod_headers.c>
+        <FilesMatch "\.(js|css)$">
+                Header append Content-Encoding gzip
+        </FilesMatch>
+</IfModule>
