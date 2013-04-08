@@ -908,7 +908,7 @@ class jbetoloJS {
                 
                 foreach ($matches[0] as $m => $match) {
                         if (!empty($js_remove_inline)) {
-                                $found = false;
+                                $foundRemovable = false;
                                 
                                 foreach ($js_remove_inline as $js_remove) {
                                         $js_remove = trim($js_remove);
@@ -917,7 +917,7 @@ class jbetoloJS {
                                         
                                         if (stripos($js_remove, plgSystemJBetolo::EXCLUDE_REG_PREFIX) === 0) {
                                                 $js_remove = str_replace(plgSystemJBetolo::EXCLUDE_REG_PREFIX, '', $js_remove);
-                                                $found = preg_match('#'.$js_remove.'#i', $match);
+                                                $foundRemovable = preg_match('#'.$js_remove.'#i', $match);
                                         } else if (stripos($js_remove, plgSystemJBetolo::DELETE_REG_START_PREFIX) === 0) {
                                                 $js_remove = str_replace(plgSystemJBetolo::DELETE_REG_START_PREFIX, '', $js_remove);
                                                 
@@ -927,25 +927,25 @@ class jbetoloJS {
                                                         if (($js_remove[0] = stripos($match, $js_remove[0])) !== false) {
                                                                 if (($js_remove[1] = stripos($match, $js_remove[1])) !== false) {
                                                                         if ($js_remove[1] > $js_remove[0]) {
-                                                                                $found = true;
+                                                                                $foundRemovable = true;
                                                                                 $match = substr($match, 0, $js_remove[0]) .
                                                                                         substr($match, $js_remove[1]);
                                                                         }
                                                                 }
                                                         }
                                                 } else if (stripos($match, $js_remove) !== false) {
-                                                        $found = true;
+                                                        $foundRemovable = true;
                                                         $match = $js_remove;
                                                 }
                                         } else if (stripos($match, $js_remove) !== false) {
-                                                $found = true;
+                                                $foundRemovable = true;
                                                 $match = $js_remove;
                                         }
                                         
-                                        if ($found) break;
+                                        if ($foundRemovable) break;
                                 }
                                 
-                                if ($found) {
+                                if ($foundRemovable) {
                                         $removes[] = $match;
                                         continue;
                                 }
@@ -954,26 +954,25 @@ class jbetoloJS {
                         if (strpos(plgSystemJBetolo::$conditionalTags, $match) !== false) continue;
                         
                         if ($asis) {
-                                $found = false;
+                                $foundAsis = false;
                                 
                                 foreach ($asis as $as) {
                                         $as = trim($as);
                                         
                                         if (strpos($as, plgSystemJBetolo::EXCLUDE_REG_PREFIX) === 0) {
                                                 $as = str_replace(plgSystemJBetolo::EXCLUDE_REG_PREFIX, '', $as);
-                                                $found = preg_match('#'.$as.'#i', $match);
+                                                $foundAsis = preg_match('#'.$as.'#i', $match);
                                         } else {
-                                                $found = strpos($match, $as) !== false;
+                                                $foundAsis = strpos($match, $as) !== false;
                                         }
                                         
-                                        if ($found) break;
+                                        if ($foundAsis) break;
                                 }
                                 
-                                if ($found) continue;
+                                if ($foundAsis) continue;
                         }
                         
-                        if ($found) $removes[] = $match;
-                        
+                        $removes[] = $match;
                         $scripts .= $match . "\n";
                 }
                 

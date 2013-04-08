@@ -99,10 +99,10 @@ class plgSystemJBetolo extends JPlugin {
                 list($_srcs['js'], $_esrcs['js'], $_tags['js'], $_conds['js'], $_comments['js'], $_indexes['js']) =
                         $this->parseBody($body, 'js');
 
-                jbetoloJS::modifyInlineScripts($body);
-                
                 jbetoloFileHelper::createFile($body, $_srcs, $_esrcs, $_tags, $_conds, $_comments, $_indexes);
 
+                jbetoloJS::modifyInlineScripts($body);
+                
                 if (self::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
                 
                 jbetoloHelper::lazyLoad($body, 2);
