@@ -23,6 +23,6 @@ jbetolo provides the following features in detail:
 13. move inline js scripts to either header, bottom of the page or leave it as it is
 14. move merged js file, as well as other non-merged js files and inline js code to the bottom of page or leave it within the header
 
-Are those features not enough please don't hesitate to head over to our repo and submit an enhancement request and we will make sure to consider it.
+Are those features not enough? Don't hesitate to head over to our issue list and submit an enhancement request and we will make sure to consider it.
 
-Notice: The last Joomla! 1.5 compatible version is 2.2.14 and will be supported only to fix bugs and no new features will be introduced.
+Notice: The last Joomla! 1.5 compatible version is 2.2.14 and will not be supported any longer, but is available for download [here](https://bitbucket.org/gobezu/jbetolo/downloads/jbetolo-2.2.18.f4c47ba.tar.gz).
