@@ -1,0 +1,28 @@
+download 
+========
+[download available here as github doesn't allow build downloads](https://bitbucket.org/gobezu/jbetolo/downloads)
+jbetolo
+=======
+jbetolo primarily helps you with your front-end optimization, combining/compressing/minimizing/caching js and css.
+
+Advice: don't expect jbetolo to work out of the box, although it will do excellent job in most cases. jbetolo helps you tune YOUR site, thus it needs to be adjusted to YOUR specific setup, and the very reason we provide you so many useful options where each is explained within jbetolo by highlighting the settings. Having said that, I always welcome you to contact me and I will try my best to provide advice or if necessary direct assistance.
+
+jbetolo provides the following features in detail:
+1. merging js and css
+2. compressing js, css and fonts
+3. minimizing js, css and html
+4. serve the generated files with correct http header
+5. off-loading to your CDN server, multiple CDNs supported for various file types
+6. static content caching
+7. exclude jbetolo processing based on browser, browser version, mobile device, certain components, url params
+8. embed selected resources as data URI in your merged css file
+9. solve js and css conflicts and dependency issues, by allowing you to sequence the loading
+10. remove unwanted js and css files from the page
+11. add js and css files that aren't included or if you want to replace removed ones
+12. merging option to indicate which files that should be excluded or included from the merging process
+13. move inline js scripts to either header, bottom of the page or leave it as it is
+14. move merged js file, as well as other non-merged js files and inline js code to the bottom of page or leave it within the header
+
+Are those features not enough please don't hesitate to head over to our repo and submit an enhancement request and we will make sure to consider it.
+
+Notice: The last Joomla! 1.5 compatible version is 2.2.14 and will be supported only to fix bugs and no new features will be introduced.
