@@ -1,6 +1,8 @@
 //$Copyright$
 
 var jbetolocdnpurge = new Class({
+        Implements: [Options],
+        
         initialize: function(options) {
                 this.setOptions(options);
 
@@ -10,7 +12,7 @@ var jbetolocdnpurge = new Class({
         },
 
         assignActions: function() {
-                $('cdnpurgeBtn').addEvent('click', function() { this.cdnpurge(); }.bind(this));
+                document.id('cdnpurgeBtn').addEvent('click', function() { this.cdnpurge(); }.bind(this));
         },
 
         /** field/param element actions **/
@@ -23,22 +25,14 @@ var jbetolocdnpurge = new Class({
                         '&cdn='+$('cdnpurgeCDN').get('value')
                 ;
 
-                var opts = {
+                new Request({
                         onSuccess: function(response) {
                                 alert(response);
-                        }.bind(this)
-                };
-
-                if (MooTools.version.substr(2, 1) != 1) {
-                        opts['url'] = request;
-                        opts['noCache'] = true;
-                        new Request(opts).send();
-                } else {
-                        new Ajax(request, opts).request();
-                }
+                        }.bind(this),
+                        url: request,
+                        noCache: true
+                }).send();
                 
                 return false;
         }
 });
-
-jbetolocdnpurge.implement(new Options);

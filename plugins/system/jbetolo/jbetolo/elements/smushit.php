@@ -35,7 +35,9 @@ class JbetoloSmushitElement {
                                         <li><input type="checkbox" name="'.$name.'_replace" id="'.$name.'_replace" />'. JText::_('PLG_JBETOLO_SMUSHIT_REPLACE') .'</li>
                                         <li><input type="checkbox" name="'.$name.'_recursive" id="'.$name.'_recursive" />'. JText::_('PLG_JBETOLO_SMUSHIT_RECURSIVE') .'</li>
                                         <li><input type="text" name="'.$name.'_fix" id="'.$name.'_fix" value="_smush" />'. JText::_('PLG_JBETOLO_SMUSHIT_FIX') .'</li>
-                                </ul>'
+                                </ul>
+                        </div>        
+                        '
                 ;
 
                 return $ui;

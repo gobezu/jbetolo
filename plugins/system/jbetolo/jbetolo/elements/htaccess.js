@@ -1,6 +1,8 @@
 //$Copyright$
 
 var jbetolohtaccess = new Class({
+        Implements: [Options],
+        
         initialize: function(options) {
                 this.setOptions(options);
 
@@ -10,30 +12,20 @@ var jbetolohtaccess = new Class({
         },
 
         assignActions: function() {
-                $('htaccessBtn').addEvent('click', function() { this.htaccess('site'); }.bind(this));
+                document.id('htaccessBtn').addEvent('click', function() { this.htaccess('site'); }.bind(this));
         },
 
         /** field/param element actions **/
 
         htaccess: function(){
-                var request = this.options.base+'index.php?option=com_jbetolo&task=htaccess';
-
-                var opts = {
+                new Request({
                         onSuccess: function(response) {
                                 alert(response);
-                        }.bind(this)
-                };
-
-                if (MooTools.version.substr(2, 1) != 1) {
-                        opts['url'] = request;
-                        opts['noCache'] = true;
-                        new Request(opts).send();
-                } else {
-                        new Ajax(request, opts).request();
-                }
+                        }.bind(this),
+                        url: this.options.base+'index.php?option=com_jbetolo&task=htaccess',
+                        noCache: true
+                }).send();
                 
                 return false;
         }
 });
-
-jbetolohtaccess.implement(new Options);
