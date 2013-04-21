@@ -1449,42 +1449,49 @@ class jbetoloFileHelper {
                 }
 
                 if ((bool) plgSystemJBetolo::param('htaccess')) {
-                        $app = JFactory::getApplication()->getName();
+                        if (JFactory::getApplication()->isSite()) {
+                                //self::createHTACCESS($task, $dst);
 
-                        if ($app == 'site') {
                                 if ($task == 'serve') {
                                         return JFile::exists(JBETOLO_CACHE_DIR . '.htaccess');
                                 } else if ($task == 'create' || $task == 'cdn') {
-                                        $dstDir = $dst;
-                                        $dst .= '.htaccess';
-
-                                        if (!JFile::exists($dst)) {
-                                                $post = plgSystemJBetolo::param('dont_stat') ? '_dontstat' : '';
-                                                $src = dirname(__FILE__). '/assets/htaccess_' . $task . $post . '.txt';
-
-                                                if (JFile::exists($src)) {
-                                                        $content = JFile::read($src);
-
-                                                        if ($task == 'cdn') {
-                                                                $content = str_replace('HTTP_HOST_REPLACE', JBETOLO_URI_CDN, $content);
-                                                                jbetoloFileHelper::createCDNPuller($dstDir);
-                                                        } else {
-                                                                $uri = JURI::getInstance();
-                                                                $replacement = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
-                                                                $replacement = str_replace('index.php', '', $replacement);
-                                                                $content = str_replace('HTTP_HOST_REPLACE', $replacement, $content);
-                                                        }
-
-                                                        JFile::write($dst, $content);
-
-                                                        return !plgSystemJBetolo::param('dont_stat');
-                                                }
-                                        }
+                                        return self::createHTACCESS($task, $dst);
                                 }
                         }
                 }
 
                 return false;
+        }
+
+        private static function createHTACCESS($task, $dst) {
+                if (!$dst) $dst = JBETOLO_CACHE_DIR;
+
+                $dstDir = $dst;
+                $dst .= '.htaccess';
+
+                if (!JFile::exists($dst)) {
+                        $dontStat = plgSystemJBetolo::param('dont_stat');
+                        $post = $dontStat ? '_dontstat' : '';
+                        $src = dirname(__FILE__). '/assets/htaccess_' . $task . $post . '.txt';
+
+                        if (JFile::exists($src)) {
+                                $content = JFile::read($src);
+
+                                if ($task == 'cdn') {
+                                        $content = str_replace('HTTP_HOST_REPLACE', JBETOLO_URI_CDN, $content);
+                                        jbetoloFileHelper::createCDNPuller($dstDir);
+                                } else if (!$dontStat) {
+                                        $uri = JURI::getInstance();
+                                        $replacement = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
+                                        $replacement = str_replace('index.php', '', $replacement);
+                                        $content = str_replace('HTTP_HOST_REPLACE', $replacement, $content);
+                                }
+
+                                JFile::write($dst, $content);
+
+                                return !$dontStat;
+                        }
+                }
         }
 
         public static function createCDNPuller($dst) {
