@@ -1450,8 +1450,6 @@ class jbetoloFileHelper {
 
                 if ((bool) plgSystemJBetolo::param('htaccess')) {
                         if (JFactory::getApplication()->isSite()) {
-                                //self::createHTACCESS($task, $dst);
-
                                 if ($task == 'serve') {
                                         return JFile::exists(JBETOLO_CACHE_DIR . '.htaccess');
                                 } else if ($task == 'create' || $task == 'cdn') {
