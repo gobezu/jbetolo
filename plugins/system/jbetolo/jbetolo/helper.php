@@ -1197,7 +1197,7 @@ class jbetoloCSS {
 
                 $processed = false;
 
-                if (JBETOLO_IS_GZ && in_array($ext, $enabled['compress'])) {
+                if (JBETOLO_IS_GZ && (in_array($ext, $enabled['compress']) || $ext == 'woff'))  {
                         $path = jbetoloFileHelper::normalizeCall($resource, true, true);
                         $file_name = basename($path);
                         $cache_file = JBETOLO_CACHE_DIR . $file_name;
@@ -1205,7 +1205,7 @@ class jbetoloCSS {
                         if (!JFile::exists($cache_file)) {
                                 if ($type == 'font') {
                                         $data = file_get_contents($path);
-                                        $processed = jbetoloFileHelper::writeToFile($file_name, $data, 'font', true);
+                                        $processed = jbetoloFileHelper::writeToFile($file_name, $data, 'font', $ext != 'woff');
                                 }
                         }
 

@@ -8,7 +8,7 @@
 </FilesMatch>
 
 <IfModule mod_headers.c>
-        <FilesMatch "\.(js|css)$">
+        <FilesMatch "\.(js|css|woff|ttf|eot|svg|otf)$">
                 Header append Content-Encoding gzip
         </FilesMatch>
 </IfModule>
