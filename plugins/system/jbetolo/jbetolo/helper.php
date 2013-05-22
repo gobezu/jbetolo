@@ -345,7 +345,7 @@ class jbetoloHelper {
 
         public static function isApache() {
                 $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-                return jbetoloHelper::beginWith($server, 'apache');
+                return jbetoloHelper::beginWith($server, 'apache') || jbetoloHelper::beginWith($server, 'litespeed');
         }
 
         public static function isNginx() {
@@ -1421,9 +1421,7 @@ class jbetoloFileHelper {
 
                 // if files compressed and CDN can't compress, provide correct header
                 if (JBETOLO_CDN_MAP && JBETOLO_IS_GZ && !(bool) plgSystemJBetolo::param('cdn_compress', 0)) {
-                        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-
-                        if (strpos($server, 'apache') === 0) {
+                        if (jbetoloHelper::isApache()) {
                                 $patchFile = dirname(__FILE__) . '/assets/htaccess_cdn_content_encoding.txt';
                                 JFile::copy($patchFile, JBETOLO_CACHE_DIR.'.htaccess');
                         }
@@ -1433,7 +1431,7 @@ class jbetoloFileHelper {
         public static function allowRewrite($task, $dst = '') {
                 $server = strtolower($_SERVER['SERVER_SOFTWARE']);
 
-                if (strpos($server, 'apache') !== 0) {
+                if (!jbetoloHelper::isApache()) {
                         // TODO: Make nginx.conf.txt available
                         $src = dirname(__FILE__). '/assets/nginx.conf.txt';
                         $msg = JText::sprintf('PLG_JBETOLO_HTACCESS_NGINX', $src);
