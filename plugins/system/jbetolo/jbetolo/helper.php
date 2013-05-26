@@ -1413,10 +1413,6 @@ class jbetoloFileHelper {
                                 $content = "<html><body bgcolor='#FFFFFF'></body></html>";
                                 JFile::write(JBETOLO_CACHE_DIR . 'index.html', $content);
                         }
-
-                        if (!JBETOLO_CDN_MAP) {
-                                self::allowRewrite('create', JBETOLO_CACHE_DIR);
-                        }
                 }
 
                 // if files compressed and CDN can't compress, provide correct header
@@ -1429,8 +1425,6 @@ class jbetoloFileHelper {
         }
 
         public static function allowRewrite($task, $dst = '') {
-                $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-
                 if (!jbetoloHelper::isApache()) {
                         // TODO: Make nginx.conf.txt available
                         $src = dirname(__FILE__). '/assets/nginx.conf.txt';
@@ -1448,10 +1442,12 @@ class jbetoloFileHelper {
 
                 if ((bool) plgSystemJBetolo::param('htaccess')) {
                         if (JFactory::getApplication()->isSite()) {
+                                $result = self::createHTACCESS('create', JBETOLO_CACHE_DIR);
+
                                 if ($task == 'serve') {
                                         return JFile::exists(JBETOLO_CACHE_DIR . '.htaccess');
                                 } else if ($task == 'create' || $task == 'cdn') {
-                                        return self::createHTACCESS($task, $dst);
+                                        return $result;
                                 }
                         }
                 }
