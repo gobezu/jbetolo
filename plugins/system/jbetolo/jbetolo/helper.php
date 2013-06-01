@@ -1050,13 +1050,14 @@ class jbetoloJS {
                                         $oScripts .= substr($ext_scripts, $start, $offset);
 
                                         $ext_scripts = $oScripts;
-                                        $event = '';
+                                        $event = plgSystemJBetolo::param('js_externalize_event', 'asis');
 
-                                        if ($event = (plgSystemJBetolo::param('js_externalize_event', 'domready') == 'asis')) {
+                                        if ($event == 'asis') {
                                                 foreach ($scripts as $event => $script) {
                                                         $ext_scripts .= "\nwindow.addEvent('".$event."', function() {\n".$script."\n});";
                                                 }
                                         } else {
+                                                $scripts = implode($scripts, "\n");
                                                 $ext_scripts .= "\nwindow.addEvent('" . $event . "', function() {\n".$scripts."\n});";
                                         }
                                 }
