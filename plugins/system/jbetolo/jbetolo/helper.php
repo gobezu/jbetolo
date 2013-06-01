@@ -2269,7 +2269,7 @@ class jbetoloFileHelper {
                 $tags = $tagsBefore . $tags . $tagsAfter;
 
                 if ($type == 'js' && (bool) plgSystemJBetolo::param('js_defer')) {
-                        $tags = str_replace('<script ', '<script defer="defer" ', $tags);
+                        $tags = str_replace('<script ', '<script defer ', $tags);
                 }
 
                 if (($rule == 1 || $rule == 2) && $titleExists) {
