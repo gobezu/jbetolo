@@ -1006,7 +1006,8 @@ class jbetoloJS {
                                 $ext_scripts = preg_replace('#(\$|jQuery)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("domready",function(){:jQuery:', $ext_scripts);
 
                                 if (preg_match_all('#window\.addEvent\(\s*([\'\"])(domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
-                                        $scripts = $oScripts = '';
+                                        $scripts = array();
+                                        $oScripts = '';
                                         $res = array();
                                         $i = 0;
 
@@ -1030,7 +1031,12 @@ class jbetoloJS {
                                                         $script = preg_replace('#\$\s*\(#Uims', 'jQuery(', $script);
                                                 }
 
-                                                $scripts .= (!empty($scripts) ? "\n" : "") . $script;
+                                                $event = trim($matches[2][$i][0]);
+
+                                                if (!isset($scripts[$event])) $scripts[$event] = '';
+                                                else $scripts[$event] .= "\n";
+
+                                                $scripts[$event] .= $script;
                                         }
 
                                         $start = $res[0] + $res[1];
@@ -1038,14 +1044,18 @@ class jbetoloJS {
                                         $start = strpos($ext_scripts, ';', $start) + 1;
                                         $offset = strlen($ext_scripts) - $start;
                                         $oScripts .= substr($ext_scripts, $start, $offset);
-                                } else {
-                                        $oScripts = '';
-                                        $scripts = $ext_scripts;
+
+                                        $ext_scripts = $oScripts;
+                                        $event = '';
+
+                                        if ($event = (plgSystemJBetolo::param('js_externalize_event', 'domready') == 'asis')) {
+                                                foreach ($scripts as $event => $script) {
+                                                        $ext_scripts .= "\nwindow.addEvent('".$event."', function() {\n".$script."\n});";
+                                                }
+                                        } else {
+                                                $ext_scripts .= "\nwindow.addEvent('" . $event . "', function() {\n".$scripts."\n});";
+                                        }
                                 }
-
-                                // move those in events to the bottom
-
-                                $ext_scripts = $oScripts."\nwindow.addEvent('domready', function() {\n".$scripts."\n});";
 
                                 jbetoloFileHelper::writeToFile($file, $ext_scripts, 'js');
 

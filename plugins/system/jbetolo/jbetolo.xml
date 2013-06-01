@@ -111,6 +111,11 @@
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
                                 </field>
+                                <field name="js_externalize_event" type="radio" default="asis" label="PLG_JBETOLO_EXTERNALIZE_EVENT_LBL" description="PLG_JBETOLO_EXTERNALIZE_EVENT_DESC">
+                                        <option value="asis">as is</option>
+                                        <option value="domready">domready</option>
+                                        <option value="load">load</option>
+                                </field>
                                 <field name="js_merge_exclude" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_LBL" description="PLG_JBETOLO_EXCL_DESC"></field>
                                 <field name="js_include" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_INCL_LBL" description="PLG_JBETOLO_INCL_DESC"></field>
                                 <field name="js_minify" type="radio" default="0" label="PLG_JBETOLO_MINIFY_LBL" description="PLG_JBETOLO_MINIFY_DESC">
