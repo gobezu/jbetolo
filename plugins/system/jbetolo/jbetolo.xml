@@ -36,7 +36,7 @@
                                 <field name="dont_stat" type="radio" default="0" label="PLG_JBETOLO_DONT_STAT_LBL" description="PLG_JBETOLO_DONT_STAT_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
-                                </field>  
+                                </field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_TOOLS" addfieldpath="/plugins/system/jbetolo/jbetolo/elements">
                                 <field type="jbetolocss" name="jbetolocss" />
@@ -76,7 +76,7 @@
                                 <field name="css_map_resources_absolute" type="radio" default="0" label="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_LBL" description="PLG_JBETOLO_MAP_RESOURCES_ABSOLUTE_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
-                                </field>                                
+                                </field>
                                 <field name="css_custom_order" type="textarea" rows="3" cols="40" default="template.css" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></field>
                                 <field name="css_compress_resources" type="text" rows="3" size="70" default="eot,ttf,svg,otf" label="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_LBL" description="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_DESC" />
                                 <field name="css_datauri_allow_in" type="list" default="all" label="PLG_JBETOLO_CSS_DATAURI_ENABLE_LBL" description="PLG_JBETOLO_CSS_DATAURI_ENABLE_DESC">
@@ -102,6 +102,14 @@
                                 <field name="js_merge" type="radio" default="1" label="PLG_JBETOLO_MERGE_LBL" description="PLG_JBETOLO_MERGE_DESC">
                                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
+                                </field>
+                                <field name="js_defer" type="radio" default="0" label="PLG_JBETOLO_DEFER_LBL" description="PLG_JBETOLO_DEFER_DESC">
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
+                                </field>
+                                <field name="js_externalize" type="radio" default="0" label="PLG_JBETOLO_EXTERNALIZE_LBL" description="PLG_JBETOLO_EXTERNALIZE_DESC">
+                                        <option value="0">JNO</option>
+                                        <option value="1">JYES</option>
                                 </field>
                                 <field name="js_merge_exclude" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_LBL" description="PLG_JBETOLO_EXCL_DESC"></field>
                                 <field name="js_include" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_INCL_LBL" description="PLG_JBETOLO_INCL_DESC"></field>
@@ -151,7 +159,7 @@
                                 <field name="add_local_jquery_ui" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
-                                </field>                                
+                                </field>
                                 <field name="cdnjs" type="cdnjs" default="" multiple="true" label="PLG_JBETOLO_CDNJS_LBL" description="PLG_JBETOLO_CDNJS_DESC" />
 				<field name="js_add_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_ADD_INLINE_LBL" description="PLG_JBETOLO_JS_ADD_INLINE_DESC" />
 				<field name="js_remove_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_REMOVE_INLINE_LBL" description="PLG_JBETOLO_JS_REMOVE_INLINE_DESC" />

@@ -891,7 +891,7 @@ class jbetoloJS {
 
                 preg_match_all($scriptRegex, $body, $matches);
 
-                $scripts = '';
+                $scripts = $ext_scripts = '';
 
                 $asis = plgSystemJBetolo::param('js_inline_dont_move', '');
 
@@ -974,6 +974,7 @@ class jbetoloJS {
 
                         $removes[] = $match;
                         $scripts .= $match . "\n";
+                        $ext_scripts .= $matches[1][$m];
                 }
 
                 if (!empty($removes)) {
@@ -985,8 +986,115 @@ class jbetoloJS {
                 }
 
                 if ($scripts) {
-                        jbetoloFileHelper::placeTags($body, $scripts, 'js', $js_move_inline);
+                        if ((bool) plgSystemJBetolo::param('js_externalize')) {
+                                $file = JURI::getInstance()->toString();
+                                $file = md5($file);
+                                $file = JFile::makeSafe($file) . '_ext.js';
+
+                                if (is_array($ext_scripts)) {
+                                        $ext_scripts = implode("\n", $ext_scripts);
+                                }
+
+                                $ext_scripts = trim($ext_scripts);
+
+                                if (empty($ext_scripts)) return;
+
+                                // Replace jQuery DOM ready or load to Mootools ditto where
+                                // the following 2 are assumed syntaxes used as also recommended by
+                                // http://api.jquery.com/ready/
+                                $ext_scripts = preg_replace('#(\$|jQuery)\(document\)\.(ready|load)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("\2",function(){:jQuery:', $ext_scripts);
+                                $ext_scripts = preg_replace('#(\$|jQuery)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("domready",function(){:jQuery:', $ext_scripts);
+
+                                if (preg_match_all('#window\.addEvent\(\s*([\'\"])(domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
+                                        $scripts = $oScripts = '';
+                                        $res = array();
+                                        $i = 0;
+
+                                        foreach ($matches[0] as $i => $match) {
+                                                $start = $i == 0 ? 0 : $res[0] + $res[1];
+
+                                                if ($i > 0) {
+                                                        $start = strpos($ext_scripts, ')', $start + 1);
+                                                        $start = strpos($ext_scripts, ';', $start) + 1;
+                                                }
+
+                                                $offset = $match[1] - $start;
+                                                $script = substr($ext_scripts, $start, $offset);
+                                                $oScripts .= $script;
+
+                                                $res = self::strpos_balanced('{', '}', $ext_scripts, (int) $match[1] + strlen($match[0]));
+                                                $script = substr($ext_scripts, $res[0], $res[1]);
+
+                                                if (strpos($script, ':jQuery:') !== false) {
+                                                        $script = str_replace(':jQuery:', '', $script);
+                                                        $script = preg_replace('#\$\s*\(#Uims', 'jQuery(', $script);
+                                                }
+
+                                                $scripts .= (!empty($scripts) ? "\n" : "") . $script;
+                                        }
+
+                                        $start = $res[0] + $res[1];
+                                        $start = strpos($ext_scripts, ')', $start + 1);
+                                        $start = strpos($ext_scripts, ';', $start) + 1;
+                                        $offset = strlen($ext_scripts) - $start;
+                                        $oScripts .= substr($ext_scripts, $start, $offset);
+                                } else {
+                                        $oScripts = '';
+                                        $scripts = $ext_scripts;
+                                }
+
+                                // move those in events to the bottom
+
+                                $ext_scripts = $oScripts."\nwindow.addEvent('domready', function() {\n".$scripts."\n});";
+
+                                jbetoloFileHelper::writeToFile($file, $ext_scripts, 'js');
+
+                                $file = JBETOLO_URI_BASE . 'cache/jbetolo/' . $file;
+
+                                $ext_scripts = '<script type="text/javascript" src="'.$file.'"></script>';
+
+                                jbetoloFileHelper::placeTags($body, $ext_scripts, 'js');
+                        } else {
+                                jbetoloFileHelper::placeTags($body, $scripts, 'js', $js_move_inline);
+                        }
                 }
+        }
+
+        public static function strpos_balanced($findStart, $findEnd, $str, $startAt) {
+                if (!is_numeric($startAt)) {
+                        $_startAt = $startAt;
+                        $startAt = strpos($str, $startAt);
+                        if ($startAt !== false) $startAt += strlen($_startAt) + 1;
+                }
+
+                if ($startAt === false) return false;
+
+                $pos = $startAt;
+                $max = strlen($str);
+                $found = 0;
+                $ch = '';
+
+                while ($pos < $max) {
+                        $ch = $str[$pos];
+
+                        if ($ch == $findStart) {
+                                $found += 1;
+                        } else if ($ch == $findEnd) {
+                                if ($found > 0) {
+                                        $found -= 1;
+                                } else {
+                                        break;
+                                }
+                        }
+
+                        $pos++;
+                }
+
+                if ($ch == $findEnd) {
+                        return array($startAt, $pos - $startAt);
+                }
+
+                return false;
         }
 
         public static function setJqueryFile($srcs, $excls) {
@@ -2159,6 +2267,10 @@ class jbetoloFileHelper {
                 $tagsAfter = empty($tagsAfter) ? '' : implode("\n", $tagsAfter);
 
                 $tags = $tagsBefore . $tags . $tagsAfter;
+
+                if ($type == 'js' && (bool) plgSystemJBetolo::param('js_defer')) {
+                        $tags = str_replace('<script ', '<script defer="defer" ', $tags);
+                }
 
                 if (($rule == 1 || $rule == 2) && $titleExists) {
                         $body = str_ireplace('</title>', '</title>' . $tags, $body);
