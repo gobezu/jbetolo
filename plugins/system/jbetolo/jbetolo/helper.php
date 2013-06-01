@@ -1005,7 +1005,7 @@ class jbetoloJS {
                                 $ext_scripts = preg_replace('#(\$|jQuery)\(document\)\.(ready|load)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("\2",function(){:jQuery:', $ext_scripts);
                                 $ext_scripts = preg_replace('#(\$|jQuery)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("domready",function(){:jQuery:', $ext_scripts);
 
-                                if (preg_match_all('#window\.addEvent\(\s*([\'\"])(domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
+                                if (preg_match_all('#window\.addEvent\(\s*([\'\"])(ready|domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
                                         $scripts = array();
                                         $oScripts = '';
                                         $res = array();
@@ -1026,12 +1026,16 @@ class jbetoloJS {
                                                 $res = self::strpos_balanced('{', '}', $ext_scripts, (int) $match[1] + strlen($match[0]));
                                                 $script = substr($ext_scripts, $res[0], $res[1]);
 
-                                                if (strpos($script, ':jQuery:') !== false) {
-                                                        $script = str_replace(':jQuery:', '', $script);
+                                                $isJQuery = 0;
+                                                $script = str_replace(':jQuery:', '', $script, $isJQuery);
+                                                if ($isJQuery > 0) {
                                                         $script = preg_replace('#\$\s*\(#Uims', 'jQuery(', $script);
                                                 }
 
+
                                                 $event = trim($matches[2][$i][0]);
+
+                                                if ($event == 'ready') $event = 'domready';
 
                                                 if (!isset($scripts[$event])) $scripts[$event] = '';
                                                 else $scripts[$event] .= "\n";
