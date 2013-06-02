@@ -202,6 +202,7 @@ class plgSystemJBetolo extends JPlugin {
                 $excludeURLs[] = array('option' => 'com_content', 'task' => 'article.edit');
                 $excludeURLs[] = array('option' => 'com_k2', 'task' => 'article.add');
                 $excludeURLs[] = array('option' => 'com_k2', 'task' => 'article.edit');
+                $excludeURLs[] = array('option' => 'com_easydiscuss', 'view' => 'ask');
 
                 if (!empty($excludeURLs)) {
                         $uri = JURI::getInstance();
