@@ -196,6 +196,7 @@ class plgSystemJBetolo extends JPlugin {
                         }
                 }
 
+                $excludeURLs[] = array('option' => 'com_maqmahelpdesk', 'task' => 'ticket_view');
                 $excludeURLs[] = array('option' => 'com_jevents', 'task' => 'icalevent.edit');
                 $excludeURLs[] = array('option' => 'com_content', 'task' => 'article.add');
                 $excludeURLs[] = array('option' => 'com_content', 'task' => 'article.edit');
