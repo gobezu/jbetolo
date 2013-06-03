@@ -30,12 +30,25 @@ class jbetoloHelper {
                 jbetoloFileHelper::placeTags($body, $js, 'js', 4);
         }
 
+        public static function debuggify(&$body) {
+                if (!(bool) plgSystemJBetolo::param('debuggify')) return;
+
+                $api = plgSystemJBetolo::param('debuggify_api');
+                $api = trim($api);
+
+                if (empty($api)) return;
+
+                $src = '<script type="text/javaScript" src="https://cdn.debuggify.net/js/'.$api.'/debuggify.logger.http.js"></script>';
+
+                jbetoloFileHelper::placeTags($body, $src, 'js', 2);
+        }
+
         public static function lazyLoad(&$body, $stage) {
                 $js = plgSystemJBetolo::param('lazyload_img');
 
                 if (!$js) return;
 
-                $loc = JURI::base().'plugins/system/jbetolo/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : '').'lazyload/';
+                $loc = JURI::base().'plugins/system/jbetolo/jbetolo/lazyload/';
 
                 if ($stage == 0 || $stage == 1) {
                         if ($js == 'mootools') {
@@ -47,12 +60,11 @@ class jbetoloHelper {
                         $src = '<script type="text/javascript" src="'.$loc.$src.'" />';
 
                         if ($js == 'mootools') {
-                                $src .= '<script type="text/javascript">window.addEvent("domready",function(){ $$("img.lazy").setStyle("display", "inline"); new LazyLoad({realSrcAttribute:"data-original"}); });</script>';
+                                $src .= '<script type="text/javascript">window.addEvent("domready",function(){ new LazyLoad({elements:"img.lazy", realSrcAttribute:"data-original"}); });</script>';
                         } else if ($js == 'jquery') {
-                                $src .= '<script type="text/javascript">jQuery.ready(function(){jQuery("img.lazy").show().lazyload({effect:"fadeIn"});});</script>';
+                                $src .= '<script type="text/javascript">jQuery(document).ready(function(){jQuery("img.lazy").lazyload({effect:"fadeIn"});});</script>';
                         }
 
-                        jbetoloFileHelper::placeTags($body, '<style>.lazy {display: none;}</style>', 'css', 3);
                         jbetoloFileHelper::placeTags($body, $src, 'js', 4);
                 }
 
@@ -246,6 +258,7 @@ class jbetoloHelper {
                 }
 
                 define('JBETOLO_CDN_MAP', !plgSystemJBetolo::dontJbetolo('cdn'));
+                define('JBETOLO_JS_DEFER', !plgSystemJBetolo::dontJbetolo('defer') && plgSystemJBetolo::param('js_defer', '0') != '0');
 
                 $cdn = '';
 
@@ -907,6 +920,8 @@ class jbetoloJS {
                 $removes = array();
 
                 foreach ($matches[0] as $m => $match) {
+                        if (strpos($match, plgSystemJBetolo::JBETOLO_SKIP) !== false) continue;
+
                         if (!empty($js_remove_inline)) {
                                 $foundRemovable = false;
 
@@ -991,86 +1006,97 @@ class jbetoloJS {
                                 $file = md5($file);
                                 $file = JFile::makeSafe($file) . '_ext.js';
 
-                                if (is_array($ext_scripts)) {
-                                        $ext_scripts = implode("\n", $ext_scripts);
-                                }
+                                $to_file = JBETOLO_CACHE_DIR . '/' . str_replace(JBETOLO_CACHE_DIR . '/', '', $file);
 
-                                $ext_scripts = trim($ext_scripts);
-
-                                if (empty($ext_scripts)) return;
-
-                                // Replace jQuery DOM ready or load to Mootools ditto where
-                                // the following 2 are assumed syntaxes used as also recommended by
-                                // http://api.jquery.com/ready/
-                                $ext_scripts = preg_replace('#(\$|jQuery)\(document\)\.(ready|load)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("\2",function(){:jQuery:', $ext_scripts);
-                                $ext_scripts = preg_replace('#(\$|jQuery)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("domready",function(){:jQuery:', $ext_scripts);
-
-                                if (preg_match_all('#window\.addEvent\(\s*([\'\"])(ready|domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
-                                        $scripts = array();
-                                        $oScripts = '';
-                                        $res = array();
-                                        $i = 0;
-
-                                        foreach ($matches[0] as $i => $match) {
-                                                $start = $i == 0 ? 0 : $res[0] + $res[1];
-
-                                                if ($i > 0) {
-                                                        $start = strpos($ext_scripts, ')', $start + 1);
-                                                        $start = strpos($ext_scripts, ';', $start) + 1;
-                                                }
-
-                                                $offset = $match[1] - $start;
-                                                $script = substr($ext_scripts, $start, $offset);
-                                                $oScripts .= $script;
-
-                                                $res = self::strpos_balanced('{', '}', $ext_scripts, (int) $match[1] + strlen($match[0]));
-                                                $script = substr($ext_scripts, $res[0], $res[1]);
-
-                                                $isJQuery = 0;
-                                                $script = str_replace(':jQuery:', '', $script, $isJQuery);
-                                                if ($isJQuery > 0) {
-                                                        $script = preg_replace('#\$\s*\(#Uims', 'jQuery(', $script);
-                                                }
-
-
-                                                $event = trim($matches[2][$i][0]);
-
-                                                if ($event == 'ready') $event = 'domready';
-
-                                                if (!isset($scripts[$event])) $scripts[$event] = '';
-                                                else $scripts[$event] .= "\n";
-
-                                                $scripts[$event] .= $script;
+                                if (!JFile::exists($to_file)) {
+                                        if (is_array($ext_scripts)) {
+                                                $ext_scripts = implode("\n", $ext_scripts);
                                         }
 
-                                        $start = $res[0] + $res[1];
-                                        $start = strpos($ext_scripts, ')', $start + 1);
-                                        $start = strpos($ext_scripts, ';', $start) + 1;
-                                        $offset = strlen($ext_scripts) - $start;
-                                        $oScripts .= substr($ext_scripts, $start, $offset);
+                                        $ext_scripts = trim($ext_scripts);
 
-                                        $ext_scripts = $oScripts;
-                                        $event = plgSystemJBetolo::param('js_externalize_event', 'asis');
+                                        if (empty($ext_scripts)) return;
 
-                                        if ($event == 'asis') {
-                                                foreach ($scripts as $event => $script) {
-                                                        $ext_scripts .= "\nwindow.addEvent('".$event."', function() {\n".$script."\n});";
+                                        // Replace jQuery DOM ready or load to Mootools ditto where
+                                        // the following 2 are assumed syntaxes used as also recommended by
+                                        // http://api.jquery.com/ready/
+                                        $ext_scripts = preg_replace('#(\$|jQuery)\(document\)\.(ready|load)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("\2",function(){:jQuery:', $ext_scripts);
+                                        $ext_scripts = preg_replace('#(\$|jQuery)\s*\(\s*function\s*\([^\(\)]*\)\s*{#Uims', 'window.addEvent("domready",function(){:jQuery:', $ext_scripts);
+
+                                        if (preg_match_all('#window\.addEvent\(\s*([\'\"])(ready|domready|load)\1\s*,\s*function\s*\([^\(\)]*\)\s*{#Uims', $ext_scripts, $matches, PREG_OFFSET_CAPTURE)) {
+                                                $scripts = array();
+                                                $oScripts = '';
+                                                $res = array();
+                                                $i = 0;
+
+                                                foreach ($matches[0] as $i => $match) {
+                                                        $start = $i == 0 ? 0 : $res[0] + $res[1];
+
+                                                        if ($i > 0) {
+                                                                $start = strpos($ext_scripts, ')', $start + 1);
+                                                                $start = strpos($ext_scripts, ';', $start) + 1;
+                                                        }
+
+                                                        $offset = $match[1] - $start;
+                                                        $script = substr($ext_scripts, $start, $offset);
+                                                        $oScripts .= $script;
+
+                                                        $res = self::strpos_balanced('{', '}', $ext_scripts, (int) $match[1] + strlen($match[0]));
+                                                        $script = substr($ext_scripts, $res[0], $res[1]);
+
+                                                        $isJQuery = 0;
+                                                        $script = str_replace(':jQuery:', '', $script, $isJQuery);
+                                                        if ($isJQuery > 0) {
+                                                                $script = preg_replace('#\$\s*\(#Uims', 'jQuery(', $script);
+                                                        }
+
+
+                                                        $event = trim($matches[2][$i][0]);
+
+                                                        if ($event == 'ready') $event = 'domready';
+
+                                                        if (!isset($scripts[$event])) $scripts[$event] = '';
+                                                        else $scripts[$event] .= "\n";
+
+                                                        $scripts[$event] .= $script;
                                                 }
-                                        } else {
-                                                $scripts = implode($scripts, "\n");
-                                                $ext_scripts .= "\nwindow.addEvent('" . $event . "', function() {\n".$scripts."\n});";
-                                        }
-                                }
 
-                                jbetoloFileHelper::writeToFile($file, $ext_scripts, 'js');
+                                                $start = $res[0] + $res[1];
+                                                $start = strpos($ext_scripts, ')', $start + 1);
+                                                $start = strpos($ext_scripts, ';', $start) + 1;
+                                                $offset = strlen($ext_scripts) - $start;
+                                                $oScripts .= substr($ext_scripts, $start, $offset);
+
+                                                $ext_scripts = $oScripts;
+                                                $event = plgSystemJBetolo::param('js_externalize_event', 'asis');
+
+                                                if (plgSystemJBetolo::param('js_externalize_library', 'mootools') == 'mootools') {
+                                                        $src = "\nwindow.addEvent('%s', function() {\n%s\n});";
+                                                } else {
+                                                        $src = "\njQuery(document).%s(function() {\n%s\n});";
+                                                }
+
+                                                if ($event == 'asis') {
+                                                        foreach ($scripts as $event => $script) {
+                                                                $ext_scripts .= sprintf($src, $event, $script);
+                                                        }
+                                                } else {
+                                                        $scripts = implode($scripts, "\n");
+                                                        $ext_scripts .= "\n" . sprintf($src, $event, $scripts);
+                                                        $ext_scripts .= "\nwindow.addEvent('" . $event . "', function() {\n".$scripts."\n});";
+                                                }
+                                        }
+
+                                        jbetoloFileHelper::writeToFile($file, $ext_scripts, 'js');
+                                }
 
                                 $file = JBETOLO_URI_BASE . 'cache/jbetolo/' . $file;
 
                                 $ext_scripts = '<script type="text/javascript" src="'.$file.'"></script>';
 
-                                jbetoloFileHelper::placeTags($body, $ext_scripts, 'js');
+                                jbetoloFileHelper::placeTags($body, $ext_scripts, 'js', false, null, null, true);
                         } else {
-                                jbetoloFileHelper::placeTags($body, $scripts, 'js', $js_move_inline);
+                                jbetoloFileHelper::placeTags($body, $scripts, 'js', $js_move_inline, null, null, true);
                         }
                 }
         }
@@ -2244,10 +2270,11 @@ class jbetoloFileHelper {
                         'js',
                         $js_placement,
                         isset($external_custom_orders['js']) ? $external_custom_orders['js']['before'] : array(),
-                        isset($external_custom_orders['js']['after']) ? $external_custom_orders['js']['after'] : array()
+                        isset($external_custom_orders['js']['after']) ? $external_custom_orders['js']['after'] : array(),
+                        true
                 );
 
-                jbetoloFileHelper::placeTags($body, $excl_js_imports, 'js', $js_placement);
+                jbetoloFileHelper::placeTags($body, $excl_js_imports, 'js', $js_placement, null, null, true);
 
                 jbetoloFileHelper::placeTags($body, $css_imports, 'css');
 
@@ -2255,7 +2282,7 @@ class jbetoloFileHelper {
                         plgSystemJBetolo::param('files', $arr, 'set');
         }
 
-        public static function placeTags(&$body, $tags, $type, $rule = false, $tagsBefore = null, $tagsAfter = null) {
+        public static function placeTags(&$body, $tags, $type, $rule = false, $tagsBefore = null, $tagsAfter = null, $considerDefer = false) {
                 if (empty($tags))
                         return;
 
@@ -2283,8 +2310,46 @@ class jbetoloFileHelper {
 
                 $tags = $tagsBefore . $tags . $tagsAfter;
 
-                if ($type == 'js' && (bool) plgSystemJBetolo::param('js_defer')) {
-                        $tags = str_replace('<script ', '<script defer ', $tags);
+                if ($type == 'js' && JBETOLO_JS_DEFER && $considerDefer) {
+                        if (plgSystemJBetolo::param('js_defer') == 'tag') {
+                                $tags = str_replace('<script ', '<script defer="defer" ', $tags);
+                        } else if (plgSystemJBetolo::param('js_defer') == 'script') {
+                                static $jsAdded = false;
+
+                                $js = '';
+
+                                if (!$jsAdded) {
+                                        $js = '
+<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">
+// Adapted from https://developers.google.com/speed/docs/best-practices/payload#DeferLoadingJS on 2013/June/3,10.40AM
+var downloadJSAtOnloadArray = [];
+// Add a script element as a child of the body
+function downloadJSAtOnload() {
+        for (var i = 0, n = downloadJSAtOnloadArray.length; i < n; i++) {
+                var element = document.createElement("script");
+                element.src = downloadJSAtOnloadArray[i];
+                document.body.appendChild(element);
+        }
+}
+// Check for browser support of event handling capability
+if (window.addEventListener) window.addEventListener("load", downloadJSAtOnload, false);
+else if (window.attachEvent) window.attachEvent("onload", downloadJSAtOnload);
+else window.onload = downloadJSAtOnload;
+</script>
+';
+                                        $jsAdded = true;
+                                }
+
+                                if (preg_match_all(plgSystemJBetolo::$srcRegex['js'], $tags, $matches)) {
+                                        $js .= '<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">'."\n";
+                                        foreach ($matches[1] as $match) {
+                                                $js .= 'downloadJSAtOnloadArray.push("'.$match.'");'."\n";
+                                        }
+                                        $js .= '</script>'."\n";
+                                }
+
+                                $tags = $js;
+                        }
                 }
 
                 if (($rule == 1 || $rule == 2) && $titleExists) {

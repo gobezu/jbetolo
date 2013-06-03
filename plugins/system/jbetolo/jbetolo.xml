@@ -105,17 +105,24 @@
                                 </field>
                                 <field name="js_defer" type="radio" default="0" label="PLG_JBETOLO_DEFER_LBL" description="PLG_JBETOLO_DEFER_DESC">
                                         <option value="0">JNO</option>
-                                        <option value="1">JYES</option>
+                                        <option value="tag">PLG_JBETOLO_DEFER_METHOD_TAG</option>
+                                        <option value="script">PLG_JBETOLO_DEFER_METHOD_ONLOAD</option>
                                 </field>
                                 <field name="js_externalize" type="radio" default="0" label="PLG_JBETOLO_EXTERNALIZE_LBL" description="PLG_JBETOLO_EXTERNALIZE_DESC">
                                         <option value="0">JNO</option>
                                         <option value="1">JYES</option>
+                                </field>
+                                <field name="js_externalize_library" type="radio" default="mootools" label="PLG_JBETOLO_EXTERNALIZE_LIBRARY_LBL" description="PLG_JBETOLO_EXTERNALIZE_LIBRARY_DESC">
+                                        <option value="mootools">PLG_JBETOLO_JS_LIBRARY_MOOTOOLS</option>
+                                        <option value="jquery">PLG_JBETOLO_JS_LIBRARY_JQUERY</option>
                                 </field>
                                 <field name="js_externalize_event" type="radio" default="asis" label="PLG_JBETOLO_EXTERNALIZE_EVENT_LBL" description="PLG_JBETOLO_EXTERNALIZE_EVENT_DESC">
                                         <option value="asis">as is</option>
                                         <option value="domready">domready</option>
                                         <option value="load">load</option>
                                 </field>
+                                <field name="defer_exclude_components" type="textarea" rows="5" cols="40" default="" label="PLG_JBETOLO_DEFER_EXCL_COMPONENTS_LBL" description="PLG_JBETOLO_DEFER_EXCL_COMPONENTS_DESC" />
+
                                 <field name="js_merge_exclude" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_LBL" description="PLG_JBETOLO_EXCL_DESC"></field>
                                 <field name="js_include" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_INCL_LBL" description="PLG_JBETOLO_INCL_DESC"></field>
                                 <field name="js_minify" type="radio" default="0" label="PLG_JBETOLO_MINIFY_LBL" description="PLG_JBETOLO_MINIFY_DESC">
@@ -249,6 +256,11 @@
                                     <option value="0">PLG_JBETOLO_NO</option>
                                     <option value="1">PLG_JBETOLO_YES</option>
                                 </field>
+                                <field name="debuggify" type="radio" default="0" label="PLG_JBETOLO_DEBUGGIFY_LBL" description="PLG_JBETOLO_DEBUGGIFY_DESC">
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                    <option value="1">PLG_JBETOLO_YES</option>
+                                </field>
+                                <field name="debuggify_api" type="text" default="" size="50" label="PLG_JBETOLO_DEBUGGIFY_API_LBL" description="PLG_JBETOLO_DEBUGGIFY_API_DESC" />
                         </fieldset>
                 </fields>
         </config>

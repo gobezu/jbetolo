@@ -9,6 +9,7 @@ require_once dirname(__FILE__) . '/jbetolo/helper.php';
 
 class plgSystemJBetolo extends JPlugin {
         public static $allowAll = false;
+        const JBETOLO_SKIP = 'JBETOLOSKIP';
         const EXCLUDE_REG_PREFIX = 'reg:';
         const DELETE_REG_START_PREFIX = 'regs:';
         const DELETE_REG_END_PREFIX = 'rege:';
@@ -18,7 +19,7 @@ class plgSystemJBetolo extends JPlugin {
             'css' => "|<link[^>]+rel=[\"\']stylesheet[\"\'][^>]+[/]?>((.*)</[^>]+>)?|Ui",
             'css2' => "|@import\s*(?:url\()?[\'\"]?([^\'\"\()]+)[\'\"]?\)?;|Uims"
         );
-        private static $srcRegex = array(
+        public static $srcRegex = array(
             'js' => "/src=(?:[\"\'])([^\"\']+)(?:[\"\'])/i",
             'css' => "/href=(?:[\"\'])([^\"\']+)(?:[\"\'])/i"
         );
@@ -34,7 +35,8 @@ class plgSystemJBetolo extends JPlugin {
                 'layout' => array('form', 'edit'),
                 'view' => array('edit')
             ),
-            'cdn' => array()
+            'cdn' => array(),
+            'defer' => array()
         );
         private static $serializableParams = array('files', 'templates');
         public static $conditionalTags = '';
