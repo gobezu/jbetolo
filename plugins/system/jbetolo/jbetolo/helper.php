@@ -1004,7 +1004,7 @@ class jbetoloJS {
                         if ((bool) plgSystemJBetolo::param('js_externalize')) {
                                 $file = JURI::getInstance()->toString();
                                 $file = md5($file);
-                                $file = JFile::makeSafe($file) . '_ext.js';
+                                $file = JFile::makeSafe($file) . '_jbetoloext.js';
 
                                 $to_file = JBETOLO_CACHE_DIR . '/' . str_replace(JBETOLO_CACHE_DIR . '/', '', $file);
 
@@ -1627,6 +1627,13 @@ class jbetoloFileHelper {
                                         $replacement = str_replace('index.php', '', $replacement);
                                         $content = str_replace('HTTP_HOST_REPLACE', $replacement, $content);
                                 }
+
+                                $exts = array();
+                                if (plgSystemJBetolo::param('js_gzip')) $exts[] = 'js';
+                                if (plgSystemJBetolo::param('css_gzip')) $exts[] = 'css';
+                                if (plgSystemJBetolo::param('css_compress_resources')) $exts[] = 'ttf|eot|svg|otf';
+                                $exts = implode('|', $exts);
+                                $content = str_replace('EXTS_REPLACE', $exts, $content);
 
                                 JFile::write($dst, $content);
 
@@ -2282,6 +2289,31 @@ class jbetoloFileHelper {
                         plgSystemJBetolo::param('files', $arr, 'set');
         }
 
+        private static $delayedScripts = array('first'=>array(), 'last'=>array());
+
+        public static function finalizePlaceTags(&$body) {
+                if (empty(self::$delayedScripts['first'])) return;
+
+                $js = '<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript" src="'.JURI::base().'plugins/system/jbetolo/jbetolo/assets/require.js"></script>'."\n";
+                $js .= '
+<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">
+// Adapted from https://developers.google.com/speed/docs/best-practices/payload#DeferLoadingJS on 2013/June/3,10.40AM
+function downloadJSAtOnload() {
+        requirejs.config({shim:{"'.self::$delayedScripts['last'][0].'":["'.implode('","', self::$delayedScripts['first']).'"]}});
+        requirejs(["'.self::$delayedScripts['last'][0].'"]);
+        //requirejs(["'.implode('","', self::$delayedScripts['first']).'"], function() {requirejs(["'.implode('","', self::$delayedScripts['last']).'"], function(){return true;});});
+}
+if (window.addEventListener) window.addEventListener("load", downloadJSAtOnload, false);
+else if (window.attachEvent) window.attachEvent("onload", downloadJSAtOnload);
+else window.onload = downloadJSAtOnload;
+</script>
+';
+                // $js .= '<script type="text/javascript">requirejs(["'.implode('","', self::$delayedScripts['first']).'"], function() {requirejs(["'.implode('","', self::$delayedScripts['last']).'"], function(){return true;});});</script>';
+                // $js .= '<script type="text/javascript">requirejs(["order!'.implode('","order!', self::$delayedScripts['first']).'","order!'.implode('","order!', self::$delayedScripts['last']).'"]);</script>';
+
+                self::placeTags($body, $js, 'js');
+        }
+
         public static function placeTags(&$body, $tags, $type, $rule = false, $tagsBefore = null, $tagsAfter = null, $considerDefer = false) {
                 if (empty($tags))
                         return;
@@ -2316,39 +2348,55 @@ class jbetoloFileHelper {
                         } else if (plgSystemJBetolo::param('js_defer') == 'script') {
                                 static $jsAdded = false;
 
-                                $js = '';
-
-                                if (!$jsAdded) {
-                                        $js = '
-<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">
-// Adapted from https://developers.google.com/speed/docs/best-practices/payload#DeferLoadingJS on 2013/June/3,10.40AM
-var downloadJSAtOnloadArray = [];
-// Add a script element as a child of the body
-function downloadJSAtOnload() {
-        for (var i = 0, n = downloadJSAtOnloadArray.length; i < n; i++) {
-                var element = document.createElement("script");
-                element.src = downloadJSAtOnloadArray[i];
-                document.body.appendChild(element);
-        }
-}
-// Check for browser support of event handling capability
-if (window.addEventListener) window.addEventListener("load", downloadJSAtOnload, false);
-else if (window.attachEvent) window.attachEvent("onload", downloadJSAtOnload);
-else window.onload = downloadJSAtOnload;
-</script>
-';
-                                        $jsAdded = true;
-                                }
-
                                 if (preg_match_all(plgSystemJBetolo::$srcRegex['js'], $tags, $matches)) {
-                                        $js .= '<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">'."\n";
+                                        //jdbg::pe($matches);
                                         foreach ($matches[1] as $match) {
-                                                $js .= 'downloadJSAtOnloadArray.push("'.$match.'");'."\n";
+                                                // $fileName = JFile::getName($match);
+                                                $fileName = $match;
+                                                $fileName = preg_replace('#\.js$#', '', $fileName);
+                                                if (strpos($match, '_jbetoloext.js') !== false) {
+                                                        self::$delayedScripts['last'][] = $fileName;
+                                                } else {
+                                                        self::$delayedScripts['first'][] = $fileName;
+                                                }
                                         }
-                                        $js .= '</script>'."\n";
                                 }
 
-                                $tags = $js;
+                                return;
+
+//                                 $js = '';
+
+//                                 if (!$jsAdded) {
+//                                         $js = '
+// <script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">
+// // Adapted from https://developers.google.com/speed/docs/best-practices/payload#DeferLoadingJS on 2013/June/3,10.40AM
+// var downloadJSAtOnloadArray = [];
+// // Add a script element as a child of the body
+// function downloadJSAtOnload() {
+//         for (var i = 0, n = downloadJSAtOnloadArray.length; i < n; i++) {
+//                 var element = document.createElement("script");
+//                 element.src = downloadJSAtOnloadArray[i];
+//                 document.body.appendChild(element);
+//         }
+// }
+// // Check for browser support of event handling capability
+// if (window.addEventListener) window.addEventListener("load", downloadJSAtOnload, false);
+// else if (window.attachEvent) window.attachEvent("onload", downloadJSAtOnload);
+// else window.onload = downloadJSAtOnload;
+// </script>
+// ';
+//                                         $jsAdded = true;
+//                                 }
+
+//                                 if (preg_match_all(plgSystemJBetolo::$srcRegex['js'], $tags, $matches)) {
+//                                         $js .= '<script '.plgSystemJBetolo::JBETOLO_SKIP.' type="text/javascript">'."\n";
+//                                         foreach ($matches[1] as $match) {
+//                                                 $js .= 'downloadJSAtOnloadArray.push("'.$match.'");'."\n";
+//                                         }
+//                                         $js .= '</script>'."\n";
+//                                 }
+
+//                                 $tags = $js;
                         }
                 }
 

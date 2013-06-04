@@ -105,6 +105,8 @@ class plgSystemJBetolo extends JPlugin {
 
                 jbetoloJS::modifyInlineScripts($body);
 
+                jbetoloFileHelper::finalizePlaceTags($body);
+
                 if (self::param('html_minify')) $body = jbetoloFileHelper::minify('html', $body);
 
                 jbetoloHelper::lazyLoad($body, 2);
