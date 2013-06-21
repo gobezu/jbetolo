@@ -28,6 +28,8 @@ class plgSystemJBetolo extends JPlugin {
             'css' => array()
         );
         private static $dontsEmpty = '__EMPTY__';
+        private static $dos = array(
+        );
         private static $donts = array(
             'jbetolo' => array(
                 'option' => array('com_contentsubmit'),
@@ -138,6 +140,115 @@ class plgSystemJBetolo extends JPlugin {
                 return $this->onUserLogout($user, $options);
         }
 
+        public static function doJbetolo($type) {
+                if (empty($type)) return false;
+
+                $app = JFactory::getApplication()->getName();
+                $user = JFactory::getUser();
+                $allowedIn = self::param($type.'_allow_in', '');
+
+                if ($allowedIn != '' && (
+                        $allowedIn == 'anonymous' && $user->guest ||
+                        $allowedIn != 'anonymous' && ($app == $allowedIn || $allowedIn == 'all')
+                   )) {
+                        return true;
+                }
+
+                if (JFactory::getDocument()->getType() != 'html') return false;
+
+                $dos = isset(self::$dos[$type]) ? self::$dos[$type] : array();
+                $includeComponents = self::param($type . '_include_components');
+
+                if (!empty($includeComponents)) {
+                        $includeComponents = explode(',', $includeComponents);
+
+                        foreach ($includeComponents as $i => $component) {
+                                $component = trim($component);
+
+                                if ($component != 'all' && substr($component, 0, 4) != 'com_') {
+                                        $includeComponents[$i] = 'com_' . $component;
+                                } else {
+                                        $includeComponents[$i] = $component;
+                                }
+                        }
+
+                        if (in_array('all', $includeComponents)) return true;
+
+                        if (isset($dos['option']) && is_array($dos['option'])) {
+                                $dos['option'] = array_merge($dos['option'], $includeComponents);
+                        } else {
+                                $dos['option'] = $includeComponents;
+                        }
+
+                        $dos['option'] = array_unique($dos['option']);
+                }
+
+                $includeURLs = self::param($type . '_include_urls', array());
+
+                if (!empty($includeURLs)) {
+                        $includeURLs = explode(',', $includeURLs);
+
+                        foreach ($includeURLs as &$url) {
+                                if (strpos($url, self::EXCLUDE_REG_PREFIX) === false) parse_str($url, $url);
+                                else $url = str_replace(self::EXCLUDE_REG_PREFIX, '', $url);
+                        }
+                }
+
+                $input = JFactory::getApplication()->input;
+
+                if (!empty($includeURLs)) {
+                        $uri = JURI::getInstance();
+                        $curr = $uri->toString(array('scheme', 'host', 'port', 'path', 'query'));
+
+                        foreach ($includeURLs as $url) {
+                                $match = true;
+
+                                if (is_string($url)) {
+                                        $match = preg_match('#'.preg_quote($url).'#', $curr);
+                                } else {
+                                        foreach ($url as $k => $v) {
+                                                $val = $input->get($k, self::$dontsEmpty);
+                                                //$val = JRequest::getVar($k, self::$dontsEmpty);
+                                                if ($val != $v) {
+                                                        $match = false;
+                                                        break;
+                                                }
+                                        }
+                                }
+
+                                if ($match) return true;
+                        }
+                }
+
+                if (self::checkRules($dos)) {
+                        return true;
+                }
+        }
+
+        private static function checkRules($rules) {
+                $cmds = array_keys($rules);
+                $input = JFactory::getApplication()->input;
+
+                // $rules = array('option'=>array('com_community'));
+
+                foreach ($rules as $key => $rule) {
+                        if (empty($rule)) continue;
+
+                        if (is_array($rule) && !in_array($rule[0], $cmds) || is_string($rule)) {
+                                $val = $input->get($key, self::$dontsEmpty);
+                                // $val = JRequest::getCmd($key, self::$dontsEmpty);
+
+                                if (is_array($rule) && in_array($val, $rule) || is_string($rule) && $val == $rule) {
+                                        return true;
+                                }
+                        } else {
+                                return self::checkRules($rule);
+                        }
+                }
+
+                return false;
+        }
+
         public static function dontJbetolo($type = 'jbetolo') {
                 if (self::param('listen_request', 0) && JRequest::getCmd('nojbetolo', 0) == 1) return true;
 
@@ -231,7 +342,7 @@ class plgSystemJBetolo extends JPlugin {
                         }
                 }
 
-                if (self::checkDonts($donts)) {
+                if (self::checkRules($donts)) {
                         return true;
                 }
 
@@ -302,27 +413,6 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 return $found;
-        }
-
-        private static function checkDonts($rules) {
-                $cmds = array_keys($rules);
-
-                foreach ($rules as $key => $rule) {
-                        if (empty($rule))
-                                continue;
-
-                        if (is_array($rule) && !in_array($rule[0], $cmds) || is_string($rule)) {
-                                $val = JRequest::getCmd($key, self::$dontsEmpty);
-
-                                if (is_array($rule) && in_array($val, $rule) || is_string($rule) && $val == $rule) {
-                                        return true;
-                                }
-                        } else {
-                                return self::checkDonts($rule);
-                        }
-                }
-
-                return false;
         }
 
         private function parseBody($body, $type) {

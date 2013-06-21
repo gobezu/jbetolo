@@ -5,17 +5,28 @@
 <IfModule mod_expires.c>
         ExpiresActive On
         ExpiresDefault A600
+        # Fonts
+        ExpiresByType font/x-woff A5184000
+        ExpiresByType application/x-font-opentype A5184000
+        ExpiresByType font/opentype A5184000
+        ExpiresByType application/x-font-woff A5184000
+        ExpiresByType application/x-font-ttf A5184000
+        ExpiresByType application/vnd.ms-fontobject A5184000
+        ExpiresByType image/svg+xml A5184000
+        # Images and flash
         ExpiresByType image/x-icon A5184000
+        ExpiresByType image/gif A5184000
+        ExpiresByType image/png A5184000
+        ExpiresByType image/jpeg A5184000
+        ExpiresByType application/x-shockwave-flash A5184000
+        ExpiresByType video/x-flv A5184000
+        # JavaScript and CSS
         ExpiresByType application/x-javascript A5184000
         ExpiresByType application/javascript A5184000
         ExpiresByType text/css A5184000
         ExpiresByType text/javascript A5184000
-        ExpiresByType image/gif A5184000
-        ExpiresByType image/png A5184000
-        ExpiresByType image/jpeg A5184000
-        ExpiresByType text/plain A86400
-        ExpiresByType application/x-shockwave-flash A5184000
-        ExpiresByType video/x-flv A5184000
-        ExpiresByType application/pdf A5184000
         ExpiresByType text/html A600
+        ExpiresByType text/plain A86400
+        # Other downloadable files
+        ExpiresByType application/pdf A5184000
 </IfModule>

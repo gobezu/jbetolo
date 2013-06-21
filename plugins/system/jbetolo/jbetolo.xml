@@ -163,6 +163,7 @@
                                         <option value="4">PLG_JBETOLO_LAST_BODY</option>
                                 </field>
                                 <field name="js_inline_dont_move" type="textarea" rows="3" cols="40" default="" label="PLG_JBETOLO_INLINE_JS_DONT_MOVE_LBL" description="PLG_JBETOLO_INLINE_JS_DONT_MOVE_DESC" />
+                                <field name="add_local_jquery_include_components" type="textarea" rows="3" cols="40" default="all" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_INCLUDE_COMPONENTS_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_INCLUDE_COMPONENTS_DESC" />
                                 <field name="add_local_jquery" type="radio" default="0" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_LBL" description="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_DESC">
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>

@@ -1436,7 +1436,7 @@ class jbetoloFileHelper {
                         $customOrder = implode(',', $customOrder);
                         $jquery = '';
 
-                        if (plgSystemJBetolo::param('add_local_jquery', 0)) {
+                        if (plgSystemJBetolo::param('add_local_jquery', 0) && plgSystemJBetolo::doJbetolo('add_local_jquery')) {
                                 $jquery = (empty($moos) ? '' : ',') . JBETOLO_JQUERY;
 
                                 if (plgSystemJBetolo::param('add_local_jquery_ui', 0)) {
