@@ -198,6 +198,11 @@
                                         <option value="0">PLG_JBETOLO_NO</option>
                                         <option value="1">PLG_JBETOLO_YES</option>
                                 </field>
+                                <field name="cdn_enabled_http" type="list" default="dont" label="PLG_JBETOLO_CDN_ENABLED_HTTP_MODE_LBL" description="PLG_JBETOLO_CDN_ENABLED_HTTP_MODE_DESC">
+                                        <option value="cdn">PLG_JBETOLO_CDN_ENABLED_HTTP_OPTION_CDN</option>
+                                        <option value="adapt">PLG_JBETOLO_CDN_ENABLED_HTTP_OPTION_ADAPT</option>
+                                        <option value="dont">PLG_JBETOLO_CDN_ENABLED_HTTP_OPTION_DONT</option>
+                                </field>
                                 <field name="cdn_type" type="list" default="pullown" label="PLG_JBETOLO_CDN_TYPE_LBL" description="PLG_JBETOLO_CDN_TYPE_DESC">
                                         <option value="pull">PLG_JBETOLO_CDN_TYPE_PULL</option>
                                         <option value="pullown">PLG_JBETOLO_CDN_TYPE_PULL_OWN</option>

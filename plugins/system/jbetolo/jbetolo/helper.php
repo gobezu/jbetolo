@@ -223,10 +223,10 @@ class jbetoloHelper {
 
                 $cdn = '';
 
-                if (!isset($_cdn['scheme'])) {
-                        $cdn = 'http';
-                        $_cdn['host'] = $_cdn['path'];
-                        unset($_cdn['path']);
+                $cdnMode = plgSystemJBetolo::param('cdn_enabled_http');
+
+                if ($cdnMode == 'adapt' || !isset($_cdn['scheme'])) {
+                        $cdn = JURI::getInstance()->getScheme();
                 } else {
                         $cdn = $_cdn['scheme'];
                 }
@@ -257,7 +257,20 @@ class jbetoloHelper {
                         $path = str_replace('/administrator', '', $path);
                 }
 
-                define('JBETOLO_CDN_MAP', !plgSystemJBetolo::dontJbetolo('cdn'));
+                $cdn = !plgSystemJBetolo::dontJbetolo('cdn');
+
+                if ($cdn) {
+                        $cdnMode = plgSystemJBetolo::param('cdn_enabled_http');
+
+                        if ($cdnMode == 'dont') {
+                                $cdn = trim(plgSystemJBetolo::param('cdn_domain'));
+                                $cdn = parse_url($cdn);
+
+                                if (JURI::getInstance()->getScheme() != $cdn['scheme']) $cdn = false;
+                        }
+                }
+
+                define('JBETOLO_CDN_MAP', $cdn);
                 define('JBETOLO_JS_DEFER', !plgSystemJBetolo::dontJbetolo('defer') && plgSystemJBetolo::param('js_defer', '0') != '0');
 
                 $cdn = '';
@@ -1809,8 +1822,8 @@ class jbetoloFileHelper {
         }
 
         private static function isPHP($call) {
-                if (strpos($call, '?') !== false) list($call, $query) = explode('?', $call);
-                return jbetoloHelper::endWith($call, '.php');
+                $call = explode('?', $call);
+                return jbetoloHelper::endWith($call[0], '.php');
         }
 
         public static function isSkippedAsDynamic($call) {
