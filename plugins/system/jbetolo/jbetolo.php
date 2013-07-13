@@ -83,7 +83,7 @@ class plgSystemJBetolo extends JPlugin {
                                 }
 
                                 if (self::param('js_jquery_no_conflict')) {
-                                        $jquery .= "\n <script type="text/javascript">jQuery.noConflict();</script>\n";
+                                        $jquery .= "\n <script type='text/javascript'>jQuery.noConflict();</script>\n";
                                 }
 
                                 jbetoloFileHelper::placeTags($body, $jquery, 'js', 2);
