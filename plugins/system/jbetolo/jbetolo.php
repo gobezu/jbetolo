@@ -73,12 +73,17 @@ class plgSystemJBetolo extends JPlugin {
                                 if (jbetoloHelper::mapCDN($body)) JResponse::setBody($body);
                         }
 
-                        if (plgSystemJBetolo::doJbetolo('jbetolo') && plgSystemJBetolo::param('add_local_jquery', 0) && plgSystemJBetolo::doJbetolo('add_local_jquery_always')) {
+                        if (self::doJbetolo('jbetolo') && self::param('add_local_jquery', 0) && self::doJbetolo('add_local_jquery_always')) {
                                 $body = JResponse::getBody();
+
                                 $jquery = '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY.'"></script>';
 
                                 if (self::param('add_local_jquery_ui', 0)) {
                                         $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI.'"></script>';
+                                }
+
+                                if (self::param('js_jquery_no_conflict')) {
+                                        $jquery .= "\n <script type="text/javascript">jQuery.noConflict();</script>\n";
                                 }
 
                                 jbetoloFileHelper::placeTags($body, $jquery, 'js', 2);
