@@ -73,6 +73,18 @@ class plgSystemJBetolo extends JPlugin {
                                 if (jbetoloHelper::mapCDN($body)) JResponse::setBody($body);
                         }
 
+                        if (plgSystemJBetolo::doJbetolo('jbetolo') && plgSystemJBetolo::param('add_local_jquery', 0) && plgSystemJBetolo::doJbetolo('add_local_jquery_always')) {
+                                $body = JResponse::getBody();
+                                $jquery = '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY.'"></script>';
+
+                                if (self::param('add_local_jquery_ui', 0)) {
+                                        $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI.'"></script>';
+                                }
+
+                                jbetoloFileHelper::placeTags($body, $jquery, 'js', 2);
+                                JResponse::setBody($body);
+                        }
+
                         return;
                 } else {
                         $body = JResponse::getBody();
@@ -145,7 +157,7 @@ class plgSystemJBetolo extends JPlugin {
 
                 $app = JFactory::getApplication()->getName();
                 $user = JFactory::getUser();
-                $allowedIn = self::param($type.'_allow_in', '');
+                $allowedIn = $type == 'jbetolo' ? self::param('allow_in') : 'site';
 
                 if ($allowedIn != '' && (
                         $allowedIn == 'anonymous' && $user->guest ||
