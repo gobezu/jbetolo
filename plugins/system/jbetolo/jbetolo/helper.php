@@ -1793,7 +1793,6 @@ class jbetoloFileHelper {
                 if (!$is_file_path) {
                         if ($is_absolute) {
                                 if ($path[0] == '/') $path = substr($path, 1);
-
                                 $path = (JBETOLO_CDN_MAP && $cdn ? $cdn : JBETOLO_URI_BASE) . $path;
                         }
                 }

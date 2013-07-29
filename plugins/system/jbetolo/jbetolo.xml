@@ -78,7 +78,7 @@
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
                                 <field name="css_custom_order" type="textarea" rows="3" cols="40" default="template.css" label="PLG_JBETOLO_CUSTOM_ORDER_LBL" description="PLG_JBETOLO_CUSTOM_ORDER_DESC"></field>
-                                <field name="css_compress_resources" type="text" rows="3" size="70" default="eot,ttf,svg,otf" label="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_LBL" description="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_DESC" />
+                                <field name="css_compress_resources" type="text" default="eot,ttf,svg,otf" label="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_LBL" description="PLG_JBETOLO_CSS_COMPRESS_RESOURCES_DESC" />
                                 <field name="css_datauri_allow_in" type="list" default="all" label="PLG_JBETOLO_CSS_DATAURI_ENABLE_LBL" description="PLG_JBETOLO_CSS_DATAURI_ENABLE_DESC">
                                         <option value="site">PLG_JBETOLO_ALLOW_IN_SITE</option>
                                         <option value="administrator">PLG_JBETOLO_ALLOW_IN_ADMIN</option>
