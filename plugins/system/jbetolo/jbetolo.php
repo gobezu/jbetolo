@@ -79,7 +79,7 @@ class plgSystemJBetolo extends JPlugin {
                                 $jquery = '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY.'"></script>';
 
                                 if (self::param('add_local_jquery_ui', 0)) {
-                                        $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI.'"></script>';
+                                        $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI.'"></script>';
                                 }
 
                                 if (self::param('js_jquery_no_conflict')) {
@@ -101,7 +101,7 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 jbetoloHelper::lazyLoad($body, 1);
-                jbetoloHelper::loadClientsiderErrorLogger($body);
+                //jbetoloHelper::loadClientsiderErrorLogger($body);
                 //jbetoloHelper::handleChanges();
 
                 $_comments = $_conds = $_srcs = $_esrcs = $_tags = $_indexes = array();
@@ -336,18 +336,21 @@ class plgSystemJBetolo extends JPlugin {
                 $excludeURLs[] = array('option' => 'com_k2', 'task' => 'article.edit');
                 $excludeURLs[] = array('option' => 'com_easydiscuss', 'view' => 'ask');
 
+                $currentURL = jbetoloHelper::currentURL();
+
                 if (!empty($excludeURLs)) {
-                        $uri = JURI::getInstance();
-			$curr = $uri->toString(array('scheme', 'host', 'port', 'path', 'query'));
+
+                        $input = JFactory::getApplication()->input;
 
                         foreach ($excludeURLs as $url) {
                                 $match = true;
 
                                 if (is_string($url)) {
-                                        $match = preg_match('#'.preg_quote($url).'#', $curr);
+                                        $match = preg_match('#'.preg_quote($url).'#', $currentURL);
                                 } else {
                                         foreach ($url as $k => $v) {
-                                                $val = JRequest::getVar($k, self::$dontsEmpty);
+//                                                $val = JRequest::getVar($k, self::$dontsEmpty);
+                                                $val = $input->get($k, self::$dontsEmpty);
                                                 if ($val != $v) {
                                                         $match = false;
                                                         break;
@@ -441,6 +444,13 @@ class plgSystemJBetolo extends JPlugin {
 
                 if (!$merge && !$gzip_excluded && !$minify_excluded)
                         return;
+
+                $head_only = (bool) self::param($type.'_scan_headonly', true);
+
+                if ($head_only) {
+                        list($body,) = explode('</head>', $body);
+                        list(,$body) = explode('<head>', $body);
+                }
 
                 // absolutely included resources are appended to body
                 $included = plgSystemJBetolo::param($type . '_include', '');
@@ -646,10 +656,10 @@ class plgSystemJBetolo extends JPlugin {
                                 self::param('js_jquery', JBETOLO_JQUERY, 'set');
 
                                 if (self::param('add_local_jquery_ui', 0)) {
-                                        $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI;
-                                        $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI] =
+                                        $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI;
+                                        $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI] =
                                                 array(
-                                                    'src' => JBETOLO_PATH.'jbetolo/assets/jquery-ui/'.JBETOLO_JQUERY_UI,
+                                                    'src' => JBETOLO_PATH.'jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI,
                                                     'tag' => '',
                                                     'srci' => ''
                                                 );
@@ -659,10 +669,10 @@ class plgSystemJBetolo extends JPlugin {
                         jbetoloJS::setJqueryFile($srcs, $_excludedSrcs);
                 } else if ($type == 'css') {
                         if (self::param('add_local_jquery_ui_css', 0)) {
-                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS;
-                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS] =
+                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery-ui/css/'.JBETOLO_JQUERY_UI_CSS;
+                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery-ui/css/'.JBETOLO_JQUERY_UI_CSS] =
                                         array(
-                                            'src' => JBETOLO_PATH.'jbetolo/assets/'.JBETOLO_JQUERY_UI_CSS,
+                                            'src' => JBETOLO_PATH.'jbetolo/assets/jquery-ui/css/'.JBETOLO_JQUERY_UI_CSS,
                                             'tag' => '',
                                             'srci' => ''
                                         );

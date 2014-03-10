@@ -47,7 +47,12 @@
                                 <field type="cdnpurge" name="cdnpurge" default="" label="PLG_JBETOLO_CDNPURGE_LBL" description="PLG_JBETOLO_CDNPURGE_DESC" />
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_CSS">
+                                <field name="css_scan_headonly" type="radio" default="1" label="PLG_JBETOLO_SCAN_HEADONLY_LBL" description="PLG_JBETOLO_SCAN_HEADONLY_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>
                                 <field name="css_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                                        <option value="url">PLG_JBETOLO_MERGE_MODE_PER_URL</option>
                                         <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
                                         <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
                                 </field>
@@ -55,6 +60,7 @@
                                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
                                 </field>
+                                <field name="css_merge_url" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_MERGE_URL_LBL" description="PLG_JBETOLO_MERGE_URL_DESC"></field>
                                 <field name="css_merge_exclude" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_EXCL_LBL" description="PLG_JBETOLO_EXCL_DESC"></field>
                                 <field name="css_include" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_INCL_LBL" description="PLG_JBETOLO_INCL_DESC"></field>
                                 <field name="css_minify" type="radio" default="0" label="PLG_JBETOLO_MINIFY_LBL" description="PLG_JBETOLO_MINIFY_DESC">
@@ -95,7 +101,12 @@
                                 </field>
                         </fieldset>
                         <fieldset name="PLG_JBETOLO_JS">
+                                <field name="js_scan_headonly" type="radio" default="1" label="PLG_JBETOLO_SCAN_HEADONLY_LBL" description="PLG_JBETOLO_SCAN_HEADONLY_DESC">
+                                        <option value="1">PLG_JBETOLO_YES</option>
+                                        <option value="0">PLG_JBETOLO_NO</option>
+                                </field>
                                 <field name="js_merge_mode" type="radio" default="mono" label="PLG_JBETOLO_MERGE_MODE_LBL" description="PLG_JBETOLO_MERGE_MODE_DESC">
+                                        <option value="url">PLG_JBETOLO_MERGE_MODE_PER_URL</option>
                                         <option value="resource">PLG_JBETOLO_MERGE_MODE_PER_RESOURCE</option>
                                         <option value="mono">PLG_JBETOLO_MERGE_MODE_MONO</option>
                                 </field>
@@ -103,6 +114,7 @@
                                         <option value="0">PLG_JBETOLO_MERGE_NO</option>
                                         <option value="1">PLG_JBETOLO_MERGE_YES</option>
                                 </field>
+                                <field name="js_merge_url" type="textarea"  rows="5" cols="40" default="" label="PLG_JBETOLO_MERGE_URL_LBL" description="PLG_JBETOLO_MERGE_URL_DESC"></field>
                                 <field name="js_defer" type="radio" default="0" label="PLG_JBETOLO_DEFER_LBL" description="PLG_JBETOLO_DEFER_DESC">
                                         <option value="0">JNO</option>
                                         <option value="tag">PLG_JBETOLO_DEFER_METHOD_TAG</option>
@@ -174,6 +186,7 @@
                                         <option value="1">PLG_JBETOLO_YES</option>
                                         <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
+                                <field name="add_local_jquery_ui_version" type="filelist" default="" hide_none="true" label="PLG_JBETOLO_ALLOW_LOCAL_JQUERY_UI_VERSION_LBL" directory="plugins/system/jbetolo/jbetolo/assets/jquery-ui/js" filter="" exclude="" stripext="true" />
                                 <field name="cdnjs" type="cdnjs" default="" multiple="true" label="PLG_JBETOLO_CDNJS_LBL" description="PLG_JBETOLO_CDNJS_DESC" />
 				<field name="js_add_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_ADD_INLINE_LBL" description="PLG_JBETOLO_JS_ADD_INLINE_DESC" />
 				<field name="js_remove_inline" type="textarea" cols="40" rows="5" default="" label="PLG_JBETOLO_JS_REMOVE_INLINE_LBL" description="PLG_JBETOLO_JS_REMOVE_INLINE_DESC" />

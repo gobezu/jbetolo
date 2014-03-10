@@ -8,6 +8,12 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 class jbetoloHelper {
+        public static function currentURL() {
+                static $url = false;
+                if (!$url) $url = JURI::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
+                return $url;
+        }
+
         public static function browser($browser) {
                 if ($browser == 'ie' || $browser == 'internet explorer') return 'msie';
                 else if ($browser == 'ff' || $browser == 'firefox') return 'mozilla';
@@ -320,9 +326,9 @@ class jbetoloHelper {
 
                 define('JBETOLO_URI_BASE', $uri);
                 define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
-                define('JBETOLO_JQUERY', plgSystemJBetolo::param('add_local_jquery_version', 'jquery-1.7.2.min').'.js');
-                define('JBETOLO_JQUERY_UI', 'jquery-ui-1.8.22.custom.min.js');
-                define('JBETOLO_JQUERY_UI_CSS', 'jquery-ui-1.8.22.custom.css');
+                define('JBETOLO_JQUERY', plgSystemJBetolo::param('add_local_jquery_version', 'jquery-1.8.3.min').'.js');
+                define('JBETOLO_JQUERY_UI', plgSystemJBetolo::param('add_local_jquery_ui_version', 'jquery-ui-1.9.2.custom.min').'.js');
+                define('JBETOLO_JQUERY_UI_CSS', plgSystemJBetolo::param('add_local_jquery_ui_version', 'jquery-ui-1.9.2.custom.min').'.css');
 
                 if (plgSystemJbetolo::$allowAll) {
                         define('JBETOLO_CACHE_DIR', JPATH_SITE . '/cache/jbetolo/');
@@ -1277,6 +1283,7 @@ class jbetoloCSS {
 
         private static function _load($matches) {
                 $file = jbetoloFileHelper::normalizeCall($matches[1]);
+                if (!$file) return $matches[0];
                 $file = (array) $file;
                 foreach (self::$deleteSrcs as $d) {
                         $_d = jbetoloFileHelper::normalizeCall($d);
@@ -1371,7 +1378,7 @@ class jbetoloCSS {
                                 }
                         }
 
-                        $resource = jbetoloFileHelper::getServingURL($file_name, $type, true);
+                        $resource = jbetoloFileHelper::getServingURL($file_name, $type, $ext != 'woff');
                 }
 
                 if (!$processed) {
@@ -1431,7 +1438,8 @@ class jbetoloFileHelper {
                         $_files = !empty($index) ? $index : $files;
 
                         foreach ($_files as $file) {
-                                if (preg_match('#mootools-(core|more){1}(\-[\d\.]+){0,1}\.js$#i', $file) || preg_match('#mootools\.js$#i', $file)) {
+                                // mootools-core-1.4.5-uncompressed.js
+                                if (preg_match('#mootools-(core|more){1}.*\.js$#i', $file) || preg_match('#mootools\.js$#i', $file)) {
                                         $b = basename($file);
                                         $f = jbetoloFileHelper::fileInArray($b, $customOrder);
 
@@ -1677,6 +1685,8 @@ class jbetoloFileHelper {
         public static function createFileName($src_files, $type) {
                 $res = array();
 
+                $mergeMode = plgSystemJBetolo::param($type . '_merge_mode', '');
+
                 foreach ($src_files as $s => $src_file) {
                         list($src_file, ) = explode('?', $src_file);
                         $f = jbetoloFileHelper::normalizeCall($src_file, true);
@@ -1685,7 +1695,6 @@ class jbetoloFileHelper {
                         $src_files[$s] = $src_file.$t;
                 }
 
-                array_multisort($src_files, SORT_ASC, SORT_STRING);
                 $gz = JBETOLO_IS_GZ && plgSystemJBetolo::param($type . '_gzip') ? '-gz' : '';
                 $minify = plgSystemJBetolo::param($type . '_minify', 0) ? '-min' : '';
                 $cdn = JBETOLO_CDN_MAP ? '-cdn' : '';
@@ -1693,10 +1702,20 @@ class jbetoloFileHelper {
                 $browsers = plgSystemJBetolo::param('exclude_browsers');
                 if ($browsers) $browsers = '-b'.$browsers;
 
+                if ($mergeMode == 'url') {
+                        $src_files[] = jbetoloHelper::currentURL();
+                } else {
+                        array_multisort($src_files, SORT_ASC, SORT_STRING);
+                }
+
                 $key = md5(implode($src_files) . $minify . $gz . $cdn . $fn . $browsers);
                 $key = JFile::makeSafe($key);
 
-                return array('merged' => $key . "." . $type, 'parts' => $res);
+                return array(
+                    'merged' => $key . "." . $type,
+                    'parts' => $res,
+                    'url' => jbetoloHelper::currentURL()
+                );
         }
 
         public static function normalizeTOCDN($call, $type = '') {
@@ -2101,14 +2120,14 @@ class jbetoloFileHelper {
                         $excl_files = $excluded_files[$type];
 
                         if ($merge) {
-                                $isMono = plgSystemJBetolo::param($type.'_merge_mode', 'mono') == 'mono';
+                                $mergeMode = plgSystemJBetolo::param($type.'_merge_mode', 'mono');
                                 $are_files_changed = $new_files_found = false;
 
                                 if (count($arr) == 0 || !isset($arr[$app]) || !isset($arr[$app][$tmpl]) || !isset($arr[$app][$tmpl][$type]) || !is_array($arr[$app][$tmpl][$type])) {
                                         $arr[$app][$tmpl][$type] = array();
                                 }
 
-                                if ($isMono) {
+                                if ($mergeMode == 'mono') {
                                         if (count($arr[$app][$tmpl][$type])) {
                                                 foreach ($arr[$app][$tmpl][$type] as $attr => $rec) {
                                                         $merged = array();
@@ -2182,10 +2201,14 @@ class jbetoloFileHelper {
 
                                         $imports = $arr[$app][$tmpl][$type];
                                 } else {
-                                        $_src_files = array_unique($_src_files);
-                                        $files_key = $_src_files;
-                                        sort($files_key);
-                                        $files_key = implode('', $files_key);
+                                        if ($mergeMode == 'url') {
+                                                $files_key = jbetoloHelper::currentURL();
+                                        } else if ($mergeMode == 'resource') {
+                                                $_src_files = array_unique($_src_files);
+                                                $files_key = $_src_files;
+                                                sort($files_key);
+                                                $files_key = implode('', $files_key);
+                                        }
 
                                         if (isset($arr[$app][$tmpl][$type][$files_key])) {
                                                 $rec = $arr[$app][$tmpl][$type][$files_key];
@@ -2361,7 +2384,6 @@ else window.onload = downloadJSAtOnload;
                                 static $jsAdded = false;
 
                                 if (preg_match_all(plgSystemJBetolo::$srcRegex['js'], $tags, $matches)) {
-                                        //jdbg::pe($matches);
                                         foreach ($matches[1] as $match) {
                                                 // $fileName = JFile::getName($match);
                                                 $fileName = $match;
