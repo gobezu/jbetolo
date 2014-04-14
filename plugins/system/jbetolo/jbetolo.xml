@@ -161,6 +161,10 @@
                                     <option value="1">PLG_JBETOLO_YES</option>
                                     <option value="0">PLG_JBETOLO_NO</option>
                                 </field>
+                                <field name="js_jquery_migrate_plugin" type="radio" default="0" label="PLG_JBETOLO_JQUERY_MIGRATE_PLUGIN_LBL" description="PLG_JBETOLO_JQUERY_MIGRATE_PLUGIN_DESC">
+                                    <option value="1">PLG_JBETOLO_YES</option>
+                                    <option value="0">PLG_JBETOLO_NO</option>
+                                </field>
                                 <field name="js_jquery" type="text" default="jquery.js" label="PLG_JBETOLO_JQUERY_FILE_NAME" />
                                 <field name="spacer_js_placement" type="spacer" default="" label="PLG_JBETOLO_JSPLACE" />
                                 <field name="js_placement" type="list" default="2" label="PLG_JBETOLO_JS_PLACEMENT_LBL" description="PLG_JBETOLO_JS_PLACEMENT_DESC">

@@ -30,3 +30,8 @@
         # Other downloadable files
         ExpiresByType application/pdf A5184000
 </IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|xml|gz)$">
+    Header append Vary: Accept-Encoding
+  </FilesMatch>
+</IfModule>

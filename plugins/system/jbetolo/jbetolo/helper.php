@@ -327,6 +327,7 @@ class jbetoloHelper {
                 define('JBETOLO_URI_BASE', $uri);
                 define('JBETOLO_PATH', JPATH_SITE.'/plugins/system/'.(jbetoloHelper::isJ16() ? 'jbetolo/' : ''));
                 define('JBETOLO_JQUERY', plgSystemJBetolo::param('add_local_jquery_version', 'jquery-1.8.3.min').'.js');
+                define('JBETOLO_JQUERY_MIGRATE_PLUGIN', 'jquery-migrate-1.2.1.min.js');
                 define('JBETOLO_JQUERY_UI', plgSystemJBetolo::param('add_local_jquery_ui_version', 'jquery-ui-1.9.2.custom.min').'.js');
                 define('JBETOLO_JQUERY_UI_CSS', plgSystemJBetolo::param('add_local_jquery_ui_version', 'jquery-ui-1.9.2.custom.min').'.css');
 
@@ -376,9 +377,10 @@ class jbetoloHelper {
         }
 
         public static function isApache() {
-                $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+        	return true;
+/*                $server = strtolower($_SERVER['SERVER_SOFTWARE']);
                 return jbetoloHelper::beginWith($server, 'apache') || jbetoloHelper::beginWith($server, 'litespeed');
-        }
+*/        }
 
         public static function isNginx() {
                 $server = strtolower($_SERVER['SERVER_SOFTWARE']);
@@ -440,6 +442,18 @@ class jbetoloHelper {
                 return JText::sprintf('PLG_JBETOLO_SMUSHIT_SUCCESS', $smush->count, ($smush->size - $smush->compressedSize)/1000);
         }
 
+        public static function cdnExcluded() {
+        	static $excluded;
+
+        	if (isset($excluded)) return $excluded;
+
+                $excluded = str_replace('\\', '/', plgSystemJBetolo::param('cdn_types_exclude'));
+                $excluded = preg_replace('#([\/]+)#', '/', $excluded);
+                $excluded = explode(',', $excluded);
+
+                return $excluded;
+        }
+
         /**
          * @@todo additional types of media to be supported as per extension list in normalizeTOCDN
          */
@@ -454,13 +468,10 @@ class jbetoloHelper {
 
                 if (in_array($option, $excluded)) return false;
 
-                $excluded = str_replace('\\', '/', plgSystemJBetolo::param('cdn_types_exclude'));
-                $excluded = preg_replace('#([\/]+)#', '/', $excluded);
-                $excluded = explode(',', $excluded);
-
+                $excluded = self::cdnExcluded();
                 $typeTags = array();
-
                 $types = plgSystemJBetolo::param('cdn_types_images', '');
+
                 if ($types) {
                         $typeTags['img'] = array('src' => 'src', 'ext' => str_replace(array(',', ';'), '|', $types), 'type'=>'images');
                 }
@@ -839,6 +850,14 @@ class jbetoloHelper {
                 return $toMove;
         }
 
+        public static function matches($str, $part) {
+        	if (strpos($part, 'reg:') === 0) {
+        		$part = str_replace('reg:', '', $part);
+        		return preg_match('#'.$part.'#i', $str);
+        	}
+        	return self::endWith($str, $part);
+        }
+
         public static function endWith($str, $end) {
                 return $end != '' && substr($str, -strlen($end)) == $end;
         }
@@ -879,6 +898,7 @@ class jbetoloJS {
 
                 $data = array();
                 $jqueryNoConflict = plgSystemJBetolo::param('js_jquery_no_conflict');
+                $jqueryMigratePlugin = plgSystemJBetolo::param('js_jquery_migrate_plugin');
                 $jqFile = plgSystemJBetolo::$jquery;
 
                 foreach ($files as $f => $file) {
@@ -1408,7 +1428,7 @@ class jbetoloFileHelper {
         }
         public static function getServingURL($file, $type, $gz, $age = null) {
                 $url = '';
-                if (JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_merged')) {
+                if (JBETOLO_CDN_MAP && (bool) plgSystemJBetolo::param('cdn_types_'.$type)) {
                         $url = self::normalizeTOCDN(JBETOLO_CACHE_DIR.$file, $type);
                 } else if ($gz) {
                         if (self::allowRewrite('serve')) {
@@ -1527,7 +1547,7 @@ class jbetoloFileHelper {
                 }
 
                 foreach ($files as $f => $file) {
-                        if (jbetoloHelper::endWith($file, $key_file)) {
+                        if (jbetoloHelper::matches($file, $key_file)) {
                                 return array($f, $file);
                         }
                 }
@@ -1812,7 +1832,20 @@ class jbetoloFileHelper {
                 if (!$is_file_path) {
                         if ($is_absolute) {
                                 if ($path[0] == '/') $path = substr($path, 1);
-                                $path = (JBETOLO_CDN_MAP && $cdn ? $cdn : JBETOLO_URI_BASE) . $path;
+
+                                if (JBETOLO_CDN_MAP && $cdn) {
+                                	$_path = $cdn . $path;
+
+                                	$excluded = jbetoloHelper::cdnExcluded();
+
+                                	if (jbetoloFileHelper::isOnPath($path, $excluded)) {
+                                		$_path = JBETOLO_URI_BASE . $path;
+                                	}
+
+                                	$path = $_path;
+                                } else {
+                                	$path = JBETOLO_URI_BASE . $path;
+                                }
                         }
                 }
 

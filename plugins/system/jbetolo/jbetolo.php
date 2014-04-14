@@ -73,21 +73,27 @@ class plgSystemJBetolo extends JPlugin {
                                 if (jbetoloHelper::mapCDN($body)) JResponse::setBody($body);
                         }
 
-                        if (self::doJbetolo('jbetolo') && self::param('add_local_jquery', 0) && self::doJbetolo('add_local_jquery_always')) {
-                                $body = JResponse::getBody();
+                        if (self::doJbetolo('jbetolo')) {
+	                        if (self::param('js_jquery_migrate_plugin', 0)) {
+	                                $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY_MIGRATE_PLUGIN.'"></script>';
+	                        }
 
-                                $jquery = '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY.'"></script>';
+                        	if (self::param('add_local_jquery', 0) && self::doJbetolo('add_local_jquery_always')) {
+	                                $body = JResponse::getBody();
 
-                                if (self::param('add_local_jquery_ui', 0)) {
-                                        $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI.'"></script>';
+	                                $jquery = '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery/'.JBETOLO_JQUERY.'"></script>';
+
+	                                if (self::param('add_local_jquery_ui', 0)) {
+	                                        $jquery .= '<script type="text/javascript" src="'.JBETOLO_URI_BASE.'plugins/system/jbetolo/jbetolo/assets/jquery-ui/js/'.JBETOLO_JQUERY_UI.'"></script>';
+	                                }
+
+	                                if (self::param('js_jquery_no_conflict')) {
+	                                        $jquery .= "\n <script type='text/javascript'>jQuery.noConflict();</script>\n";
+	                                }
+
+	                                jbetoloFileHelper::placeTags($body, $jquery, 'js', 2);
+	                                JResponse::setBody($body);
                                 }
-
-                                if (self::param('js_jquery_no_conflict')) {
-                                        $jquery .= "\n <script type='text/javascript'>jQuery.noConflict();</script>\n";
-                                }
-
-                                jbetoloFileHelper::placeTags($body, $jquery, 'js', 2);
-                                JResponse::setBody($body);
                         }
 
                         return;
@@ -135,6 +141,7 @@ class plgSystemJBetolo extends JPlugin {
                 if (JBETOLO_DEBUG) jbetoloHelper::timer(false, true, $body);
 
                 JResponse::setBody($body);
+
                 // jbetoloHelper::sanityCheck();
         }
 
@@ -644,6 +651,16 @@ class plgSystemJBetolo extends JPlugin {
                 }
 
                 if ($type == 'js') {
+                        if (self::param('js_jquery_migrate_plugin', 0)) {
+                                $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY_MIGRATE_PLUGIN;
+                                $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY_MIGRATE_PLUGIN] =
+                                        array(
+                                            'src' => JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY_MIGRATE_PLUGIN,
+                                            'tag' => '',
+                                            'srci' => ''
+                                        );
+                        }
+
                         if (self::param('add_local_jquery', 0)) {
                                 $srcs[] = JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY;
                                 $srcsIndexes[JBETOLO_PATH.'jbetolo/assets/jquery/'.JBETOLO_JQUERY] =
